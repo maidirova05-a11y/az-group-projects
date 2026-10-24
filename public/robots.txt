@@ -1,0 +1,8 @@
+# AZ Group — https://www.azgroup.kz
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://www.azgroup.kz/sitemap.xml

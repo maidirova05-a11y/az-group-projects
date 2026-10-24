@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 160" role="img" aria-labelledby="t"><title id="t">Magnifying glass over empty search results</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/></defs>
+<ellipse cx="100" cy="82" rx="78" ry="64" fill="#f0f2f4"/>
+<ellipse cx="100" cy="146" rx="52" ry="5" fill="#1d1f23" opacity=".07"/>
+<rect x="44" y="34" width="84" height="22" rx="8" fill="#fff"/>
+<rect x="44" y="62" width="84" height="22" rx="8" fill="#fff"/>
+<rect x="44" y="90" width="84" height="22" rx="8" fill="#fff"/>
+<g fill="#e4e7eb"><circle cx="56" cy="45" r="5"/><rect x="66" y="42" width="48" height="6" rx="3"/><circle cx="56" cy="73" r="5"/><rect x="66" y="70" width="36" height="6" rx="3"/><circle cx="56" cy="101" r="5"/><rect x="66" y="98" width="42" height="6" rx="3"/></g>
+<path d="M140 110l22 22" stroke="#1d1f23" stroke-width="11" stroke-linecap="round"/>
+<circle cx="124" cy="94" r="28" fill="#fff" fill-opacity=".85" stroke="#cd0929" stroke-width="7"/>
+<path d="M115 85l18 18m0-18l-18 18" stroke="#6b7079" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+<use xlink:href="#s" transform="translate(162 44) scale(.8)" fill="#cd0929"/>
+<circle cx="32" cy="110" r="4" fill="#6b7079" opacity=".5"/>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240" role="img" aria-labelledby="t"><title id="t">Creative academy: an artist palette with a brush</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/></defs>
+<circle cx="120" cy="120" r="96" fill="#fdecef"/>
+<ellipse cx="116" cy="206" rx="64" ry="7" fill="#1d1f23" opacity=".07"/>
+<path d="M114 52c-46 0-78 32-78 72 0 38 26 66 60 66 16 0 20-12 14-24-5-10 2-18 14-18h20c22 0 38-14 38-36 0-36-30-60-68-60z" fill="#fff" stroke="#1d1f23" stroke-width="6" stroke-linejoin="round"/>
+<circle cx="78" cy="104" r="13" fill="#cd0929"/>
+<circle cx="110" cy="80" r="13" fill="#4f47b7"/>
+<circle cx="148" cy="84" r="13" fill="#187d77"/>
+<circle cx="72" cy="144" r="13" fill="#1d1f23"/>
+<circle cx="164" cy="118" r="9" fill="#e4e7eb"/>
+<g transform="rotate(35 176 150)">
+<rect x="170" y="88" width="12" height="74" rx="6" fill="#1d1f23"/>
+<rect x="168" y="156" width="16" height="12" rx="2" fill="#e4e7eb"/>
+<path d="M168 168h16c0 16-4 26-8 34-4-8-8-18-8-34z" fill="#cd0929"/>
+</g>
+<use xlink:href="#s" transform="translate(194 54)" fill="#cd0929"/>
+<use xlink:href="#s" transform="translate(42 58) scale(.75)" fill="#4f47b7"/>
+<circle cx="206" cy="186" r="5" fill="#187d77"/>
+</svg>

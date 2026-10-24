@@ -1,0 +1,41 @@
+/* Раздел «Программы и события». Только переменные admin.css. */
+.pg-hint { font-size: 13px; margin: 0 0 10px; }
+.pg-skeleton { display: grid; gap: 8px; }
+
+.pg-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 12px; }
+.pg-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 3px var(--card); flex: none; }
+.pg-main { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; padding: 4px 0; border: 0; background: none; text-align: left; cursor: pointer; color: inherit; font: inherit; border-radius: 8px; }
+.pg-main:hover .pg-name { color: var(--brand-ink); }
+.pg-main:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.pg-name { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+.pg-sub { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.pg-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 8px; }
+.pg-next { font-size: 13px; white-space: nowrap; }
+.pg-actions { display: flex; }
+.pg-hidden .pg-name, .pg-hidden .pg-dot { opacity: .55; }
+
+.pg-events { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+.pg-events-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.pg-events-head h3 { font-size: 16px; font-weight: 700; }
+.pg-events .table-wrap { margin: 0; }
+.pg-ev-label { font-weight: 600; }
+.pg-nowrap { white-space: nowrap; }
+.pg-past td { color: var(--muted); }
+.pg-foot-delete { margin-right: auto; }
+
+.pg-label-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pg-label-row > .input { flex: 1 1 220px; }
+
+@media (max-width: 1100px) {
+  .pg-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .pg-meta { grid-column: 2 / -1; grid-row: 2; justify-content: flex-start; }
+}
+
+@media (max-width: 767px) {
+  .pg-row { grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; }
+  .pg-meta { grid-column: 1 / -1; grid-row: 2; }
+  .pg-actions { grid-column: 1 / -1; grid-row: 3; justify-content: flex-end; margin-top: -4px; }
+  .pg-next { white-space: normal; flex-basis: 100%; }
+  .pg-foot-delete { margin-right: 0; order: 3; flex-basis: 100%; }
+  .sortable-item:has(.pg-row) .sortable-arrows { flex-direction: column; }
+}

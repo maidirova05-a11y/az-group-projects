@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AZ Group — международные олимпиады, робототехника и обучение за рубежом</title>
+    <meta
+      name="description"
+      content="AZ Group — международная образовательная компания в Казахстане: олимпиады Fibonacci и Atlantia для 3–12 классов, научный конгресс ITECX, чемпионат Astana Tech Cup, зарубежные лагеря и обмен. Календарь 2026–2027 и регистрация."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AZ Group — образовательные возможности здесь" />
+    <meta
+      property="og:description"
+      content="Олимпиады Fibonacci и Atlantia, чемпионаты по робототехнике, научный конгресс ITECX, фестивали, программы обмена и лагеря за рубежом — для учеников, учителей и школ Казахстана."
+    />
+    <!-- canonical, og:url и hreflang ставит src/components/Seo.tsx под текущий адрес и язык. -->
+    <meta property="og:site_name" content="AZ Group" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:image" content="https://www.azgroup.kz/images/og-cover.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AZ Group — олимпиады, чемпионаты, научные конференции и обучение за рубежом" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://www.azgroup.kz/images/og-cover.jpg" />
+    <meta name="theme-color" content="#f0f2f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)" />
+    <!-- Тема до первой отрисовки (без вспышки). Логика — как в src/content/theme.ts. -->
+    <script>
+      (function () {
+        var p = null, d = document.documentElement;
+        // Язык страницы по префиксу пути (/kk/…, /en/…) — до загрузки скриптов; дальше его ведёт src/i18n.
+        var l = /^\/(kk|en)(\/|$)/.exec(location.pathname);
+        if (l) d.lang = l[1];
+        try { p = localStorage.getItem('az-theme'); } catch (e) {}
+        var dark = p === 'dark' || (p !== 'light' && !!window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+        var t = dark ? 'dark' : 'light';
+        d.setAttribute('data-theme', t);
+        d.style.colorScheme = t;
+        if (p === 'light' || p === 'dark') {
+          var m = document.querySelectorAll('meta[name="theme-color"]');
+          for (var i = 0; i < m.length; i++) m[i].setAttribute('content', dark ? '#111317' : '#f0f2f4');
+        }
+      })();
+    </script>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

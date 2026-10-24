@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "project": {
+    "name": "az-group-projects",
+    "productType": "Educational project portfolio and seasonal calendar",
+    "stack": [
+      "react",
+      "tailwind-v4",
+      "vite"
+    ]
+  },
+  "sources": {
+    "tokens": [
+      "src/index.css"
+    ],
+    "components": [],
+    "assets": [],
+    "instructions": []
+  },
+  "design": {
+    "colorMode": "light",
+    "colors": {
+      "--color-slate-ink": {
+        "value": "#44464c",
+        "source": "src/index.css"
+      },
+      "--color-slate-deep": {
+        "value": "#292a2e",
+        "source": "src/index.css"
+      },
+      "--color-slate-soft": {
+        "value": "#686b73",
+        "source": "src/index.css"
+      },
+      "--color-slate-mute": {
+        "value": "#777b83",
+        "source": "src/index.css"
+      },
+      "--color-brand-red": {
+        "value": "#cd0929",
+        "source": "src/index.css"
+      },
+      "--color-brand-red-dark": {
+        "value": "#a80722",
+        "source": "src/index.css"
+      },
+      "--color-brand-red-soft": {
+        "value": "#f6e2e6",
+        "source": "src/index.css"
+      },
+      "--color-paper": {
+        "value": "#ffffff",
+        "source": "src/index.css"
+      },
+      "--color-paper-2": {
+        "value": "#f8f7f3",
+        "source": "src/index.css"
+      },
+      "--color-paper-3": {
+        "value": "#eceef1",
+        "source": "src/index.css"
+      },
+      "--color-line": {
+        "value": "#e6e4de",
+        "source": "src/index.css"
+      },
+      "--color-navy-950": {
+        "value": "#060f2e",
+        "source": "src/index.css"
+      },
+      "--color-navy-900": {
+        "value": "#08153d",
+        "source": "src/index.css"
+      },
+      "--color-navy-800": {
+        "value": "#0d2260",
+        "source": "src/index.css"
+      },
+      "--color-panel": {
+        "value": "#f3f6fc",
+        "source": "src/index.css"
+      },
+      "--color-ink-date": {
+        "value": "#0c1b4d",
+        "source": "src/index.css"
+      }
+    },
+    "typography": {
+      "--font-sans": {
+        "value": "'Montserrat', ui-sans-serif, system-ui, sans-serif",
+        "source": "src/index.css"
+      }
+    },
+    "spacing": {},
+    "radius": {},
+    "shadows": {},
+    "motion": {},
+    "density": "unknown"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": [
+      "AnimatedContent",
+      "SplitText",
+      "CountUp",
+      "ClickSpark",
+      "NeuralHub"
+    ],
+    "patterns": [
+      "Warm light editorial hero with an original 3D explorer mascot",
+      "Category and month filters for program dates",
+      "Pastel branded project panels"
+    ]
+  },
+  "constraints": {
+    "must": [
+      "Preserve original AZ Group logos and crimson brand accent",
+      "Use supplied calendar PDF as date authority",
+      "Respect reduced motion and keep mascot animation pausable"
+    ],
+    "avoid": [
+      "Inventing exact dates for month-only or holiday events",
+      "Inventing URLs for programs without a confirmed site"
+    ]
+  },
+  "decisions": [],
+  "evidence": [
+    {
+      "fact": "design.colorMode:light",
+      "source": "src/index.css"
+    },
+    {
+      "fact": "design.tokens",
+      "source": "src/index.css"
+    },
+    {
+      "fact": "project.stack:react",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:tailwind-v4",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:vite",
+      "source": "package.json"
+    }
+  ],
+  "generatedAt": "2026-10-08T10:00:35.450Z"
+}

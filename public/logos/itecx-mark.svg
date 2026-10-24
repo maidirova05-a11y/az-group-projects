@@ -1,0 +1,5 @@
+<!-- Знак ITECX без словомарки: красный X из BrandMark.tsx проекта ITECX. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 520">
+  <path d="M16,40 L118,40 L210,250 L404,460 L302,460 L210,250 Z" fill="#e31f2d"/>
+  <path d="M404,40 L302,40 L210,250 L16,460 L118,460 L210,250 Z" fill="#e31f2d"/>
+</svg>

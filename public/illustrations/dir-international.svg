@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240" role="img" aria-labelledby="t"><title id="t">International programs: a globe with a plane and a location pin</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/><clipPath id="g"><circle cx="120" cy="130" r="64"/></clipPath></defs>
+<circle cx="120" cy="120" r="96" fill="#e3f1f0"/>
+<ellipse cx="120" cy="208" rx="58" ry="7" fill="#1d1f23" opacity=".07"/>
+<circle cx="120" cy="130" r="64" fill="#fff"/>
+<g clip-path="url(#g)" fill="#187d77">
+<path d="M64 92c16-12 38-12 46 0s-4 22 6 30 26 0 28 16-12 24-28 20-18 12-28 4-4-20-16-24-22-4-24-18 4-20 16-28z"/>
+<path d="M146 74c12-4 26 0 28 10s-6 16-16 14-16-2-18-10 0-12 6-14z"/>
+<path d="M156 160c10-6 24-4 26 6s-8 20-18 20-14-18-8-26z"/>
+</g>
+<circle cx="120" cy="130" r="64" fill="none" stroke="#1d1f23" stroke-width="6"/>
+<path d="M36 82C76 34 160 30 200 70" fill="none" stroke="#187d77" stroke-width="4" stroke-dasharray="1 10" stroke-linecap="round"/>
+<g transform="translate(204 76) rotate(135)"><path d="M0-22c4 0 6 4 6 10v8l18 10v6L6 8v10l6 5v4L0 24l-12 3v-4l6-5V8l-18 4V6l18-10v-8C-6-18-4-22 0-22z" fill="#cd0929"/></g>
+<path d="M60 146c-11 0-20 9-20 20 0 15 20 34 20 34s20-19 20-34c0-11-9-20-20-20z" fill="#cd0929"/>
+<circle cx="60" cy="166" r="7" fill="#fff"/>
+<use xlink:href="#s" transform="translate(200 168)" fill="#187d77"/>
+<circle cx="30" cy="110" r="5" fill="#187d77"/>
+</svg>

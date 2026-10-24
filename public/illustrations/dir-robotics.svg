@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240" role="img" aria-labelledby="t"><title id="t">Robotics: a friendly robot in front of a gear</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/></defs>
+<circle cx="120" cy="120" r="96" fill="#ecebf8"/>
+<g transform="translate(180 66)"><path fill="#4f47b7" opacity=".22" d="M-6-34h12l2 9 8 3 8-5 8 8-5 8 3 8 9 2v12l-9 2-3 8 5 8-8 8-8-5-8 3-2 9H-6l-2-9-8-3-8 5-8-8 5-8-3-8-9-2V-6l9-2 3-8-5-8 8-8 8 5 8-3z"/><circle r="10" fill="#ecebf8"/></g>
+<ellipse cx="120" cy="208" rx="58" ry="7" fill="#1d1f23" opacity=".07"/>
+<path d="M120 46V34" stroke="#1d1f23" stroke-width="5" stroke-linecap="round"/>
+<circle cx="120" cy="28" r="8" fill="#cd0929"/>
+<path d="M82 164l-18 20M158 164l18 20" stroke="#1d1f23" stroke-width="9" stroke-linecap="round"/>
+<circle cx="62" cy="188" r="10" fill="#4f47b7"/><circle cx="178" cy="188" r="10" fill="#4f47b7"/>
+<rect x="80" y="146" width="80" height="58" rx="22" fill="#fff"/>
+<circle cx="120" cy="176" r="11" fill="#4f47b7"/>
+<circle cx="120" cy="176" r="5" fill="#fff"/>
+<rect x="56" y="80" width="22" height="42" rx="11" fill="#cd0929"/>
+<rect x="162" y="80" width="22" height="42" rx="11" fill="#cd0929"/>
+<rect x="66" y="44" width="108" height="100" rx="42" fill="#fff"/>
+<path d="M96 45.5Q120 40 144 45.5L138 55H102z" fill="#cd0929"/>
+<rect x="80" y="64" width="80" height="62" rx="26" fill="#1d1f23"/>
+<circle cx="104" cy="92" r="8" fill="#8fe0f2"/><circle cx="136" cy="92" r="8" fill="#8fe0f2"/>
+<circle cx="106.5" cy="89.5" r="2.5" fill="#fff"/><circle cx="138.5" cy="89.5" r="2.5" fill="#fff"/>
+<path d="M110 108q10 7 20 0" fill="none" stroke="#8fe0f2" stroke-width="4" stroke-linecap="round"/>
+<use xlink:href="#s" transform="translate(44 62)" fill="#4f47b7"/>
+<circle cx="204" cy="140" r="5" fill="#cd0929"/>
+</svg>

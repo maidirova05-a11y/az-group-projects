@@ -1,0 +1,3 @@
+ALTER TABLE "admins" ADD COLUMN "session_version" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+CREATE INDEX "audit_login_failed_created_idx" ON "audit_log" USING btree ("created_at") WHERE "audit_log"."action" = 'login_failed';--> statement-breakpoint
+CREATE INDEX "audit_login_failed_email_idx" ON "audit_log" USING btree (("details"->>'email'),"created_at") WHERE "audit_log"."action" = 'login_failed';

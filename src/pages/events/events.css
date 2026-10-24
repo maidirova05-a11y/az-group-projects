@@ -1,0 +1,201 @@
+/*
+ * «Мероприятия»: живой календарь, легенда-фильтр, карточка события.
+ * Поверхности и текст — только токены из index.css (светлая/тёмная тема и [data-theme] подхватываются сами).
+ * Цвета программ приходят переменными из color.ts: --acc, --on-acc, --acc-ink-l, --acc-ink-d.
+ */
+
+/* Обёртка не должна ломать сетку/отступы основной колонки. */
+.ev-page { display: contents; }
+
+/* ---------- Цвет программы: «чернильный» вариант для текста выбираем по теме ---------- */
+.acc { --acc-ink: var(--acc-ink-l); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .acc { --acc-ink: var(--acc-ink-d); }
+}
+:root[data-theme='dark'] .acc { --acc-ink: var(--acc-ink-d); }
+:root[data-theme='light'] .acc { --acc-ink: var(--acc-ink-l); }
+
+/* ---------- Общие мелкие элементы ---------- */
+.ev-dot { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--acc); }
+.ev-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border: 0; border-radius: var(--radius-pill); background: var(--tile); color: var(--ink); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
+.ev-pill:hover:not(:disabled) { background: var(--tile-hover); }
+.ev-pill.on { background: var(--inverse); color: var(--on-inverse); }
+.ev-pill.ghost { background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); }
+.ev-pill.ghost:hover { background: var(--tile); }
+.ev-pill:disabled { cursor: default; color: var(--muted); }
+.ev-icon-btn { display: grid; place-items: center; flex: none; width: var(--tap); height: var(--tap); border: 0; border-radius: 50%; background: var(--tile); color: var(--ink); cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.ev-icon-btn:hover { background: var(--tile-hover); }
+.ev-link-btn { display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 0 var(--space-2); border: 0; background: none; color: var(--ink-2); font: inherit; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; border-radius: var(--radius-xs); text-underline-offset: 3px; }
+.ev-link-btn:hover { color: var(--ink); text-decoration: underline; }
+
+/* ---------- Переключатель вида ---------- */
+.ev-toolbar { display: flex; justify-content: flex-start; }
+.ev-toolbar .segmented { background: var(--card); padding: 4px; border-radius: var(--radius-pill); }
+
+/* ---------- Легенда = фильтр ---------- */
+.ev-legend { display: grid; gap: var(--space-3); padding: 18px var(--space-5); }
+.ev-legend-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.ev-legend-title { font-size: var(--fs-md); font-weight: 700; }
+.ev-legend-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.ev-legend-body { display: grid; gap: var(--space-3); }
+.ev-legend-toggle { display: none; }
+.ev-legend-hint, .ev-legend-count { font-size: var(--fs-sm); color: var(--muted); }
+.ev-legend-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3) var(--space-5); }
+.ev-legend-group { display: grid; gap: var(--space-2); align-content: start; min-width: 0; }
+.ev-group-btn { justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--space-1); border: 0; background: none; color: var(--ink-2); font: inherit; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius-xs); }
+.ev-group-btn:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.ev-group-btn[aria-pressed='false'] { color: var(--muted); }
+.ev-chips { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.ev-chip { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 0 14px 0 10px; border: 0; border-radius: var(--radius-pill); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+.ev-chip.on { background: color-mix(in srgb, var(--acc) 14%, var(--card)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 45%, transparent); }
+.ev-chip.on:hover { background: color-mix(in srgb, var(--acc) 22%, var(--card)); }
+.ev-chip.off { background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line-strong); text-decoration: line-through; text-decoration-thickness: 1px; }
+.ev-chip.off .ev-dot { background: transparent; box-shadow: inset 0 0 0 2px var(--acc); }
+.ev-chip.off:hover { background: var(--tile); }
+
+/* ---------- Календарь ---------- */
+.ev-cal { display: grid; gap: var(--space-4); --bar-h: 24px; --num-h: 32px; }
+.ev-cal-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.ev-cal-title { font-size: var(--fs-xl); font-weight: 700; line-height: var(--lh-tight); min-width: 9ch; }
+.ev-cal-nav { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.ev-cal-nav .ev-pill { min-height: var(--tap); }
+.ev-select select { min-height: var(--tap); padding: 0 var(--space-8) 0 var(--space-4); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--card); color: var(--ink); font: inherit; font-size: var(--fs-ui); font-weight: 600; cursor: pointer; }
+
+/* Полоса «весь месяц» */
+.ev-strip { display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--tile); }
+.ev-strip h3 { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
+.ev-strip ul { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.ev-tag { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 0 14px 0 10px; border: 0; border-radius: var(--radius-pill); background: var(--card); color: var(--ink); font: inherit; font-size: var(--fs-sm); cursor: pointer; box-shadow: inset 0 0 0 1px var(--line); max-width: 100%; }
+.ev-tag strong { font-weight: 700; }
+.ev-tag span:not(.ev-dot) { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-tag:hover { box-shadow: inset 0 0 0 1px var(--acc); }
+.ev-tag.past strong { color: var(--muted); font-weight: 600; }
+
+/* Сетка месяца */
+.ev-grid { display: grid; border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; touch-action: pan-y; }
+.ev-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.ev-head-row [role='columnheader'] { padding: var(--space-2) var(--space-2); font-size: var(--fs-xs); font-weight: 700; color: var(--ink-2); text-align: left; background: var(--tile); border-bottom: 1px solid var(--line); }
+.ev-head-row [role='columnheader'].weekend { color: var(--muted); }
+.ev-head-row abbr { text-decoration: none; }
+.ev-week { position: relative; }
+.ev-week + .ev-week .ev-day { border-top: 1px solid var(--line); }
+.ev-day { position: relative; min-height: calc(var(--num-h) + (var(--bar-h) + 3px) * 4 + 6px); padding: 4px 6px; background: var(--card); cursor: pointer; outline-offset: -3px; transition: background-color var(--t-fast) var(--ease); }
+.ev-day + .ev-day { border-left: 1px solid var(--line); }
+.ev-day:hover { background: color-mix(in srgb, var(--tile) 70%, var(--card)); }
+.ev-day.weekend { background: color-mix(in srgb, var(--tile) 55%, var(--card)); }
+.ev-day.out { background: var(--tile); }
+.ev-day.selected { box-shadow: inset 0 0 0 2px var(--brand-ink); }
+.ev-day:focus-visible { outline: 2px solid var(--brand-ink); }
+.ev-num { display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 4px; border-radius: var(--radius-pill); font-size: var(--fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+.ev-day.past .ev-num, .ev-day.out .ev-num { color: var(--muted); font-weight: 600; }
+.ev-day.today .ev-num { background: var(--brand); color: var(--on-brand); }
+.ev-dots { display: none; }
+
+.ev-bars { position: absolute; left: 0; right: 0; top: var(--num-h); display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 3px; pointer-events: none; }
+.ev-bar { pointer-events: auto; display: block; min-width: 0; height: var(--bar-h); margin: 0 4px; padding: 0 8px; border: 0; border-radius: 6px; background: var(--acc); color: var(--on-acc); font: inherit; font-size: var(--fs-xs); font-weight: 700; line-height: var(--bar-h); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: filter var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+.ev-bar:hover { filter: brightness(1.08) saturate(1.05); box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--acc) 60%, transparent); }
+.ev-bar.cont-l { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.ev-bar.cont-r { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+/* Прошедшие и «чужой месяц»: приглушённая подложка, но текст токеном — контраст AA сохраняется. */
+.ev-bar.past, .ev-bar.out { background: color-mix(in srgb, var(--acc) 16%, var(--card)); color: var(--ink-2); font-weight: 600; box-shadow: inset 3px 0 0 var(--acc); }
+.ev-bar.past.cont-l, .ev-bar.out.cont-l { box-shadow: none; }
+.ev-bar.past:hover, .ev-bar.out:hover { filter: none; background: color-mix(in srgb, var(--acc) 26%, var(--card)); }
+.ev-more { pointer-events: auto; justify-self: start; height: var(--bar-h); margin: 0 4px; padding: 0 6px; border: 0; border-radius: 6px; background: none; color: var(--ink-2); font: inherit; font-size: var(--fs-xs); font-weight: 700; cursor: pointer; }
+.ev-more:hover { background: var(--tile-hover); color: var(--ink); }
+.ev-swipe-hint { display: none; }
+
+/* Список дня / месяца */
+.ev-agenda { display: grid; gap: var(--space-3); }
+.ev-agenda-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.ev-agenda-head h3 { font-size: var(--fs-md); font-weight: 700; border-radius: var(--radius-xs); }
+.ev-agenda-head h3:focus { outline: none; }
+.ev-agenda-head h3:focus-visible { outline: 2px solid var(--brand-ink); outline-offset: 4px; }
+.ev-agenda-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: var(--space-2); list-style: none; margin: 0; padding: 0; }
+.ev-agenda-empty { font-size: var(--fs-sm); color: var(--muted); }
+.ev-agenda-item { display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 56px; padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2); border: 0; border-radius: var(--radius-md); background: var(--tile); color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.ev-agenda-item:hover { background: var(--tile-hover); }
+.ev-agenda-bar { align-self: stretch; flex: none; width: 6px; min-height: 36px; border-radius: 3px; background: var(--acc); }
+.ev-agenda-date { display: grid; justify-items: center; flex: none; width: 44px; line-height: 1.1; }
+.ev-agenda-date strong { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ev-agenda-date small { font-size: var(--fs-2xs); font-weight: 600; color: var(--muted); }
+.ev-agenda-text { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.ev-agenda-text strong { font-size: var(--fs-ui); font-weight: 700; color: var(--acc-ink); }
+.ev-agenda-text > span { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: var(--fs-xs); color: var(--muted); }
+.ev-agenda-item.past .ev-agenda-text strong { color: var(--ink-2); font-weight: 600; }
+.ev-agenda-item.past .ev-agenda-bar { background: color-mix(in srgb, var(--acc) 40%, var(--tile)); }
+.ev-agenda-item .badge { flex: none; }
+
+/* В течение сезона */
+.ev-season-note { font-size: var(--fs-sm); color: var(--muted); margin-bottom: var(--space-3); }
+
+/* Список: карточки программ своим цветом */
+.ev-page .program.acc.ev-program { --accent-ink: var(--acc-ink); box-shadow: inset 4px 0 0 var(--acc); }
+.ev-page .program.acc .program-mark { color: var(--acc); }
+
+/* ---------- Карточка события (dialog) ---------- */
+.ev-dialog { position: fixed; inset: 0; margin: auto; height: fit-content; width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: var(--radius); background: var(--card); color: var(--ink); box-shadow: var(--shadow-3); overflow: auto; }
+.ev-dialog::backdrop { background: rgba(15, 17, 21, .5); }
+.ev-dialog-body { display: grid; gap: var(--space-4); padding: 0 var(--space-6) var(--space-6); }
+.ev-dialog-band { height: 8px; margin: 0 calc(var(--space-6) * -1); background: var(--acc); }
+.ev-dialog.is-past .ev-dialog-band { background: color-mix(in srgb, var(--acc) 40%, var(--card)); }
+.ev-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.ev-dialog-head h2 { font-size: var(--fs-xl); font-weight: 700; line-height: var(--lh-tight); color: var(--acc-ink); }
+.ev-dialog-head p { margin-top: var(--space-1); font-size: var(--fs-ui); color: var(--muted); }
+.ev-facts { display: grid; gap: var(--space-2); margin: 0; }
+.ev-facts > div { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3); border-radius: var(--radius-md); background: var(--tile); }
+.ev-facts dt { display: grid; place-items: center; flex: none; width: 20px; height: 22px; color: var(--acc-ink); }
+.ev-facts dd { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin: 0; font-size: var(--fs-ui); font-weight: 600; line-height: var(--lh-snug); }
+.ev-dialog-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+/* ---------- Планшет ---------- */
+@media (max-width: 1100px) {
+  .ev-legend-groups { grid-template-columns: minmax(0, 1fr); }
+  .ev-bar { padding: 0 6px; font-size: var(--fs-2xs); }
+}
+
+/* ---------- Телефон: компактная сетка с точками + список выбранного дня ---------- */
+@media (max-width: 767px) {
+  .ev-legend { padding: var(--space-4); }
+  .ev-legend-toggle { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); width: 100%; min-height: var(--tap); padding: 0 var(--space-4); border: 0; border-radius: var(--radius-pill); background: var(--tile); color: var(--ink); font: inherit; font-size: var(--fs-ui); font-weight: 700; cursor: pointer; }
+  .ev-legend-toggle svg { flex: none; transition: transform var(--t-fast) var(--ease); }
+  .ev-legend-toggle[aria-expanded='true'] svg { transform: rotate(180deg); }
+  .ev-legend-body:not(.open) { display: none; }
+  .ev-cal-head { gap: var(--space-2); }
+  .ev-cal-title { width: 100%; font-size: 19px; }
+  .ev-cal-nav { width: 100%; }
+  .ev-cal-nav .ev-pill { flex: 1; justify-content: center; }
+  .ev-select { flex: 1 1 100%; min-width: 0; }
+  .ev-select select { width: 100%; }
+  .ev-bars { display: none; }
+  .ev-grid { margin: 0 calc(var(--space-2) * -1); }
+  .ev-head-row [role='columnheader'] { padding: 6px 0; text-align: center; }
+  .ev-day { display: grid; justify-items: center; align-content: start; gap: 3px; min-height: 52px; padding: 4px 0; }
+  .ev-dots { display: flex; align-items: center; gap: 3px; height: 8px; }
+  .ev-dots .ev-dot { width: 7px; height: 7px; }
+  .ev-dots .ev-dot.past { background: color-mix(in srgb, var(--acc) 45%, var(--card)); box-shadow: inset 0 0 0 1px var(--acc); }
+  .ev-dots-more { font-size: 10px; font-weight: 800; line-height: 1; color: var(--ink-2); }
+  .ev-agenda-list { grid-template-columns: minmax(0, 1fr); }
+  .ev-dialog { width: 100%; max-width: 100%; margin: auto 0 0; top: auto; border-radius: var(--radius) var(--radius) 0 0; max-height: 88dvh; }
+  .ev-dialog-body { padding: 0 var(--space-4) var(--space-5); }
+  .ev-dialog-band { margin: 0 calc(var(--space-4) * -1); }
+  .ev-dialog-actions .btn { flex: 1 1 auto; }
+}
+@media (max-width: 767px) and (pointer: coarse) {
+  .ev-swipe-hint { display: block; margin-top: calc(var(--space-2) * -1); font-size: var(--fs-xs); color: var(--muted); text-align: center; }
+}
+@media (pointer: coarse) {
+  .ev-pill, .ev-chip, .ev-tag, .ev-group-btn { min-height: var(--tap); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ev-bar, .ev-chip, .ev-pill, .ev-day, .ev-agenda-item { transition: none; }
+}
+@media (forced-colors: active) {
+  .ev-bar, .ev-chip, .ev-tag, .ev-agenda-item { border: 1px solid CanvasText; }
+  .ev-dot, .ev-agenda-bar { forced-color-adjust: none; }
+  .ev-day.today .ev-num { outline: 2px solid Highlight; }
+}
+@media print {
+  .ev-toolbar, .ev-legend, .ev-cal-nav, .ev-swipe-hint, .ev-dialog { display: none !important; }
+  .ev-bar, .ev-dot, .ev-agenda-bar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

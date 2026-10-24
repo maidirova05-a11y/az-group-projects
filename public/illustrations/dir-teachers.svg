@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240" role="img" aria-labelledby="t"><title id="t">Teacher training: a board with diagrams and a graduation cap</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/></defs>
+<circle cx="120" cy="120" r="96" fill="#f0f2f4"/>
+<ellipse cx="120" cy="208" rx="70" ry="7" fill="#1d1f23" opacity=".07"/>
+<path d="M78 170l-14 34M162 170l14 34" stroke="#1d1f23" stroke-width="6" stroke-linecap="round"/>
+<rect x="42" y="72" width="156" height="104" rx="12" fill="#1d1f23"/>
+<rect x="50" y="80" width="140" height="88" rx="6" fill="#33373e"/>
+<polyline points="64,150 88,126 108,138 136,102" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="136" cy="102" r="6" fill="#cd0929"/>
+<path d="M152 108h24M152 122h18M152 136h22" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".4"/>
+<rect x="66" y="172" width="44" height="8" rx="4" fill="#cd0929"/>
+<g transform="translate(168 56)">
+<path d="M-20 6v14c0 6 9 11 20 11s20-5 20-11V6L0 15z" fill="#a80722"/>
+<path d="M-36 0L0-17 36 0 0 17z" fill="#cd0929"/>
+<path d="M27 4v20" stroke="#1d1f23" stroke-width="3" stroke-linecap="round"/>
+<circle cx="27" cy="26" r="4.5" fill="#1d1f23"/>
+</g>
+<use xlink:href="#s" transform="translate(52 48)" fill="#cd0929"/>
+<circle cx="212" cy="150" r="5" fill="#1d1f23"/>
+</svg>

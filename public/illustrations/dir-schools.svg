@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240" role="img" aria-labelledby="t"><title id="t">Partner schools: a school building with a flag and trees</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/></defs>
+<circle cx="120" cy="120" r="96" fill="#fdecef"/>
+<ellipse cx="120" cy="202" rx="92" ry="8" fill="#1d1f23" opacity=".07"/>
+<path d="M120 30v34" stroke="#1d1f23" stroke-width="4" stroke-linecap="round"/>
+<path d="M122 30h26l-6 8 6 8h-26z" fill="#cd0929"/>
+<rect x="54" y="104" width="132" height="92" fill="#fff"/>
+<path d="M42 110L120 64l78 46z" fill="#cd0929" stroke="#cd0929" stroke-width="6" stroke-linejoin="round"/>
+<circle cx="120" cy="94" r="11" fill="#fff"/>
+<path d="M120 88v6l4 3" fill="none" stroke="#1d1f23" stroke-width="2.5" stroke-linecap="round"/>
+<g fill="#1d1f23"><rect x="68" y="122" width="22" height="20" rx="4"/><rect x="150" y="122" width="22" height="20" rx="4"/><rect x="68" y="156" width="22" height="20" rx="4"/><rect x="150" y="156" width="22" height="20" rx="4"/></g>
+<g fill="#8fe0f2" opacity=".55"><rect x="72" y="126" width="6" height="6" rx="1"/><rect x="154" y="126" width="6" height="6" rx="1"/><rect x="72" y="160" width="6" height="6" rx="1"/><rect x="154" y="160" width="6" height="6" rx="1"/></g>
+<path d="M104 196v-30a16 16 0 0 1 32 0v30z" fill="#cd0929"/>
+<rect x="44" y="194" width="152" height="6" rx="3" fill="#1d1f23"/>
+<rect x="26" y="168" width="5" height="30" rx="2" fill="#1d1f23"/>
+<circle cx="28.5" cy="158" r="16" fill="#187d77"/>
+<rect x="210" y="174" width="5" height="24" rx="2" fill="#1d1f23"/>
+<circle cx="212.5" cy="166" r="12" fill="#187d77"/>
+<use xlink:href="#s" transform="translate(186 50)" fill="#cd0929"/>
+<circle cx="52" cy="70" r="5" fill="#187d77"/>
+</svg>

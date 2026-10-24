@@ -1,0 +1,156 @@
+/*
+ * Дополнения к src/index.css для интеграции с API и иллюстраций.
+ * Только токены из index.css — тёмная тема и печать подхватываются автоматически.
+ * Особые правила для тёмной темы — через :root[data-theme="dark"], не через медиазапрос системной темы.
+ */
+
+/* ---------- Иллюстрации ---------- */
+/* Нарисованы под светлую подложку; в тёмной теме чуть приглушаем, чтобы не слепили. */
+:root[data-theme="dark"] :is(.illus, .pillar-art, .img-frame.is-fallback img) { filter: brightness(.86) saturate(.92); }
+
+/* ---------- Главная: hero с талисманом ---------- */
+/* Две колонки: текст и поиск слева, робот — в собственной колонке справа, прижат к низу баннера. */
+.hero .hero-banner.hero-illustrated {
+  --mascot: clamp(200px, 22vw, 290px);
+  grid-template-columns: minmax(0, 1fr) var(--mascot);
+  align-items: center;
+  justify-items: stretch;
+  gap: var(--space-6);
+  padding: var(--space-10) var(--space-6) var(--space-10) var(--space-8);
+  text-align: left;
+  color: var(--ink);
+  background-color: var(--card);
+  background-image:
+    radial-gradient(70% 120% at 100% 100%, color-mix(in srgb, var(--brand-soft) 95%, transparent), transparent 70%),
+    url('/illustrations/pattern-dots.svg');
+  background-repeat: no-repeat, repeat;
+  background-size: auto, 32px 32px;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+/* Подсказки поиска не должны обрезаться краем блока: скругление держит сам баннер. */
+.panel.hero:has(.hero-illustrated) { overflow: visible; }
+.hero-copy { display: grid; gap: 14px; justify-items: start; min-width: 0; }
+.hero .hero-illustrated h1 { text-shadow: none; max-width: 24ch; font-size: clamp(24px, 2.5vw, 34px); }
+.hero .hero-illustrated .hero-copy > p { max-width: 46ch; color: var(--ink-2); opacity: 1; margin-bottom: var(--space-2); font-size: var(--fs-base); }
+.hero .hero-illustrated .search-field { box-shadow: var(--shadow-2), 0 0 0 1px var(--line); }
+.hero .hero-illustrated .search-field:focus-within { box-shadow: var(--shadow-2), 0 0 0 2px var(--brand-ink); }
+.hero-mascot { align-self: end; margin-bottom: calc(var(--space-10) * -1 + var(--space-2)); pointer-events: none; user-select: none; }
+.hero-mascot img { width: 100%; height: auto; filter: drop-shadow(0 14px 24px rgba(16, 24, 40, .16)); }
+:root[data-theme="dark"] .hero-mascot img { filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .55)); }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-mascot img { animation: az-float 6s ease-in-out infinite; }
+  @keyframes az-float { 50% { transform: translateY(-8px); } }
+}
+@media (max-width: 1100px) {
+  .hero .hero-banner.hero-illustrated { --mascot: 190px; padding: var(--space-8) var(--space-5) var(--space-8) var(--space-6); }
+  .hero-mascot { margin-bottom: calc(var(--space-8) * -1 + var(--space-2)); }
+}
+/* Телефон: поиск важнее — робот прячется, чтобы ничему не мешать. */
+@media (max-width: 767px) {
+  .hero .hero-banner.hero-illustrated { grid-template-columns: minmax(0, 1fr); padding: var(--space-6) var(--space-4) var(--space-6); gap: var(--space-4); }
+  .hero-mascot { display: none; }
+}
+
+/* ---------- Главная: возможности ---------- */
+.audience { display: grid; grid-template-columns: minmax(0, 1fr) 168px; gap: var(--space-4); align-items: center; }
+.audience-art { width: 168px; height: auto; }
+@media (max-width: 1100px) {
+  .audience { grid-template-columns: minmax(0, 1fr); }
+  .audience-art { display: none; }
+}
+.upcoming .dot { background: var(--accent, var(--brand)); }
+
+/* ---------- Мероприятия ---------- */
+.panel-head h2 .cat-icon { color: var(--accent, var(--brand)); }
+.event-extra { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin-top: 2px; }
+.event-price { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--fs-xs); font-weight: 600; color: var(--ink-2); }
+.event-reg { display: inline-flex; align-items: center; gap: 2px; min-height: 24px; font-size: var(--fs-xs); font-weight: 700; color: var(--accent-ink, var(--brand-ink)); border-radius: 6px; text-underline-offset: 3px; }
+.event-reg:hover { text-decoration: underline; }
+:root[data-theme="dark"] .event-reg { color: var(--brand-ink); }
+@media (pointer: coarse) { .event-reg { min-height: var(--tap); } }
+
+/* ---------- Пустые состояния ---------- */
+.empty-state { display: grid; justify-items: center; gap: var(--space-3); text-align: center; padding: var(--space-6) var(--space-4); color: var(--muted); }
+.empty-state .illus { width: 168px; height: auto; }
+.empty-state-title { font-size: 17px; font-weight: 700; color: var(--ink); max-width: 40ch; line-height: var(--lh-tight); }
+.empty-state.compact { padding: var(--space-3) var(--space-2); gap: var(--space-2); font-size: var(--fs-sm); }
+.empty-state.compact .illus { width: 96px; }
+.empty-state.compact .empty-state-title { font-size: var(--fs-ui); }
+.panel.empty { padding: var(--space-4); }
+.search-empty { padding: var(--space-2); }
+
+/* ---------- Картинки со скелетоном ---------- */
+.img-frame { display: block; border-radius: var(--radius-sm); }
+.img-frame.skeleton img { opacity: 0; }
+.img-frame.is-fallback img { object-fit: contain !important; background: var(--tile); padding: var(--space-4); }
+.news-card .img-frame { overflow: visible; }
+
+/* ---------- О компании ---------- */
+.pillar .pillar-art { object-fit: contain; background: transparent; }
+
+/* ---------- Проекты ---------- */
+.program-art { width: 64px; height: 64px; flex: none; }
+.program-item h3 a { text-underline-offset: 3px; }
+.program-item h3 a:hover { color: var(--brand-ink); text-decoration: underline; }
+article.project { cursor: default; }
+article.project:hover { transform: none; box-shadow: none; background: var(--tile); }
+
+/* ---------- Новость на сайте ---------- */
+.article { display: grid; gap: var(--space-3); max-width: 860px; padding: var(--space-6) var(--space-8) var(--space-8); }
+.article-back { justify-self: start; }
+.article time { font-size: var(--fs-sm); color: var(--muted); font-weight: 500; }
+.article h1 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 700; line-height: 1.2; letter-spacing: -.015em; }
+.article-image { margin: var(--space-2) 0; }
+.article-image img, span.article-image.skeleton { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-sm); }
+.article-body { display: grid; gap: var(--space-4); margin-top: var(--space-2); }
+.article-body p { color: var(--ink-2); font-size: var(--fs-md); line-height: 1.7; max-width: var(--measure); overflow-wrap: anywhere; }
+.article-source { justify-self: start; margin-top: var(--space-2); }
+.article-skeleton-title { height: 1.6em; width: 80%; }
+.article-missing { margin-bottom: var(--space-4); padding: 0; }
+@media (max-width: 767px) {
+  .article { padding: 18px var(--space-4) var(--space-6); }
+  .article-body p { font-size: var(--fs-base); }
+}
+
+/* ---------- Форма заявки ---------- */
+.request-form .field { display: grid; gap: 6px; }
+.request-form .field label span { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-2); }
+.request-form .optional { font-style: normal; font-weight: 500; color: var(--muted); }
+.request-form [aria-invalid='true'] { border-color: var(--brand-ink); }
+.field-error { font-size: var(--fs-xs); font-weight: 600; color: var(--brand-ink); }
+.form-error { font-size: var(--fs-sm); font-weight: 600; color: var(--brand-ink); padding: 10px var(--space-3); border-radius: var(--radius-md); background: var(--brand-soft); }
+.form-alt { font-size: var(--fs-sm); color: var(--muted); }
+.form-alt a { display: inline-flex; align-items: center; gap: var(--space-1); font-weight: 600; color: var(--brand-ink); text-underline-offset: 3px; vertical-align: bottom; }
+.form-alt a:hover { text-decoration: underline; }
+@media (pointer: coarse) { .form-alt a { min-height: var(--tap); } }
+/* Ловушка для ботов: вне экрана, но не display:none — иначе часть ботов её распознаёт. */
+.hp-field { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.form-success { display: grid; justify-items: start; gap: var(--space-3); padding: var(--space-5); border-radius: var(--radius-sm); background: var(--tile); }
+.form-success > svg { color: var(--brand-ink); }
+.form-success h3 { font-size: var(--fs-lg); font-weight: 700; line-height: var(--lh-tight); }
+.form-success h3:focus { outline: none; }
+.form-success p { color: var(--ink-2); font-size: var(--fs-ui); max-width: var(--measure); }
+.form-success a { color: var(--brand-ink); font-weight: 600; white-space: nowrap; }
+.spin { animation: az-spin 1s linear infinite; }
+@keyframes az-spin { to { transform: rotate(360deg); } }
+#request { position: relative; }
+
+/* ---------- Цвета проектов (страница «Проекты») ----------
+   Переменные --acc, --acc-ink-l/-d задаёт programVars() из pages/events/color.ts:
+   чернильный оттенок подобран так, чтобы текст цветом проекта читался (≥ 4.5:1) в обеих темах. */
+.acc { --acc-ink: var(--acc-ink-l); }
+:root[data-theme='dark'] .acc { --acc-ink: var(--acc-ink-d); }
+/* На тонированной карточке в светлой теме фон темнее базовой плитки — берём оттенок с запасом. */
+:root:not([data-theme='dark']) .project.acc, :root:not([data-theme='dark']) .program-item.acc { --acc-ink: color-mix(in srgb, var(--acc-ink-l) 82%, #000); }
+.project.acc { background: color-mix(in srgb, var(--acc) 5%, var(--tile)); box-shadow: inset 0 4px 0 var(--acc); }
+.project.acc:hover { background: color-mix(in srgb, var(--acc) 9%, var(--tile)); box-shadow: inset 0 4px 0 var(--acc), var(--shadow-2); }
+article.project.acc:hover { background: color-mix(in srgb, var(--acc) 5%, var(--tile)); box-shadow: inset 0 4px 0 var(--acc); }
+.project.acc .project-logo { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 22%, transparent); }
+.project.acc .badge { color: var(--acc-ink); background: var(--card); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 35%, transparent); }
+.project.acc .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--acc); margin-right: 6px; flex: none; }
+.project.acc .project-tag, .program-item.acc .project-tag { color: var(--acc-ink); }
+.project.acc .project-foot { color: var(--acc-ink); }
+.program-item.acc { background: color-mix(in srgb, var(--acc) 5%, var(--tile)); box-shadow: inset 4px 0 0 var(--acc); }
+.program-item.acc h3 a { color: var(--acc-ink); }
+@media (forced-colors: active) { .project.acc, .program-item.acc { box-shadow: none; } }

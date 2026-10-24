@@ -1,0 +1,136 @@
+/**
+ * Контент компании с основного сайта https://az-group.kz (снят 14.10.2026).
+ * Изображения скопированы из CMS старого сайта в public/images/cms (файл = номер в CMS).
+ */
+const CMS = '/images/cms';
+
+export const contacts = {
+  address: 'Астана, ул.\u00a0Токпанова,\u00a08',
+  mapUrl: 'https://yandex.com/maps/163/astana/?mode=search&text=%D0%90%D1%81%D1%82%D0%B0%D0%BD%D0%B0%2C+%D1%83%D0%BB.+%D0%A2%D0%BE%D0%BA%D0%BF%D0%B0%D0%BD%D0%BE%D0%B2%D0%B0+8',
+  phone: '+7 (777) 088-88-44',
+  phoneHref: 'tel:+77770888844',
+  email: 'info@az-group.kz',
+  whatsapp: 'https://wa.me/77770888844',
+  instagram: 'https://www.instagram.com/azgroup.kz/',
+  taplink: 'https://azgroupkz.taplink.kz/',
+  offer: 'https://az-group.kz/public-offer',
+};
+
+/** Регистрация и оплата участия работают в личном кабинете az-group.kz. */
+export const links = {
+  registration: 'https://az-group.kz/events',
+  cabinet: 'https://az-group.kz/auth',
+  fibonacciResults: 'https://drive.google.com/drive/folders/1F8kfK37kOgrlKFCQfgjTyAy5VVuTpIbh?usp=share_link',
+  posterPdf: '/calendar-2026-2027.pdf',
+  ifo: 'https://ifolympiad.com/',
+  ifoCertificate: 'https://drive.google.com/file/d/1vcX-1KTpwRiU6fxvT3hpmNNFZh81yfpM/view?usp=sharing',
+};
+
+export const heroImages = [
+  `${CMS}/22.jpg`,
+  `${CMS}/21.jpg`,
+];
+
+export const about = {
+  title: 'AZ Group — ведущая международная образовательная компания в Казахстане и СНГ',
+  pillars: [
+    { title: 'Миссия', text: 'Наша миссия — развивать образование в Казахстане и повышать его качество.', image: `${CMS}/1.png` },
+    { title: 'Чем мы занимаемся', text: 'Мы проводим международные предметные олимпиады, тренинги и семинары для учеников и педагогов, образовательные фестивали, программы академического обмена и зарубежные лагеря.', image: `${CMS}/2.png` },
+    { title: 'Цели', text: 'Наша цель — открывать новые образовательные возможности для учеников, учителей и руководителей школ и других организаций образования.', image: `${CMS}/3.png` },
+  ],
+  directions: ['Расширение возможностей', 'Повышение квалификации', 'Международное развитие', 'Обучение за рубежом'],
+};
+
+export const achievements = [
+  { value: '20+', label: 'организованных проектов' },
+  { value: 'Тысячи', label: 'участников каждый год' },
+  { value: 'Призёры', label: 'Наши ученики занимают призовые места на олимпиадах Fibonacci и выигрывают ценные призы' },
+  { value: '«Астана дарыны»', label: 'Наши проекты входят в реестр мероприятий, которые учитываются при аттестации педагогов' },
+  { value: 'Меморандумы', label: 'Школы и образовательные центры по всему Казахстану сотрудничают с нами на основе меморандумов' },
+];
+
+export const keyStats = [
+  { value: '30+', label: 'стран-партнёров' },
+  { value: '№1', label: 'в подготовке специалистов по робототехнике — и не только' },
+  { value: '20+', label: 'организованных проектов' },
+  { value: '32', label: 'школы-партнёра в Казахстане' },
+];
+
+export interface NewsItem { id: number; title: string; date: string; image: string }
+export const news: NewsItem[] = [
+  { id: 12, title: 'Сборная Казахстана показала невероятные результаты на мировом финале Fibonacci по робототехнике в Риме', date: '2025-12-05', image: `${CMS}/173.png` },
+  { id: 5, title: 'Bilim Talks: семинар для учителей', date: '2025-10-20', image: `${CMS}/100.jpg` },
+  { id: 4, title: 'Международный тренинг по робототехнике RoboCoach International в Алматы', date: '2025-10-15', image: `${CMS}/68.jpg` },
+  { id: 2, title: 'RoboCoach International в Алматы: тренинг по робототехнике для педагогов', date: '2025-10-06', image: `${CMS}/55.jpg` },
+  { id: 3, title: 'Международные олимпиады Fibonacci', date: '2025-10-06', image: `${CMS}/56.jpg` },
+  { id: 1, title: 'Международный тренинг по робототехнике RoboCoach International в Астане', date: '2025-09-29', image: `${CMS}/54.jpg` },
+];
+export const newsUrl = (id: number) => `https://az-group.kz/news/${id}`;
+
+export type PartnerGroup = 'schools' | 'org' | 'gov';
+export interface Partner { name: string; group: PartnerGroup; image?: string }
+const school = (name: string, img?: string): Partner => ({ name, group: 'schools', image: img && `${CMS}/${img}` });
+export const partners: Partner[] = [
+  school('Zerdeli International School, Астана', '25.png'),
+  school('Школа Бином имени Қ. Сатпаева, Астана', '24.png'),
+  school('Neotech Digital School, Астана', '30.jpg'),
+  school('Физико-математический лицей «ФЛАГМАН», Астана', '31.jpg'),
+  school('Alpamys School, Астана', '32.jpg'),
+  school('Future School, Астана', '33.png'),
+  school('Школа «Академия Успеха», Павлодар', '42.jpg'),
+  school('Школа «Fiztex School», Алматы', '41.png'),
+  school('Школа-лицей №2 «Дарын», Астана', '34.jpg'),
+  school('Школа «Seed Uniker School», Астана', '39.jpg'),
+  school('Лицей-интернат для одарённых девочек «Білім-инновация»', '37.png'),
+  school('Школа Бином имени А. Байтұрсынұлы, Астана', '58.png'),
+  school('Школа Бином имени Қ. Мырза Әлі, Астана', '59.png'),
+  school('Школа Бином имени Ы. Алтынсарина, Астана', '60.png'),
+  school('Школа Бином имени А. Бөкейхана, Астана', '61.png'),
+  school('Школа цифровых технологий Skillset', '93.png'),
+  school('Школа всестороннего развития Milestone', '94.png'),
+  school('Umka School — начальная школа', '96.png'),
+  school('Школа-лицей №84'),
+  school('Школа-гимназия №97'),
+  school('Начальная школа «Kemel»', '98.png'),
+  school('Школа-лицей №8'),
+  school('Средняя школа №107'),
+  school('Международная школа №81 Astana English School', '99.png'),
+  school('Гимназия №90 им. Қайыма Мұхамедханова'),
+  school('Национальный лицей QAZBILIM, Астана', '140.png'),
+  school('Школа QAZBILIM, Алматы', '141.png'),
+  school('Национальный лицей QAZBILIM, Костанай', '142.png'),
+  school('Национальный лицей QAZBILIM, Кызылорда', '143.png'),
+  school('Национальный лицей QAZBILIM, Караганда', '144.png'),
+  school('Harmony School', '145.jpg'),
+  { name: 'Дворец школьников «Bolashaq Saraiy», Кокшетау', group: 'org', image: `${CMS}/43.jpg` },
+  { name: 'Дворец школьников имени Аль-Фараби, Астана', group: 'org', image: `${CMS}/36.webp` },
+  { name: 'Школа робототехники и программирования «Rolab Academy», Алматы', group: 'org', image: `${CMS}/97.png` },
+  { name: 'Центр по выявлению и поддержке одарённых детей и талантливой молодёжи «Астана дарыны»', group: 'gov', image: `${CMS}/95.png` },
+];
+export const partnerGroups: { id: PartnerGroup; label: string }[] = [
+  { id: 'schools', label: 'Школы' },
+  { id: 'org', label: 'Организации' },
+  { id: 'gov', label: 'Государственные' },
+];
+
+export const partnership = {
+  name: 'Fibonacci International Olympiads',
+  text: 'AZ Group — официальный представитель международных образовательных организаций. Fibonacci International Olympiads — международная компания с представительством в Риме: каждый год она проводит олимпиады, лагеря, научные конференции и программы обмена.',
+  image: `${CMS}/23.jpg`,
+};
+
+export const faq = [
+  { q: 'Как зарегистрироваться на олимпиаду?', a: 'Откройте раздел «Мероприятия» и нажмите «Регистрация» — вы перейдёте в личный кабинет на сайте az-group.kz. Выберите олимпиаду, заполните анкету участника и оплатите участие там же.' },
+  { q: 'Для кого олимпиады и сколько стоит участие?', a: 'Участвовать могут школьники 3–12 классов — каждый выступает в своей возрастной категории (подробности — в Положении об олимпиаде). Одно участие стоит 25 000 ₸. Пока открыта регистрация, участвовать можно несколько раз.' },
+  { q: 'По каким предметам проходят олимпиады?', a: 'Олимпиады Fibonacci — по математике, физике, химии, биологии, информатике и естествознанию. Atlantia — по математике, физике, информатике, химии и биологии, а в направлении Atlantia STEM — по робототехнике.' },
+  { q: 'Какие призы ждут победителей?', a: 'На республиканском этапе победители получают ценные призы — гаджеты. На мировом финале можно выиграть зарубежную поездку и даже грант на обучение в вузе.' },
+  { q: 'Где проходит республиканский этап?', a: 'Республиканский этап олимпиады Fibonacci проходит в городах Казахстана. Даты туров сезона 2026–2027 — в разделе «Мероприятия».' },
+  { q: 'Где проходят мировые финалы?', a: 'Мировые финалы олимпиад Fibonacci и Atlantia проходят в Турции (Анталья), Италии (Рим) и Испании (Барселона). В сезоне 2026–2027 финалы Fibonacci пройдут в Анталье и Риме, Atlantia — в Анталье и Барселоне. Месяцы проведения — в разделе «Мероприятия».' },
+  { q: 'Где посмотреть результаты олимпиады Fibonacci?', a: 'Результаты публикуются по ссылке «Результаты олимпиады Fibonacci» в блоке «Популярное» на главной странице.' },
+  { q: 'Есть ли программы для учителей?', a: 'Да. В RoboCoach Academy педагоги учатся преподавать робототехнику, на турнире RoboCoach Cup соревнуются сами, а международные тренинги RoboCoach International проходят в Астане, Алматы и Шымкенте. Для учителей и представителей организаций образования мы проводим семинар Bilim Talks. Наши проекты входят в реестр «Астана дарыны» для аттестации педагогов.' },
+  { q: 'Как школе стать партнёром AZ Group?', a: 'Оставьте заявку в разделе «Контакты» или напишите нам в WhatsApp. Мы подпишем меморандум о сотрудничестве и подключим ваших учеников и педагогов к нашим проектам.' },
+];
+
+/** Олимпиады Fibonacci по предметам — с основного сайта. */
+export const fibonacciSubjects = ['Математика', 'Физика', 'Химия', 'Биология', 'Информатика', 'Естествознание'];
+export const participationPrice = '25\u00a0000\u00a0₸';

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 320 200" role="img" aria-labelledby="t"><title id="t">Mission: a rocket launching upward among stars</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/></defs>
+<rect x="20" y="16" width="280" height="168" rx="28" fill="#fdecef"/>
+<path d="M20 150c40-20 80-12 120 2s100 18 160-6v10a28 28 0 0 1-28 28H48a28 28 0 0 1-28-28z" fill="#fff" opacity=".7"/>
+<path d="M118 160c-6-24 6-46 30-58" fill="none" stroke="#cd0929" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 11" opacity=".6"/>
+<g transform="rotate(40 190 92)">
+<path d="M190 40c18 14 26 36 22 66h-44c-4-30 4-52 22-66z" fill="#fff"/>
+<path d="M190 40c10 8 17 18 20 30h-40c3-12 10-22 20-30z" fill="#cd0929"/>
+<circle cx="190" cy="86" r="10" fill="#1d1f23"/>
+<circle cx="190" cy="86" r="4" fill="#8fe0f2"/>
+<path d="M168 92l-14 22h18zM212 92l14 22h-18z" fill="#cd0929"/>
+<path d="M178 108h24l-4 10h-16z" fill="#1d1f23"/>
+<path d="M182 120h16c0 12-4 20-8 26-4-6-8-14-8-26z" fill="#cd0929" opacity=".75"/>
+</g>
+<use xlink:href="#s" transform="translate(64 56)" fill="#cd0929"/>
+<use xlink:href="#s" transform="translate(262 50) scale(.7)" fill="#1d1f23"/>
+<use xlink:href="#s" transform="translate(256 122) scale(.6)" fill="#cd0929"/>
+<circle cx="100" cy="100" r="4" fill="#1d1f23" opacity=".3"/>
+<circle cx="230" cy="36" r="3" fill="#1d1f23" opacity=".3"/>
+<circle cx="70" cy="128" r="10" fill="none" stroke="#cd0929" stroke-width="3" opacity=".5"/>
+</svg>

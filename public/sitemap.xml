@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Сгенерировано scripts/sitemap.mjs (npm run sitemap) — не редактируйте вручную. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.azgroup.kz/</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/events</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/events"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/events"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/events"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/events"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk/events</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/events"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/events"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/events"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/events"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en/events</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/events"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/events"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/events"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/events"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/projects</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/projects"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/projects"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/projects"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/projects"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk/projects</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/projects"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/projects"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/projects"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/projects"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en/projects</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/projects"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/projects"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/projects"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/projects"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/about</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/about"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk/about</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/about"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en/about</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/about"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/news</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/news"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/news"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/news"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/news"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk/news</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/news"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/news"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/news"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/news"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en/news</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/news"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/news"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/news"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/news"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/partners</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/partners"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/partners"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/partners"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/partners"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk/partners</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/partners"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/partners"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/partners"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/partners"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en/partners</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/partners"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/partners"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/partners"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/partners"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/faq</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/faq"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/faq"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk/faq</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/faq"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/faq"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en/faq</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/faq"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/faq"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/contacts</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/contacts"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/contacts"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/contacts"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/contacts"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/kk/contacts</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/contacts"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/contacts"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/contacts"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/contacts"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.azgroup.kz/en/contacts</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.azgroup.kz/contacts"/>
+    <xhtml:link rel="alternate" hreflang="kk" href="https://www.azgroup.kz/kk/contacts"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.azgroup.kz/en/contacts"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.azgroup.kz/contacts"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

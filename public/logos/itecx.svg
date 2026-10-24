@@ -1,0 +1,31 @@
+<!--
+  Логотип ITECX. В самом проекте он не лежит файлом, а рисуется вектором
+  в src/components/common/BrandMark.tsx — здесь тот же знак, сведённый в SVG
+  и разложенный горизонтально, чтобы сидеть в одной сетке с остальными
+  словомарками проектов.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="880" height="260">
+  <!-- Красный X: две «бабочки», сходящиеся в перехвате -->
+  <g transform="translate(0,10)">
+    <path d="M10,20 L70,20 L120,120 L230,220 L170,220 L120,120 Z" fill="#e31f2d" />
+    <path d="M230,20 L170,20 L120,120 L10,220 L70,220 L120,120 Z" fill="#e31f2d" />
+  </g>
+  <text
+    x="280"
+    y="160"
+    font-family="Montserrat, Arial, sans-serif"
+    font-size="132"
+    font-weight="800"
+    letter-spacing="-4"
+    fill="#52555a"
+  >ITEC<tspan fill="#e31f2d">X</tspan></text>
+  <text
+    x="286"
+    y="212"
+    font-family="Montserrat, Arial, sans-serif"
+    font-size="44"
+    font-weight="500"
+    font-style="italic"
+    fill="#9aa0a8"
+  >Kazakhstan</text>
+</svg>

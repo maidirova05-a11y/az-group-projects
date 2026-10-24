@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240" role="img" aria-labelledby="t"><title id="t">Science: a flask with bubbling liquid and an atom</title>
+<defs><path id="s" d="M0-12C1.5-3 3-1.5 12 0C3 1.5 1.5 3 0 12C-1.5 3-3 1.5-12 0C-3-1.5-1.5-3 0-12Z"/></defs>
+<circle cx="120" cy="120" r="96" fill="#fdecef"/>
+<ellipse cx="120" cy="206" rx="62" ry="7" fill="#1d1f23" opacity=".07"/>
+<g fill="none" stroke="#cd0929" stroke-width="4" opacity=".35">
+<ellipse cx="164" cy="70" rx="38" ry="13" transform="rotate(30 164 70)"/>
+<ellipse cx="164" cy="70" rx="38" ry="13" transform="rotate(-30 164 70)"/>
+<ellipse cx="164" cy="70" rx="38" ry="13" transform="rotate(90 164 70)"/>
+</g>
+<circle cx="164" cy="70" r="8" fill="#cd0929"/>
+<path d="M104 56v44l-38 72c-6 12 2 26 16 26h76c14 0 22-14 16-26l-38-72V56z" fill="#fff"/>
+<path d="M79 148c14 6 27-6 41 0s27 6 41 0l18 34c5 9-1 16-11 16H72c-10 0-16-7-11-16z" fill="#cd0929"/>
+<path d="M98 56h44M104 56v44l-38 72c-6 12 2 26 16 26h76c14 0 22-14 16-26l-38-72V56" fill="none" stroke="#1d1f23" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="104" cy="178" r="7" fill="#fff" opacity=".45"/>
+<circle cx="126" cy="168" r="4" fill="#fff" opacity=".45"/>
+<circle cx="120" cy="130" r="6" fill="#cd0929"/>
+<circle cx="112" cy="110" r="4" fill="#cd0929" opacity=".6"/>
+<circle cx="124" cy="90" r="3" fill="#cd0929" opacity=".4"/>
+<use xlink:href="#s" transform="translate(56 84)" fill="#1d1f23"/>
+<circle cx="194" cy="150" r="5" fill="#cd0929"/>
+</svg>

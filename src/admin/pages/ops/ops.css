@@ -1,0 +1,80 @@
+/* Стили страниц «Заявки», «Настройки», «Администраторы». Переменные — из admin.css. */
+
+/* ---------- Заявки ---------- */
+.ops-toolbar-end { margin-left: auto; display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.ops-bulk { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; margin-bottom: 12px; border-radius: 12px; background: var(--info-soft); color: var(--info); font-weight: 600; font-size: 13.5px; }
+.ops-bulk .btn { min-height: 34px; }
+.ops-date { display: grid; gap: 1px; white-space: nowrap; }
+.ops-date small { font-size: 12px; color: var(--muted); }
+.ops-phone { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
+.ops-phone a.ops-tel { font-weight: 600; color: var(--ink); }
+.ops-phone a.ops-tel:hover { color: var(--brand-ink); }
+.ops-wa { color: var(--success) !important; }
+.ops-preview { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-width: 160px; max-width: 320px; color: var(--ink-2); font-size: 13.5px; word-break: break-word; }
+.ops-page { font-size: 12.5px; color: var(--muted); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+.data-table tr.ops-unread td.td-primary { font-weight: 700; }
+.ops-name { display: grid; gap: 1px; }
+.ops-name small { font-size: 12px; color: var(--muted); font-weight: 500; }
+.ops-check-cell { width: 36px; }
+
+/* Карточка заявки */
+.ops-lead-meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 16px; margin: 0 0 18px; font-size: 14px; }
+.ops-lead-meta dt { color: var(--muted); font-size: 13px; font-weight: 600; }
+.ops-lead-meta dd { margin: 0; min-width: 0; word-break: break-word; }
+.ops-message { white-space: pre-wrap; word-break: break-word; background: var(--tile); border-radius: var(--radius-sm); padding: 14px 16px; margin: 0 0 18px; font-size: 14.5px; line-height: 1.55; }
+.ops-message.empty { color: var(--muted); font-style: italic; }
+.ops-section-label { font-size: 13px; font-weight: 600; color: var(--ink-2); margin: 0 0 8px; }
+.ops-status-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.ops-status-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 0; background: var(--tile); color: var(--ink-2); font: inherit; font-weight: 600; font-size: 13.5px; cursor: pointer; }
+.ops-status-btn:hover:not(:disabled) { background: var(--tile-hover); color: var(--ink); }
+.ops-status-btn[aria-pressed='true'] { background: var(--ink); color: var(--on-ink); }
+.ops-status-btn:disabled { cursor: default; }
+.ops-note-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+.ops-contact-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+
+/* ---------- Настройки ---------- */
+.ops-tabs { margin-bottom: 16px; }
+.ops-tabs .segmented { width: 100%; }
+.ops-dirty-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--warning); margin-left: 2px; }
+.ops-form-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.ops-form-foot .ops-foot-note { margin-right: auto; font-size: 13px; color: var(--muted); }
+.ops-form-foot .ops-foot-note.warn { color: var(--warning); font-weight: 600; }
+.ops-subhead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 22px 0 10px; }
+.ops-subhead h3 { font-size: 15px; font-weight: 700; margin: 0; }
+.ops-subhead span { font-size: 12.5px; color: var(--muted); }
+.ops-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ops-list-item { display: flex; gap: 8px; align-items: flex-start; padding: 12px; border-radius: var(--radius-sm); background: var(--tile); }
+.ops-list-num { flex: none; width: 24px; height: 24px; margin-top: 8px; display: grid; place-items: center; border-radius: 8px; background: var(--card); font-size: 12px; font-weight: 700; color: var(--muted); }
+.ops-list-body { flex: 1; min-width: 0; display: grid; gap: 10px; }
+.ops-list-tools { flex: none; display: flex; flex-direction: column; gap: 2px; }
+.ops-list-add { margin-top: 10px; }
+.ops-readonly { font-size: 12.5px; color: var(--muted); }
+
+/* ---------- Администраторы ---------- */
+.ops-admin-name { display: grid; gap: 1px; }
+.ops-admin-name small { font-size: 12.5px; color: var(--muted); word-break: break-all; }
+.ops-pass { display: flex; gap: 6px; align-items: center; }
+.ops-pass .input { flex: 1; min-width: 0; }
+.ops-meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 2px; }
+.ops-meter span { height: 4px; border-radius: 2px; background: var(--line); }
+.ops-meter[data-level='1'] span:nth-child(-n+1) { background: var(--danger); }
+.ops-meter[data-level='2'] span:nth-child(-n+2) { background: var(--warning); }
+.ops-meter[data-level='3'] span { background: var(--success); }
+.ops-switches { display: grid; gap: 12px; margin-top: 16px; }
+
+@media (max-width: 767px) {
+  .ops-toolbar-end { margin-left: 0; width: 100%; }
+  .ops-toolbar-end > .btn { flex: 1; }
+  .ops-preview, .ops-page { max-width: none; min-width: 0; }
+  .ops-phone { flex-wrap: wrap; white-space: normal; min-width: 0; }
+  .data-table td:has(> .ops-rowcheck) { position: absolute; top: 10px; right: 8px; width: auto; padding: 0; }
+  .data-table tr:has(.ops-rowcheck) td.td-primary { padding-right: 36px; }
+  .ops-lead-meta { grid-template-columns: 1fr; gap: 2px; }
+  .ops-lead-meta dd { margin-bottom: 8px; }
+  .ops-status-btn { flex: 1 1 calc(50% - 8px); justify-content: center; }
+  .ops-list-item { flex-wrap: wrap; padding: 10px; }
+  .ops-list-num { margin-top: 0; }
+  .ops-list-tools { flex-direction: row; width: 100%; justify-content: flex-end; order: 3; }
+  .ops-form-foot .btn { flex: 1; }
+  .ops-form-foot .ops-foot-note { width: 100%; }
+}
