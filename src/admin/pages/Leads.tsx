@@ -9,7 +9,7 @@ import {
   Button, Checkbox, DataTable, IconButton, PageHeader, Pagination, Panel, SearchInput, Segmented, StatusPill, Toolbar,
   useAdminStats, useToast, type Column,
 } from '../ui';
-import { LeadDrawer } from './ops/LeadDrawer';
+import { LeadDrawer, leadSourceLabel } from './ops/LeadDrawer';
 import { almatyExact, almatyRelative, copyText, telHref, whatsappHref } from './ops/format';
 import './ops/ops.css';
 
@@ -156,7 +156,18 @@ export default function LeadsPage() {
       ),
     },
     { key: 'message', header: 'Сообщение', render: l => (l.message ? <span className="ops-preview">{l.message}</span> : <span className="muted">—</span>) },
-    { key: 'page', header: 'Страница', hideOnMobile: true, render: l => (l.page ? <span className="ops-page mono" title={l.page}>{l.page}</span> : <span className="muted">—</span>) },
+    {
+      key: 'page', header: 'Страница и источник', hideOnMobile: true,
+      render: l => {
+        const src = leadSourceLabel(l);
+        return (
+          <span className="ops-page">
+            {l.page ? <span className="mono" title={l.page}>{l.page}</span> : <span className="muted">—</span>}
+            {src && <small className="muted" title={src}>{src}</small>}
+          </span>
+        );
+      },
+    },
     { key: 'status', header: 'Статус', render: l => <StatusPill status={l.status} /> },
   ];
 

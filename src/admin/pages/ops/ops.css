@@ -78,3 +78,7 @@
   .ops-form-foot .btn { flex: 1; }
   .ops-form-foot .ops-foot-note { width: 100%; }
 }
+
+/* Страница и источник заявки в таблице: путь сверху, канал (UTM или сайт-источник) снизу. */
+.ops-page { display: inline-grid; gap: 1px; }
+.ops-page small { font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

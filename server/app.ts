@@ -12,6 +12,7 @@ import { requireAdmin } from './auth/middleware.js';
 import auth from './routes/auth.js';
 import publicRoutes from './routes/public.js';
 import leads from './routes/leads.js';
+import sitemap from './routes/sitemap.js';
 import adminContent from './routes/admin/content.js';
 import adminLeads from './routes/admin/leads.js';
 import adminAdmins from './routes/admin/admins.js';
@@ -41,6 +42,7 @@ app.get('/health', c => c.json({ ok: true }));
 // Публичная часть
 app.route('/public', publicRoutes); // GET /api/public/content
 app.route('/leads', leads);         // POST /api/leads
+app.route('/', sitemap);            // GET /api/sitemap.xml (на Vercel — /sitemap.xml)
 app.route('/auth', auth);           // POST /login, POST /logout, GET /me, POST /password
 
 // Админка — всё за requireAdmin

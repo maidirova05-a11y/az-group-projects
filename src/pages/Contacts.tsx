@@ -1,5 +1,6 @@
 import { useId, useState, type FormEvent } from 'react';
 import { CircleCheck, Link2, Loader2, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
+import { visitSource } from '../content/visit';
 import type { ApiError } from '@shared/schemas';
 import { PageTitle, Panel } from '../components/ui';
 import { useContent } from '../content/useContent';
@@ -73,7 +74,7 @@ function RequestForm() {
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ ...values, page: window.location.pathname.slice(0, 200), website }),
+        body: JSON.stringify({ ...values, page: window.location.pathname.slice(0, 200), website, ...visitSource() }),
       });
       if (res.ok) {
         setStatus({ kind: 'sent' });

@@ -3,6 +3,9 @@ import {
   CalendarDays, CircleHelp, Handshake, House, LayoutGrid, Building2, Newspaper, Phone, type LucideIcon,
 } from 'lucide-react';
 import { DEFAULT_LANG, LANGS, type Lang } from '@shared/i18n';
+import { SITE_ROUTES, type Route } from '@shared/routes';
+
+export type { Route };
 
 /**
  * Маршруты сайта. Язык — префикс пути: русский без префикса (/events), казахский /kk/events,
@@ -11,7 +14,6 @@ import { DEFAULT_LANG, LANGS, type Lang } from '@shared/i18n';
  */
 
 /** Разделы сайта — как вкладки бокового меню egov.kz. Подписи — в словарях src/i18n/ui (nav.*). */
-export type Route = '/' | '/events' | '/projects' | '/about' | '/news' | '/partners' | '/faq' | '/contacts';
 export type NavKey = 'home' | 'events' | 'projects' | 'about' | 'news' | 'partners' | 'faq' | 'contacts';
 export interface NavItem { path: Route; key: NavKey; Icon: LucideIcon }
 
@@ -28,7 +30,7 @@ export const NAV: NavItem[] = [
 
 export const LANG_KEY = 'az-lang';
 const PREFIXED = LANGS.filter(l => l !== DEFAULT_LANG);
-const known = new Set<string>(NAV.map(n => n.path));
+const known = new Set<string>(SITE_ROUTES);
 
 /** Путь браузера → язык и раздел. Неизвестный раздел → главная. */
 export function parsePath(pathname: string): { lang: Lang; path: Route } {

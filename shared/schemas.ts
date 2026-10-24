@@ -152,12 +152,23 @@ export type SettingTranslations<K extends SettingKey> = z.infer<(typeof SETTING_
 export type AllSettingTranslations = { [K in SettingKey]: SettingTranslations<K> };
 
 // ---------- Заявки ----------
+/** UTM-метки визита (utm_source, utm_medium, utm_campaign, utm_term, utm_content) — все необязательны. */
+export const leadUtm = z.object({
+  source: text(120), medium: text(120), campaign: text(200), term: text(200), content: text(200),
+}).partial();
+export type LeadUtm = z.infer<typeof leadUtm>;
+
 export const leadInput = z.object({
   name: required(120, 'Имя'),
   phone: z.string().trim().regex(/^[\d\s()+-]{10,20}$/, 'Проверьте номер телефона'),
   topic: required(120, 'Тема'),
   message: text(2000, 'Сообщение').default(''),
   page: z.string().max(200).optional(),
+  /** Язык страницы (ru|kk|en); неизвестное значение сервер отбрасывает. */
+  lang: z.string().max(5).optional(),
+  /** document.referrer посетителя (сервер оставляет только хост и путь). */
+  referrer: z.string().max(2000).optional(),
+  utm: leadUtm.optional(),
   /** Ловушка для ботов: настоящие люди оставляют поле пустым. */
   website: z.string().max(500).optional(),
 });
@@ -190,7 +201,13 @@ export interface ProjectDTO extends ProjectInput { id: number }
 export interface NewsDTO extends NewsInput { id: number }
 export interface PartnerDTO extends PartnerInput { id: number }
 export interface FaqDTO extends FaqInput { id: number }
-export interface LeadDTO { id: number; name: string; phone: string; topic: string; message: string; page: string | null; status: (typeof LEAD_STATUSES)[number]; note: string; createdAt: string; updatedAt: string }
+export interface LeadDTO {
+  id: number; name: string; phone: string; topic: string; message: string; page: string | null;
+  status: (typeof LEAD_STATUSES)[number]; note: string;
+  /** Язык страницы, источник перехода и UTM-метки — откуда пришла заявка (null, если неизвестно). */
+  lang: Lang | null; referrer: string | null; utm: LeadUtm | null;
+  createdAt: string; updatedAt: string;
+}
 export interface AdminDTO { id: number; email: string; name: string; role: (typeof ADMIN_ROLES)[number]; active: boolean; lastLoginAt: string | null }
 
 /** Ответ GET /api/public/content?lang= — только опубликованное, отсортированное по sort, тексты на языке lang. */

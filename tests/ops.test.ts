@@ -75,7 +75,7 @@ describe('admin leads', () => {
     expect([...buf.slice(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
     const text = new TextDecoder('utf-8', { ignoreBOM: true }).decode(buf).slice(1);
     const lines = text.split('\r\n');
-    expect(lines[0].split(';').length).toBe(9);
+    expect(lines[0].split(';').length).toBe(12);
     expect(text).toContain(`"${marker} =HYPERLINK(""http://evil"")"`); // кавычки удвоены, ячейка в кавычках
     expect(text).toContain("'+77010000001"); // телефон с + защищён от формулы
     expect(text).toContain('"a;b ""quoted"""');

@@ -114,6 +114,31 @@ function LeadsChart({ data }: { data: AdminStats['leadsByDay'] }) {
   );
 }
 
+const LANG_LABELS: Record<string, string> = { ru: 'Русский', kk: 'Қазақша', en: 'English' };
+const SOURCE_LABELS: Record<string, string> = { direct: 'Прямой заход / без источника' };
+
+/** Откуда приходят заявки: каналы (UTM или сайт-источник) и язык страницы — чтобы видеть, какие запросы и кампании работают. */
+function LeadSources({ sources, langs }: { sources: AdminStats['leadsBySource']; langs: AdminStats['leadsByLang'] }) {
+  const total = sources.reduce((s, x) => s + x.count, 0);
+  if (!total) return <EmptyState icon={Inbox} compact title="Пока нет данных об источниках" text="Источник и язык сохраняются у каждой новой заявки." />;
+  return (
+    <div className="sources">
+      <ul className="source-list">
+        {sources.map(s => (
+          <li key={s.source}>
+            <span className="source-name" title={s.source}>{SOURCE_LABELS[s.source] ?? s.source}</span>
+            <span className="source-bar" aria-hidden="true"><span style={{ width: `${Math.round((s.count / total) * 100)}%` }} /></span>
+            <strong>{s.count}</strong>
+          </li>
+        ))}
+      </ul>
+      <p className="source-langs">
+        Язык страницы: {langs.map(l => `${LANG_LABELS[l.lang] ?? l.lang} — ${l.count}`).join(' · ')}
+      </p>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { stats, loading, error, reload } = useAdminStats();
   const { admin } = useAuth();
@@ -148,6 +173,10 @@ export default function Dashboard() {
       <div className="dash-grid">
         <Panel title="Заявки по дням" description="Последние 30 дней" actions={<a className="more-link" {...linkProps('/admin/leads')}>Все заявки</a>}>
           {stats ? <LeadsChart data={stats.leadsByDay} /> : error ? <ErrorState message={error} onRetry={() => void reload()} /> : <Skeleton height={180} radius={12} />}
+        </Panel>
+
+        <Panel title="Источники заявок" description="Последние 30 дней: UTM-метки или сайт, с которого перешли">
+          {stats ? <LeadSources sources={stats.leadsBySource} langs={stats.leadsByLang} /> : error ? <ErrorState message={error} onRetry={() => void reload()} /> : <Skeleton height={180} radius={12} />}
         </Panel>
 
         <Panel title="Быстрые действия">

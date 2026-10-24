@@ -5,15 +5,47 @@ import type { AppEnv } from '../types.js';
 import { db, schema } from '../db/client.js';
 import { ApiFail, assertJson, body } from '../lib/http.js';
 import { clientIp, hashIp } from '../lib/ratelimit.js';
-import { leadInput } from '../../shared/schemas.js';
+import { leadInput, type LeadUtm } from '../../shared/schemas.js';
+import { LANGS, type Lang } from '../../shared/i18n.js';
 
 const LIMIT = 5;
 const WINDOW_MINUTES = 10;
+/** Повтор той же заявки (имя + телефон + тема + сообщение) за это время не создаёт дубль — двойной клик, повторная отправка. */
+const DEDUPE_MINUTES = 10;
 
 /** Однострочное поле: все управляющие символы (включая переводы строк) → пробел. */
 const line = (s: string) => s.replace(/[\p{Cc}\p{Zl}\p{Zp}]+/gu, ' ').replace(/\s{2,}/g, ' ').trim();
 /** Многострочное поле: сохраняем переводы строк и табуляцию, остальные управляющие символы удаляем. */
 const multiline = (s: string) => s.replace(/\r\n?/g, '\n').replace(/[^\P{Cc}\n\t]/gu, '').trim();
+
+/** Язык страницы: только известные коды. */
+const parseLang = (v: string | undefined): Lang | null => ((LANGS as readonly string[]).includes(v ?? '') ? (v as Lang) : null);
+
+/**
+ * Источник перехода: только хост и путь (без query/hash — там могут быть чужие токены), только http(s).
+ * Переходы внутри самого сайта источником не считаются.
+ */
+export function cleanReferrer(raw: string | undefined, ownHost: string | undefined): string | null {
+  if (!raw) return null;
+  let u: URL;
+  try { u = new URL(raw.trim()); } catch { return null; }
+  if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+  const host = u.hostname.toLowerCase().replace(/^www\./, '');
+  const own = ownHost?.toLowerCase().replace(/:\d+$/, '').replace(/^www\./, '');
+  if (own && host === own) return null;
+  return `${host}${u.pathname === '/' ? '' : u.pathname}`.slice(0, 300);
+}
+
+/** UTM-метки: только непустые строки, без управляющих символов. */
+function cleanUtm(utm: LeadUtm | undefined): LeadUtm | null {
+  if (!utm) return null;
+  const out: LeadUtm = {};
+  for (const k of ['source', 'medium', 'campaign', 'term', 'content'] as const) {
+    const v = utm[k];
+    if (typeof v === 'string' && line(v)) out[k] = line(v);
+  }
+  return Object.keys(out).length ? out : null;
+}
 
 const r = new Hono<AppEnv>();
 
@@ -33,6 +65,9 @@ r.post('/', async c => {
     topic: line(input.topic),
     message: multiline(input.message ?? ''),
     page: input.page ? line(input.page) || null : null,
+    lang: parseLang(input.lang),
+    referrer: cleanReferrer(input.referrer, c.req.header('host')),
+    utm: cleanUtm(input.utm),
   };
   const fields: Record<string, string> = {};
   if (!lead.name) fields.name = 'Имя: обязательно';
@@ -49,6 +84,15 @@ r.post('/', async c => {
       gt(schema.leads.createdAt, sql`now() - make_interval(mins => ${WINDOW_MINUTES})`),
     ));
     if (n >= LIMIT) return true;
+    // Та же заявка уже есть (повторная отправка формы) — отвечаем «принято», дубль не создаём.
+    const [dup] = await tx.select({ id: schema.leads.id }).from(schema.leads).where(and(
+      eq(schema.leads.phone, lead.phone),
+      eq(schema.leads.name, lead.name),
+      eq(schema.leads.topic, lead.topic),
+      eq(schema.leads.message, lead.message),
+      gt(schema.leads.createdAt, sql`now() - make_interval(mins => ${DEDUPE_MINUTES})`),
+    )).limit(1);
+    if (dup) return false;
     await tx.insert(schema.leads).values({ ...lead, ipHash });
     return false;
   });

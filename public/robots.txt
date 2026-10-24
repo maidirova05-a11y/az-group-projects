@@ -5,4 +5,9 @@ Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
 
+# Фильтры календаря и поиск не создают отдельных страниц — Яндекс склеивает их с разделом.
+Clean-param: q&programs /events
+Clean-param: q&programs /kk/events
+Clean-param: q&programs /en/events
+
 Sitemap: https://www.azgroup.kz/sitemap.xml

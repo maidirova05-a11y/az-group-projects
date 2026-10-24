@@ -60,7 +60,6 @@ npm run dev                      # сайт + API одной командой
 | `npm run db:generate` | новая миграция Drizzle после правки `server/db/schema.ts` |
 | `npm run db:migrate` / `npm run db:seed` | применить миграции / залить стартовый контент |
 | `npm run admin:create` | создать или обновить владельца админки |
-| `npm run sitemap` | пересобрать `public/sitemap.xml` |
 | `node scripts/csp-hashes.mjs [--check]` | хэши inline-скриптов для CSP в `vercel.json` |
 
 ## Где живёт контент
@@ -86,8 +85,8 @@ npm run dev                      # сайт + API одной командой
 1. В настройках проекта Vercel задайте переменные `DATABASE_URL` (лучше pooled-строку Neon/Supabase), `JWT_SECRET`, `IP_SALT`.
 2. Примените миграции к боевой базе с локальной машины: временно подставьте боевую строку в `DATABASE_URL` в `.env.local` и выполните `npm run db:migrate` (затем верните локальную). Сид на проде — только для пустой базы.
 3. Создайте владельца админки на проде так же: `npm run admin:create` с боевым `DATABASE_URL`.
-4. `vercel.json`: SPA-переписывание (`/admin/*` → `admin.html`, остальное → `index.html`), долгий кеш `/assets`, заголовки безопасности и CSP. Статические файлы (`robots.txt`, `sitemap.xml`, PDF, картинки) Vercel отдаёт раньше переписываний.
+4. `vercel.json`: SPA-переписывание (`/admin/*` → `admin.html`, остальное → `index.html`), долгий кеш `/assets`, заголовки безопасности и CSP. Статические файлы (`robots.txt`, PDF, картинки) Vercel отдаёт раньше переписываний; `/sitemap.xml` переписывается на `/api/sitemap.xml`.
 5. **CSP:** если меняли inline-`<script>` в `index.html` или `admin.html` (даже отступ), выполните `node scripts/csp-hashes.mjs` и обновите хэши в `script-src` в `vercel.json`; перед деплоем — `node scripts/csp-hashes.mjs --check`.
-6. **Sitemap:** после добавления раздела в `NAV` (`src/router.ts`) выполните `npm run sitemap`. `public/robots.txt` закрывает `/admin` и `/api` и указывает на sitemap.
+6. **Sitemap:** `GET /api/sitemap.xml` (`server/routes/sitemap.ts`) строится из базы: разделы (`shared/routes.ts`) × языки с hreflang и опубликованные новости с текстом, `lastmod` по дате изменения. Новый раздел добавляйте в `SITE_ROUTES` в `shared/routes.ts`. `public/robots.txt` закрывает `/admin` и `/api`, склеивает параметры фильтров календаря (`Clean-param`) и указывает на sitemap.
 
 Канонический домен — `https://www.azgroup.kz`.

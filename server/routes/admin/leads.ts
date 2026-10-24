@@ -9,7 +9,8 @@ import { db, schema } from '../../db/client.js';
 import { ApiFail, body, idParam, notFound } from '../../lib/http.js';
 import { audit } from '../../lib/audit.js';
 import { requireOwner } from '../../auth/middleware.js';
-import { LEAD_STATUSES, leadUpdate, type LeadDTO } from '../../../shared/schemas.js';
+import { LEAD_STATUSES, leadUpdate, type LeadDTO, type LeadUtm } from '../../../shared/schemas.js';
+import { LANGS, type Lang } from '../../../shared/i18n.js';
 
 const { leads } = schema;
 const r = new Hono<AppEnv>();
@@ -17,11 +18,22 @@ const r = new Hono<AppEnv>();
 /** Колонки без ipHash. */
 const cols = {
   id: leads.id, name: leads.name, phone: leads.phone, topic: leads.topic, message: leads.message,
-  page: leads.page, status: leads.status, note: leads.note, createdAt: leads.createdAt, updatedAt: leads.updatedAt,
+  page: leads.page, status: leads.status, note: leads.note, lang: leads.lang, referrer: leads.referrer, utm: leads.utm,
+  createdAt: leads.createdAt, updatedAt: leads.updatedAt,
 };
 type Row = Omit<typeof leads.$inferSelect, 'ipHash'>;
 
-const toDTO = (l: Row): LeadDTO => ({ ...l, createdAt: l.createdAt.toISOString(), updatedAt: l.updatedAt.toISOString() });
+const toDTO = (l: Row): LeadDTO => ({
+  ...l, lang: (LANGS as readonly string[]).includes(l.lang ?? '') ? (l.lang as Lang) : null, utm: l.utm ?? null,
+  createdAt: l.createdAt.toISOString(), updatedAt: l.updatedAt.toISOString(),
+});
+
+/** Источник заявки одной строкой для CSV: utm_source / medium / campaign, иначе хост перехода. */
+export const leadSource = (l: { utm: LeadUtm | null; referrer: string | null }) => {
+  const u = l.utm;
+  if (u && (u.source || u.medium || u.campaign)) return [u.source, u.medium, u.campaign].filter(Boolean).join(' / ');
+  return l.referrer ?? '';
+};
 
 /** Условие WHERE из ?status=&q=. */
 function filters(status?: string, q?: string): SQL | undefined {
@@ -73,10 +85,13 @@ export function csvCell(v: unknown): string {
 r.get('/export.csv', requireOwner, async c => {
   const where = filters(c.req.query('status'), c.req.query('q'));
   const rows = await db().select(cols).from(leads).where(where).orderBy(desc(leads.createdAt), desc(leads.id));
-  const header = ['id', 'дата', 'имя', 'телефон', 'тема', 'сообщение', 'страница', 'статус', 'заметка'];
+  const header = ['id', 'дата', 'имя', 'телефон', 'тема', 'сообщение', 'страница', 'язык', 'источник', 'utm_term', 'статус', 'заметка'];
   const lines = [header.join(';')];
   for (const l of rows) {
-    lines.push([l.id, almaty.format(l.createdAt), l.name, l.phone, l.topic, l.message, l.page, STATUS_RU[l.status] ?? l.status, l.note].map(csvCell).join(';'));
+    lines.push([
+      l.id, almaty.format(l.createdAt), l.name, l.phone, l.topic, l.message, l.page, l.lang, leadSource(l), l.utm?.term,
+      STATUS_RU[l.status] ?? l.status, l.note,
+    ].map(csvCell).join(';'));
   }
   const csv = '﻿' + lines.join('\r\n') + '\r\n';
   return c.body(csv, 200, {

@@ -12,6 +12,10 @@ export interface AdminStats {
     partners: number; faqs: number; leadsNew: number; leadsTotal: number;
   };
   leadsByDay: { date: string; count: number }[];
+  /** Источники заявок за 30 дней: utm_source, иначе хост перехода, иначе «direct». */
+  leadsBySource: { source: string; count: number }[];
+  /** Язык страницы, с которой отправлены заявки за 30 дней. */
+  leadsByLang: { lang: string; count: number }[];
   recentAudit: { id: number; action: string; entity: string; entityId: string | number | null; adminName: string | null; createdAt: string }[];
 }
 

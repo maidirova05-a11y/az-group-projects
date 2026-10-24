@@ -16,6 +16,15 @@ export interface LeadDrawerProps {
   onDeleted: (id: number) => void;
 }
 
+const LANG_LABELS: Record<string, string> = { ru: 'русский', kk: 'казахский', en: 'английский' };
+
+/** Источник заявки: UTM (source / medium / campaign) либо сайт, с которого перешли; null — прямой заход. */
+export function leadSourceLabel(l: Pick<LeadDTO, 'utm' | 'referrer'>): string | null {
+  const u = l.utm;
+  if (u && (u.source || u.medium || u.campaign)) return [u.source, u.medium, u.campaign].filter(Boolean).join(' / ');
+  return l.referrer || null;
+}
+
 export function LeadDrawer({ lead, onClose, onUpdated, onDeleted }: LeadDrawerProps) {
   const toast = useToast();
   const { isOwner } = useAuth();
@@ -110,7 +119,9 @@ export function LeadDrawer({ lead, onClose, onUpdated, onDeleted }: LeadDrawerPr
         <dt>Телефон</dt><dd>{tel ? <a href={tel} className="mono">{lead.phone}</a> : lead.phone}</dd>
         <dt>Тема</dt><dd>{lead.topic}</dd>
         <dt>Получена</dt><dd>{almatyExact(lead.createdAt)} <span className="muted">(Алматы)</span></dd>
-        <dt>Страница</dt><dd>{lead.page ? <span className="mono">{lead.page}</span> : '—'}</dd>
+        <dt>Страница</dt><dd>{lead.page ? <span className="mono">{lead.page}</span> : '—'}{lead.lang && <span className="muted"> · {LANG_LABELS[lead.lang] ?? lead.lang}</span>}</dd>
+        <dt>Источник</dt><dd>{leadSourceLabel(lead) ?? <span className="muted">прямой заход</span>}</dd>
+        {lead.utm?.term && <><dt>Запрос (utm_term)</dt><dd>{lead.utm.term}</dd></>}
         {lead.updatedAt !== lead.createdAt && <><dt>Изменена</dt><dd>{almatyExact(lead.updatedAt)}</dd></>}
       </dl>
 

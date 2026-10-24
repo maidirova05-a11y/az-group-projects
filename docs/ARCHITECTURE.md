@@ -18,7 +18,8 @@
 
 Публичные:
 - `GET /api/public/content?lang=ru|kk|en` → `{ lang, ...PublicContent }` (язык по умолчанию и при неизвестном значении — `ru`; тексты уже на нужном языке, см. «Мультиязычность»; только `published`, сортировка по `sort`, затем id; события внутри программ по `startDate`, null в конце). Заголовок `Cache-Control: public, s-maxage=60, stale-while-revalidate=600`.
-- `POST /api/leads` (`leadInput`) → `201 { ok: true }`. Ловушка `website`, не более 5 заявок с одного IP за 10 минут (ipHash в таблице leads; проверка и вставка атомарны — `pg_advisory_xact_lock(hashtext(ipHash))` в транзакции).
+- `POST /api/leads` (`leadInput`) → `201 { ok: true }`. Ловушка `website`, не более 5 заявок с одного IP за 10 минут (ipHash в таблице leads; проверка и вставка атомарны — `pg_advisory_xact_lock(hashtext(ipHash))` в транзакции). Повтор той же заявки (имя + телефон + тема + сообщение) за 10 минут дубль не создаёт (ответ тот же `201`). Необязательные `lang` (ru|kk|en), `referrer` (сервер оставляет хост и путь, свой домен отбрасывает) и `utm { source, medium, campaign, term, content }` (миграция `0004`) — откуда пришла заявка; видны в админке (карточка, таблица, CSV) и в сводке `GET /admin/stats` (`leadsBySource`, `leadsByLang` за 30 дней).
+- `GET /api/sitemap.xml` (на Vercel — `/sitemap.xml`): разделы `SITE_ROUTES` (`shared/routes.ts`) × языки с `hreflang`, новости с текстом (`/news?id=N`), `lastmod` из `updated_at`. `Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`.
 
 Авторизация (`/api/auth`): `POST /login` (`loginInput`) → ставит httpOnly-cookie `az_admin` (JWT HS256, 24 часа = Max-Age cookie, SameSite=Strict, Secure на Vercel и в проде), отвечает `AdminDTO`; `POST /logout`; `GET /me` → `AdminDTO` или 401; `POST /password` (`passwordChange`).
 CSRF: все изменяющие запросы к `/api/admin/*` и `/api/auth/*`, **включая login**, обязаны иметь заголовок `X-Requested-With: az-admin` (иначе 403 `csrf`).
