@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { LANGS } from '../shared/i18n';
 import { SITE_ROUTES } from '../shared/routes';
 import { Client, db, schema } from './helpers';
+import { invalidatePublicCache } from '../server/lib/cache';
 
 describe('GET /api/sitemap.xml', () => {
   it('lists every section in every language with hreflang alternates and caches', async () => {
@@ -19,6 +20,10 @@ describe('GET /api/sitemap.xml', () => {
     const locs = xml.match(/<loc>/g)?.length ?? 0;
     expect(locs).toBeGreaterThanOrEqual(SITE_ROUTES.length * LANGS.length);
     expect(xml).not.toContain('/admin');
+    // Страницы проектов на всех языках.
+    expect(xml).toContain('<loc>https://www.azgroup.kz/projects/fibonacci</loc>');
+    expect(xml).toContain('<loc>https://www.azgroup.kz/kk/projects/itecx</loc>');
+    expect(xml).toContain('<loc>https://www.azgroup.kz/en/projects/astanatechcup</loc>');
   });
 
   it('includes published news with body (all languages, lastmod) and skips unpublished', async () => {
@@ -26,6 +31,7 @@ describe('GET /api/sitemap.xml', () => {
     const [hidden] = await db().insert(schema.news).values({ title: 'Hidden news', date: '2026-01-16', body: 'Текст', published: false }).returning();
     const [linkOnly] = await db().insert(schema.news).values({ title: 'Link news', date: '2026-01-17', body: '', externalUrl: 'https://example.com', published: true }).returning();
     try {
+      invalidatePublicCache(); // прямые записи в БД минуют audit()
       const xml = await (await new Client().get('/sitemap.xml')).text();
       expect(xml).toContain(`<loc>https://www.azgroup.kz/news?id=${shown.id}</loc>`);
       expect(xml).toContain(`<loc>https://www.azgroup.kz/kk/news?id=${shown.id}</loc>`);

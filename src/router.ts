@@ -3,7 +3,7 @@ import {
   CalendarDays, CircleHelp, Handshake, House, LayoutGrid, Building2, Newspaper, Phone, type LucideIcon,
 } from 'lucide-react';
 import { DEFAULT_LANG, LANGS, type Lang } from '@shared/i18n';
-import { SITE_ROUTES, type Route } from '@shared/routes';
+import { PROJECT_SLUG_RE, SITE_ROUTES, type Route } from '@shared/routes';
 
 export type { Route };
 
@@ -32,13 +32,18 @@ export const LANG_KEY = 'az-lang';
 const PREFIXED = LANGS.filter(l => l !== DEFAULT_LANG);
 const known = new Set<string>(SITE_ROUTES);
 
-/** Путь браузера → язык и раздел. Неизвестный раздел → главная. */
-export function parsePath(pathname: string): { lang: Lang; path: Route } {
+/**
+ * Путь браузера → язык, раздел и (для /projects/<slug>) слаг проекта. Неизвестный раздел → главная.
+ * Страница проекта относится к разделу «Проекты» (подсветка меню, хлебные крошки).
+ */
+export function parsePath(pathname: string): { lang: Lang; path: Route; slug: string | null } {
   const m = /^\/([a-z]{2})(?=\/|$)/.exec(pathname);
   const lang = m && (PREFIXED as string[]).includes(m[1]) ? (m[1] as Lang) : DEFAULT_LANG;
   const rest = lang === DEFAULT_LANG ? pathname : pathname.slice(3);
   const clean = rest.replace(/\/+$/, '') || '/';
-  return { lang, path: (known.has(clean) ? clean : '/') as Route };
+  const project = /^\/projects\/([^/]+)$/.exec(clean);
+  if (project && PROJECT_SLUG_RE.test(project[1])) return { lang, path: '/projects', slug: project[1] };
+  return { lang, path: (known.has(clean) ? clean : '/') as Route, slug: null };
 }
 
 export const currentLang = (): Lang => parsePath(window.location.pathname).lang;
@@ -53,8 +58,8 @@ export function localizeHref(to: string, lang: Lang = currentLang()): string {
 
 /** Тот же раздел, запрос и якорь — на другом языке (для переключателя языка). */
 export function hrefForLang(lang: Lang, loc: { pathname: string; search: string; hash: string } = window.location): string {
-  const { path } = parsePath(loc.pathname);
-  return localizeHref(`${path}${loc.search}${loc.hash}`, lang);
+  const { path, slug } = parsePath(loc.pathname);
+  return localizeHref(`${slug ? `/projects/${slug}` : path}${loc.search}${loc.hash}`, lang);
 }
 
 function emit() { window.dispatchEvent(new Event('az:navigate')); }

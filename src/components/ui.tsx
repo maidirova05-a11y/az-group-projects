@@ -20,13 +20,14 @@ export function Panel({ title, action, children, className = '', id }: { title?:
 }
 
 /** Заголовок страницы-раздела с хлебной крошкой. */
-export function PageTitle({ title, lead, children }: { title: string; lead?: ReactNode; children?: ReactNode }) {
+export function PageTitle({ title, lead, children, parent }: { title: string; lead?: ReactNode; children?: ReactNode; parent?: { to: string; label: string } }) {
   const t = useT().layout;
   return (
     <div className="page-title">
       <nav aria-label={t.crumbs} className="crumbs">
         <a {...linkProps('/')}>{t.home}</a>
         <ChevronRight size={14} aria-hidden="true" />
+        {parent && <><a {...linkProps(parent.to)}>{parent.label}</a><ChevronRight size={14} aria-hidden="true" /></>}
         <span aria-current="page">{title}</span>
       </nav>
       <div className="page-title-row">

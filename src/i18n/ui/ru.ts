@@ -244,6 +244,24 @@ export const ru = {
     goToSite: 'Перейти на сайт',
     certificate: 'Сертификат о партнёрстве',
     ecosystem: 'Экосистема AZ Group',
+    /** Страница проекта /projects/<slug> */
+    page: {
+      about: 'О проекте',
+      dates: 'Ближайшие даты',
+      allDates: 'Все даты в календаре',
+      noDates: 'Даты нового сезона появятся в календаре. Сроки подскажем по телефону или в WhatsApp.',
+      site: 'Сайт проекта',
+      request: 'Оставить заявку на участие',
+      register: 'Регистрация',
+      details: 'Подробнее о проекте',
+      others: 'Другие проекты AZ Group',
+      notFound: 'Проект не найден',
+      notFoundText: 'Возможно, он переименован или снят с публикации. Посмотрите все проекты AZ Group.',
+      allProjects: 'Все проекты',
+      seoTitle: (name: string, _tagline: string) => `${name}: регистрация и даты 2026–2027`,
+      seoKeywords: (name: string, category: string, tagline: string) =>
+        `${name}, ${name} регистрация, ${name} 2026, ${name} Казахстан, ${tagline}, ${category.toLowerCase()} для школьников, стоимость участия, сроки, сертификат, AZ Group`,
+    },
     /** Русское название категории (как в БД) → подпись на этом языке; должно совпадать с переводами контента. */
     categories: {
       'Олимпиады': 'Олимпиады',

@@ -5,6 +5,7 @@ import { ContentProvider } from './content/ContentProvider';
 import { LanguageProvider } from './i18n/LanguageProvider';
 import { applyStoredLang } from './router';
 import { rememberVisitSource } from './content/visit';
+import './fonts.css';
 import './index.css';
 import './content/site-extra.css';
 

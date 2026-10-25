@@ -2,6 +2,7 @@
  * SEO в рантайме (SPA): <html lang>, document.title, meta description/keywords/robots, Open Graph,
  * canonical на текущий язык, <link rel="alternate" hreflang="ru|kk|en|x-default"> и JSON-LD (schema.org).
  * Адреса языков: https://www.azgroup.kz/<путь> (ru, x-default), /kk/<путь>, /en/<путь>.
+ * Страница проекта /projects/<slug>: search = '/<slug>' (canonical и hreflang ведут на неё).
  * Тексты страниц — t.seo.pages[раздел] (src/i18n/ui/*): заголовок, описание и ключевые слова под запросы,
  * по которым ищут олимпиады, конкурсы и лагеря (см. docs/SEO.md).
  */
@@ -76,9 +77,11 @@ export interface SeoProps {
   article?: { published: string; modified?: string } | null;
   /** Объекты schema.org для этой страницы (без @context). */
   jsonLd?: object[];
+  /** Страница «не найдено» и т.п. — robots noindex. */
+  noindex?: boolean;
 }
 
-export function useSeo({ path, title, description, keywords, search = '', image, article, jsonLd = [] }: SeoProps) {
+export function useSeo({ path, title, description, keywords, search = '', image, article, jsonLd = [], noindex = false }: SeoProps) {
   const { lang, t } = useI18n();
   useEffect(() => {
     const nav = NAV.find(n => n.path === path)!;
@@ -93,7 +96,7 @@ export function useSeo({ path, title, description, keywords, search = '', image,
     document.title = fullTitle;
     meta('name', 'description', desc);
     meta('name', 'keywords', words);
-    meta('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1');
+    meta('name', 'robots', noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1');
     meta('property', 'og:type', article ? 'article' : 'website');
     meta('property', 'og:title', fullTitle);
     meta('property', 'og:description', desc);
@@ -110,5 +113,5 @@ export function useSeo({ path, title, description, keywords, search = '', image,
     LANGS.forEach(l => link('alternate', url(l), l));
     link('alternate', url('ru'), 'x-default');
     setJsonLd(jsonLd);
-  }, [lang, t, path, title, description, keywords, search, image, article, jsonLd]);
+  }, [lang, t, path, title, description, keywords, search, image, article, jsonLd, noindex]);
 }

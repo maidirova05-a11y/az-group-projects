@@ -1,5 +1,5 @@
 /**
- * GET /api/sitemap.xml — карта сайта из базы: разделы × языки (с hreflang-альтернативами) и
+ * GET /api/sitemap.xml — карта сайта из базы: разделы × языки (с hreflang-альтернативами), страницы проектов /projects/<slug> и
  * опубликованные новости с текстом (адрес /news?id=N на каждом языке, lastmod по updated_at).
  * На Vercel /sitemap.xml переписывается сюда (vercel.json), поэтому поисковики всегда видят свежий список.
  */
@@ -8,7 +8,8 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import type { AppEnv } from '../types.js';
 import { db, schema } from '../db/client.js';
 import { DEFAULT_LANG, LANGS } from '../../shared/i18n.js';
-import { SITE_ROUTES, routePath } from '../../shared/routes.js';
+import { SITE_ROUTES, projectPath, routePath } from '../../shared/routes.js';
+import { cached, respondCached } from '../lib/cache.js';
 
 export const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://www.azgroup.kz').replace(/\/+$/, '');
 
@@ -35,13 +36,15 @@ function entry(path: string, lastmod: string | null, priority: string, changefre
 
 export async function buildSitemap(): Promise<string> {
   const d = db();
-  const { news, events, programs } = schema;
-  const [articles, [content]] = await Promise.all([
+  const { news, events, programs, projects } = schema;
+  const [articles, [content], projectRows] = await Promise.all([
     d.select({ id: news.id, date: news.date, updatedAt: news.updatedAt }).from(news)
       .where(and(eq(news.published, true), sql`${news.body} <> ''`)).orderBy(desc(news.date), desc(news.id)).limit(1000),
     // Последнее изменение контента календаря — lastmod главной и раздела «Мероприятия».
     d.select({ at: sql<string | null>`to_char(greatest(max(${events.updatedAt}), max(${programs.updatedAt})) at time zone 'UTC', 'YYYY-MM-DD')` })
       .from(events).fullJoin(programs, sql`true`),
+    d.select({ slug: projects.slug, updatedAt: projects.updatedAt }).from(projects)
+      .where(eq(projects.published, true)).orderBy(projects.sort, projects.id),
   ]);
   const contentDay = content?.at ?? null;
   const newsDay = articles[0] ? day(articles[0].updatedAt) : null;
@@ -50,6 +53,8 @@ export async function buildSitemap(): Promise<string> {
     const lastmod = path === '/' || path === '/events' ? contentDay : path === '/news' ? newsDay : null;
     return entry(path, lastmod, PRIORITY[path] ?? '0.6', WEEKLY.has(path) ? 'weekly' : 'monthly');
   });
+  // Страницы проектов /projects/<slug> — свои запросы («олимпиада Фибоначчи», «Astana Tech Cup регистрация»).
+  for (const p of projectRows) parts.push(entry(projectPath(p.slug), day(p.updatedAt), '0.8', 'monthly'));
   for (const a of articles) parts.push(entry(`/news?id=${a.id}`, day(a.updatedAt > new Date(a.date) ? a.updatedAt : a.date), '0.5', 'yearly'));
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -62,9 +67,8 @@ ${parts.join('\n')}
 const r = new Hono<AppEnv>();
 
 r.get('/sitemap.xml', async c => {
-  const xml = await buildSitemap();
-  c.header('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
-  return c.body(xml, 200, { 'Content-Type': 'application/xml; charset=utf-8' });
+  const entry = await cached('sitemap', buildSitemap, 5 * 60_000);
+  return respondCached(c, entry, 'application/xml; charset=utf-8', 'public, s-maxage=3600, stale-while-revalidate=86400');
 });
 
 export default r;

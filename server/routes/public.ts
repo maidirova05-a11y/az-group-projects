@@ -9,6 +9,7 @@ import type { AppEnv } from '../types.js';
 import { db, schema } from '../db/client.js';
 import { SETTINGS, type EventDTO, type ProgramDTO, type PublicContent, type SettingKey } from '../../shared/schemas.js';
 import { localize, localizeSetting, parseLang } from '../lib/i18n.js';
+import { cached, respondCached } from '../lib/cache.js';
 import { about, achievements, contacts, keyStats, links } from '../../src/data/site.js';
 
 const { programs, events, projects, news, partners, faqs, settings } = schema;
@@ -36,8 +37,8 @@ function strip<T extends { createdAt?: unknown; updatedAt?: unknown }>(row: T): 
 
 const r = new Hono<AppEnv>();
 
-r.get('/content', async c => {
-  const lang = parseLang(c.req.query('lang'));
+/** Собирает контент на языке lang из базы (без кэша). */
+export async function buildPublicContent(lang: ReturnType<typeof parseLang>): Promise<PublicContent & { lang: typeof lang }> {
   const d = db();
   const publishedProgramIds = d.select({ id: programs.id }).from(programs).where(eq(programs.published, true));
 
@@ -81,8 +82,14 @@ r.get('/content', async c => {
     settings: resolved as PublicContent['settings'],
   };
 
-  c.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
-  return c.json(payload);
+  return payload;
+}
+
+r.get('/content', async c => {
+  const lang = parseLang(c.req.query('lang'));
+  // Кэш в памяти + ETag: один и тот же ответ не собирается из 7 запросов к базе на каждый заход (сброс — audit()).
+  const entry = await cached(`content:${lang}`, async () => JSON.stringify(await buildPublicContent(lang)));
+  return respondCached(c, entry, 'application/json; charset=utf-8', 'public, s-maxage=60, stale-while-revalidate=600');
 });
 
 export default r;

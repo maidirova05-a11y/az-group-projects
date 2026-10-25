@@ -71,7 +71,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-wnOkMk8OYIz9yI/iLlPEPjIsaAorL79q+4/nHHMQsHo=' 'sha256-S9qjF9ngHv2V2xqi1e7g6XUXNxb1WAQxay8HkeX+F5I='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-wnOkMk8OYIz9yI/iLlPEPjIsaAorL79q+4/nHHMQsHo=' 'sha256-S9qjF9ngHv2V2xqi1e7g6XUXNxb1WAQxay8HkeX+F5I='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' https: data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
         }
       ]
     }

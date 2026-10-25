@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { and, eq } from 'drizzle-orm';
 import { Client, asEditor, asOwner, db, expectJson, schema, uniq } from './helpers';
+import { invalidatePublicCache } from '../server/lib/cache';
 
 let owner: Client;
 let editor: Client;
@@ -137,7 +138,7 @@ describe.each(cases)('$path CRUD', ({ path, entity, valid, invalid, invalidField
     expect(await auditRows('update', entity, created.id)).toHaveLength(2);
 
     // неопубликованное видно в админке, но не на сайте
-    const pub = await expectJson(await new Client().get('/public/content'), 200);
+    const pub = await expectJson(await (invalidatePublicCache(), new Client().get('/public/content')), 200);
     expect((pub[path] as { id: number }[]).some(x => x.id === created.id)).toBe(false);
 
     expect(await expectJson(await owner.del(`/admin/${path}/${created.id}`), 200)).toEqual({ ok: true });
@@ -181,7 +182,7 @@ describe('PUT /api/admin/reorder/:resource', () => {
     const after = await expectJson<any[]>(await owner.get('/admin/faqs'), 200);
     expect(after.map(f => f.id)).toEqual(ids);
     expect(after.map(f => f.sort)).toEqual(ids.map((_, i) => i));
-    const pub = await expectJson(await new Client().get('/public/content'), 200);
+    const pub = await expectJson(await (invalidatePublicCache(), new Client().get('/public/content')), 200);
     const pubIds = (pub.faqs as { id: number }[]).map(f => f.id);
     expect(pubIds).toEqual(ids.filter(id => pubIds.includes(id)));
     const audit = await db().select().from(schema.auditLog).where(eq(schema.auditLog.action, 'reorder'));
@@ -228,7 +229,7 @@ describe('settings', () => {
       const saved = await expectJson(await owner.put('/admin/settings/contacts', contacts), 200);
       expect(saved).toMatchObject({ phone: '+7 700 000 00 00' });
       expect(await auditRows('update', 'setting', 'contacts')).not.toHaveLength(0);
-      const pub = await expectJson(await new Client().get('/public/content'), 200);
+      const pub = await expectJson(await (invalidatePublicCache(), new Client().get('/public/content')), 200);
       expect(pub.settings.contacts.phone).toBe('+7 700 000 00 00');
 
       const bad = await expectJson(await owner.put('/admin/settings/contacts', { ...contacts, email: 'nope' }), 422);

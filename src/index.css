@@ -2,7 +2,7 @@
 
 /* Токены оставлены для схемы связей проектов (NeuralHub использует утилиты Tailwind). */
 @theme {
-  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Montserrat Variable', 'Montserrat', ui-sans-serif, system-ui, sans-serif;
   --color-slate-deep: #1d1f23;
   --color-slate-soft: #5c616a;
   --color-brand-red: #cd0929;
@@ -830,4 +830,20 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
   .news-card img, .pillar img { max-height: 40mm; }
   a[href^='http']:not(.tile):not(.project):not(.news-card)::after { content: ' (' attr(href) ')'; font-size: 8.5pt; color: #444; word-break: break-all; }
   .site-footer { border-top: 1px solid var(--line); }
+}
+
+/* Страница проекта /projects/<slug> */
+.project-about-body { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+.project-about-body .project-logo { display: grid; place-items: center; width: 168px; min-height: 120px; padding: 12px; border-radius: var(--radius-sm); background: var(--tile); }
+.project-about-body .project-logo img { max-width: 100%; object-fit: contain; }
+.project-about-body p { margin: var(--space-2) 0 0; color: var(--ink-2); line-height: var(--lh-body); }
+.project-site a { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+.project-cta { margin-top: var(--space-4); }
+.project-links { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-2); }
+.project-links a { display: grid; gap: 2px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--tile); transition: background-color var(--t-fast) var(--ease); }
+.project-links a:hover { background: var(--tile-hover); }
+.project-links span { font-size: 13px; color: var(--muted); }
+@media (max-width: 640px) {
+  .project-about-body { grid-template-columns: 1fr; }
+  .project-about-body .project-logo { width: 100%; }
 }

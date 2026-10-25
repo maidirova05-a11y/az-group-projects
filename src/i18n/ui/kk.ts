@@ -234,6 +234,23 @@ export const kk: Dict = {
     goToSite: 'Сайтқа өту',
     certificate: 'Серіктестік сертификаты',
     ecosystem: 'AZ Group экожүйесі',
+    page: {
+      about: 'Жоба туралы',
+      dates: 'Жақын күндер',
+      allDates: 'Күнтізбедегі барлық күндер',
+      noDates: 'Жаңа маусымның күндері күнтізбеде пайда болады. Мерзімін телефон немесе WhatsApp арқылы айтамыз.',
+      site: 'Жоба сайты',
+      request: 'Қатысуға өтінім қалдыру',
+      register: 'Тіркелу',
+      details: 'Жоба туралы толығырақ',
+      others: 'AZ Group басқа жобалары',
+      notFound: 'Жоба табылмады',
+      notFoundText: 'Мүмкін, оның атауы өзгерген немесе жарияланымнан алынған. AZ Group барлық жобаларын қараңыз.',
+      allProjects: 'Барлық жобалар',
+      seoTitle: (name: string, _tagline: string) => `${name}: тіркелу және 2026–2027 күндері`,
+      seoKeywords: (name: string, category: string, tagline: string) =>
+        `${name}, ${name} тіркелу, ${name} 2026, ${name} Қазақстан, ${tagline}, оқушыларға ${category.toLowerCase()}, қатысу құны, мерзімі, сертификат, AZ Group`,
+    },
     categories: {
       'Олимпиады': 'Олимпиадалар',
       'Наука': 'Ғылым',

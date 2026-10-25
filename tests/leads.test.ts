@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { asOwner, Client, db, expectJson, schema, uniq } from './helpers';
 
 const valid = (name: string) => ({ name, phone: '+7 (701) 123-45-67', topic: 'Fibonacci', message: 'Хочу участвовать\nв олимпиаде', page: '/calendar' });
@@ -86,5 +86,25 @@ describe('POST /api/leads', () => {
     const csv = await (await owner.get(`/admin/leads/export.csv?q=${name}`)).text();
     expect(csv.split('\r\n')[0]).toContain(';язык;источник;utm_term;');
     expect(csv).toContain(';en;instagram / social;;');
+  });
+
+  it('still stores the lead when migration 0004 is missing (no lang/referrer/utm columns)', async () => {
+    const name = uniq('NoMig');
+    await db().execute(sql`alter table leads rename column utm to utm_missing`);
+    try {
+      const res = await new Client().post('/leads', { ...valid(name), lang: 'en', utm: { source: 'x' } }, { csrf: false });
+      expect(res.status).toBe(201);
+    } finally {
+      await db().execute(sql`alter table leads rename column utm_missing to utm`);
+    }
+    const [row] = await findByName(name);
+    expect(row).toMatchObject({ name, lang: null, utm: null });
+  });
+
+  it('dedupe holds under concurrency from different IPs', async () => {
+    const name = uniq('Race');
+    const res = await Promise.all(Array.from({ length: 8 }, () => new Client().post('/leads', valid(name), { csrf: false })));
+    expect(res.every(r => r.status === 201)).toBe(true);
+    expect(await findByName(name)).toHaveLength(1);
   });
 });
