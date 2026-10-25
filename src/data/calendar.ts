@@ -1,7 +1,11 @@
 /** Даты из «календарь (11).pdf», русская страница. Неизвестные дни не предполагаются. */
 export type CalendarCategory = 'science' | 'robotics' | 'international';
-export interface CalendarEvent { label: string; place: string; start?: string; end?: string; monthOnly?: boolean }
-export interface CalendarProgram { id: string; name: string; subtitle: string; category: CalendarCategory; color: string; projectSlug?: string; events: CalendarEvent[] }
+export interface CalendarEvent { label: string; place: string; start?: string; end?: string; monthOnly?: boolean; price?: number }
+export interface CalendarProgram { id: string; name: string; subtitle: string; category: CalendarCategory; color: string; projectSlug?: string; paymentUrl?: string; events: CalendarEvent[] }
+/** Оплата олимпиады Fibonacci через Kaspi (ссылка со старого сайта az-group.kz). */
+export const FIBONACCI_KASPI = 'https://kaspi.kz/pay/CoursesUniversal?subservice_id=22909&region_id=19&started_from=share';
+/** Стоимость одного участия в туре олимпиады Fibonacci, тенге. */
+export const FIBONACCI_PRICE = 25000;
 export const calendarCategories = [
   { id: 'science', label: 'Олимпиады и наука' },
   { id: 'robotics', label: 'Робототехника' },
@@ -13,8 +17,8 @@ const month = (label: string, ym: string, place: string): CalendarEvent => {
   return { label, place, start: `${ym}-01`, end: `${ym}-${new Date(year, m, 0).getDate()}`, monthOnly: true };
 };
 export const calendarPrograms: CalendarProgram[] = [
-  { id: 'fibonacci-math', name: 'Fibonacci', subtitle: 'International Math Olympiad', category: 'science', color: '#e10926', projectSlug: 'fibonacci',
-    events: [date('17 октября 2026', '2026-10-17'), date('14 ноября 2026', '2026-11-14'), date('19 декабря 2026', '2026-12-19'), date('13 февраля 2027', '2027-02-13'), month('Апрель 2027', '2027-04', 'Анталья'), month('Май 2027', '2027-05', 'Рим')] },
+  { id: 'fibonacci-math', name: 'Fibonacci', subtitle: 'International Math Olympiad', category: 'science', color: '#e10926', projectSlug: 'fibonacci', paymentUrl: FIBONACCI_KASPI,
+    events: [...[date('17 октября 2026', '2026-10-17'), date('14 ноября 2026', '2026-11-14'), date('19 декабря 2026', '2026-12-19'), date('13 февраля 2027', '2027-02-13')].map(e => ({ ...e, price: FIBONACCI_PRICE })), month('Апрель 2027', '2027-04', 'Анталья'), month('Май 2027', '2027-05', 'Рим')] },
   { id: 'atlantia-science', name: 'Atlantia', subtitle: 'Science Olympiads', category: 'science', color: '#8557d5', projectSlug: 'atlantia',
     events: [date('24 октября 2026', '2026-10-24'), date('21 ноября 2026', '2026-11-21'), date('12 декабря 2026', '2026-12-12'), date('20 февраля 2027', '2027-02-20'), month('Январь 2027', '2027-01', 'Анталья'), month('Май 2027', '2027-05', 'Барселона')] },
   { id: 'itecx', name: 'ITECX', subtitle: 'Научный конгресс', category: 'science', color: '#037f7a', projectSlug: 'itecx',

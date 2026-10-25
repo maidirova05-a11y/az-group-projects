@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUpRight, Download, Globe2, GraduationCap, Info, Wallet } from 'lucide-react';
 import { useContent } from '../content/useContent';
 import { eventStatus, nearestEvent, toISODate, type CalendarCategory } from '../content/calendar';
-import { isExternal } from '../content/links';
+import { anchorProps, registerHref } from '../content/links';
 import { safeHref } from '../content/safe-url';
 import { participationPrice } from '../data/site';
 import { EmptyState, PageTitle, Panel, Segmented } from '../components/ui';
@@ -65,7 +65,7 @@ export default function Events({ query }: { query: URLSearchParams }) {
   const occs = useMemo(() => occurrences(visible, today), [visible, today]);
   const nearest = useMemo(() => nearestEvent(programs, today), [programs, today]);
   const nearestNow = !!nearest && eventStatus(nearest.event, today) === 'current';
-  const nearestReg = safeHref(nearest?.event.registrationUrl || links.registration);
+  const nearestReg = nearest ? registerHref(nearest.event, nearest.program) : links.registration;
   // Стартовый месяц пересчитываем только при смене ссылки ?q, а не на каждое переключение легенды.
   const start = useMemo(() => initialMonth(occs, today), [filterKey, today]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -91,7 +91,7 @@ export default function Events({ query }: { query: URLSearchParams }) {
       <PageTitle title={t.nav.events.label} lead={T.pageLead}>
         <div className="title-actions">
           <a className="btn btn-ghost" href={safeHref(links.posterPdf)} target="_blank" rel="noreferrer"><Download size={17} aria-hidden="true" />{T.posterPdf}</a>
-          <a className="btn btn-primary" href={safeHref(links.registration)} target="_blank" rel="noreferrer">{T.registration}<ArrowUpRight size={17} aria-hidden="true" /></a>
+          <a className="btn btn-primary" {...anchorProps(links.registration)}>{T.registration}<ArrowUpRight size={17} aria-hidden="true" /></a>
         </div>
       </PageTitle>
 
@@ -111,7 +111,7 @@ export default function Events({ query }: { query: URLSearchParams }) {
               <p className="nearest-title"><strong>{nearest.program.name}</strong>{nearestNow && <span className="badge hot">{T.badgeCurrent}</span>}</p>
               <p>{nearest.program.subtitle} · {nearest.event.label} · {nearest.event.place}{nearest.event.price != null && ` · ${nearest.event.price === 0 ? T.freeLower : price(nearest.event.price)}`}</p>
             </div>
-            <a className="btn btn-primary" href={nearestReg} target={isExternal(nearestReg) ? '_blank' : undefined} rel="noreferrer">{T.participate}<ArrowUpRight size={17} aria-hidden="true" /></a>
+            <a className="btn btn-primary" {...anchorProps(nearestReg)}>{T.participate}<ArrowUpRight size={17} aria-hidden="true" /></a>
           </div>
         </Panel>
       )}

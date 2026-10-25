@@ -1,7 +1,7 @@
 /** Обзор: сводка, график заявок за 30 дней, последние действия, быстрые действия. */
 import { useMemo, useState } from 'react';
 import {
-  Activity, CalendarDays, CalendarPlus, Handshake, Inbox, LayoutGrid, Newspaper, RefreshCw, type LucideIcon,
+  Activity, CalendarDays, CalendarPlus, ClipboardList, Handshake, Inbox, LayoutGrid, Newspaper, RefreshCw, type LucideIcon,
 } from 'lucide-react';
 import { linkProps } from '../router';
 import { useAuth } from '../auth';
@@ -15,6 +15,7 @@ const TILES: Tile[] = [
   { key: 'projects', label: 'Проекты', Icon: LayoutGrid, to: '/admin/projects' },
   { key: 'news', label: 'Новости', Icon: Newspaper, to: '/admin/news' },
   { key: 'partners', label: 'Партнёры', Icon: Handshake, to: '/admin/partners' },
+  { key: 'registrationsNew', label: 'Новые регистрации', Icon: ClipboardList, to: '/admin/registrations', hint: c => `всего регистраций: ${c.registrationsTotal}` },
   { key: 'leadsNew', label: 'Новые заявки', Icon: Inbox, to: '/admin/leads?status=new', hint: c => `всего заявок: ${c.leadsTotal}` },
 ];
 
@@ -27,7 +28,7 @@ const ACTION_LABELS: Record<string, string> = {
 /** Винительный падеж: «изменил(а) программу №3». */
 const ENTITY_LABELS: Record<string, string> = {
   program: 'программу', event: 'мероприятие', project: 'проект', news: 'новость', partner: 'партнёра', faq: 'вопрос',
-  setting: 'настройки', setting_translations: 'переводы настроек', lead: 'заявку', admin: 'администратора',
+  setting: 'настройки', setting_translations: 'переводы настроек', lead: 'заявку', registration: 'регистрацию', admin: 'администратора',
 };
 /** Для перестановки (entity — ресурс без «s»): «изменил(а) порядок: программы». */
 const REORDER_LABELS: Record<string, string> = { program: 'программы', project: 'проекты', partner: 'партнёры', faq: 'вопросы' };
@@ -37,7 +38,7 @@ const SETTING_TABS: Record<string, string> = { links: 'links', stats: 'stats', a
 const SETTING_ENTITIES = ['setting', 'setting_translations'];
 const ENTITY_LINKS: Record<string, string> = {
   program: '/admin/programs', event: '/admin/programs', project: '/admin/projects', news: '/admin/news', partner: '/admin/partners',
-  faq: '/admin/faqs', lead: '/admin/leads', setting: '/admin/settings', setting_translations: '/admin/settings', admin: '/admin/admins',
+  faq: '/admin/faqs', lead: '/admin/leads', registration: '/admin/registrations', setting: '/admin/settings', setting_translations: '/admin/settings', admin: '/admin/admins',
 };
 const AUTH_ACTIONS = ['login', 'logout', 'login_failed', 'password_change'];
 

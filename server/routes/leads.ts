@@ -14,12 +14,12 @@ const WINDOW_MINUTES = 10;
 const DEDUPE_MINUTES = 10;
 
 /** Однострочное поле: все управляющие символы (включая переводы строк) → пробел. */
-const line = (s: string) => s.replace(/[\p{Cc}\p{Zl}\p{Zp}]+/gu, ' ').replace(/\s{2,}/g, ' ').trim();
+export const line = (s: string) => s.replace(/[\p{Cc}\p{Zl}\p{Zp}]+/gu, ' ').replace(/\s{2,}/g, ' ').trim();
 /** Многострочное поле: сохраняем переводы строк и табуляцию, остальные управляющие символы удаляем. */
-const multiline = (s: string) => s.replace(/\r\n?/g, '\n').replace(/[^\P{Cc}\n\t]/gu, '').trim();
+export const multiline = (s: string) => s.replace(/\r\n?/g, '\n').replace(/[^\P{Cc}\n\t]/gu, '').trim();
 
 /** Язык страницы: только известные коды. */
-const parseLang = (v: string | undefined): Lang | null => ((LANGS as readonly string[]).includes(v ?? '') ? (v as Lang) : null);
+export const parseLeadLang = (v: string | undefined): Lang | null => ((LANGS as readonly string[]).includes(v ?? '') ? (v as Lang) : null);
 
 /**
  * Источник перехода: только хост и путь (без query/hash — там могут быть чужие токены), только http(s).
@@ -37,7 +37,7 @@ export function cleanReferrer(raw: string | undefined, ownHost: string | undefin
 }
 
 /** UTM-метки: только непустые строки, без управляющих символов. */
-function cleanUtm(utm: LeadUtm | undefined): LeadUtm | null {
+export function cleanUtm(utm: LeadUtm | undefined): LeadUtm | null {
   if (!utm) return null;
   const out: LeadUtm = {};
   for (const k of ['source', 'medium', 'campaign', 'term', 'content'] as const) {
@@ -73,7 +73,7 @@ r.post('/', async c => {
     topic: line(input.topic),
     message: multiline(input.message ?? ''),
     page: input.page ? line(input.page) || null : null,
-    lang: parseLang(input.lang),
+    lang: parseLeadLang(input.lang),
     referrer: cleanReferrer(input.referrer, c.req.header('host')),
     utm: cleanUtm(input.utm),
   };

@@ -20,6 +20,9 @@ const required = (max: number, label = 'Поле') => text(max, label).min(1, `$
 export const CATEGORIES = ['science', 'robotics', 'international'] as const;
 export const PARTNER_GROUPS = ['schools', 'org', 'gov'] as const;
 export const LEAD_STATUSES = ['new', 'in_progress', 'done', 'spam'] as const;
+export const REGISTRATION_STATUSES = ['new', 'confirmed', 'paid', 'cancelled', 'spam'] as const;
+/** Класс участника: 1–12, педагог или другое. */
+export const GRADES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'teacher', 'other'] as const;
 export const ADMIN_ROLES = ['owner', 'editor'] as const;
 
 // ---------- Переводы (kk/en) ----------
@@ -45,6 +48,8 @@ export const programInput = z.object({
   category: z.enum(CATEGORIES),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Цвет в формате #RRGGBB').default('#cd0929'),
   projectSlug: z.string().trim().max(60).nullable().optional(),
+  /** Ссылка на оплату (Kaspi Pay и т.п.) — кнопка «Оплатить» после регистрации. */
+  paymentUrl: optionalUrl,
   sort: z.number().int().default(0),
   published: z.boolean().default(true),
   translations: programTranslations.optional(),
@@ -173,6 +178,41 @@ export const leadInput = z.object({
   website: z.string().max(500).optional(),
 });
 export const leadUpdate = z.object({ status: z.enum(LEAD_STATUSES).optional(), note: text(2000, 'Заметка').optional() });
+
+// ---------- Регистрации на мероприятия ----------
+const PHONE_RE = /^[\d\s()+-]{10,20}$/;
+export const registrationInput = z.object({
+  programId: z.number().int().positive('Выберите мероприятие'),
+  /** Дата и место (событие программы); нет — «дату уточним». */
+  eventId: z.number().int().positive().nullable().optional(),
+  participantName: required(160, 'ФИО участника'),
+  grade: z.enum(GRADES, 'Выберите класс'),
+  school: text(200, 'Школа').default(''),
+  city: required(80, 'Город'),
+  subjects: text(300, 'Предметы').default(''),
+  contactName: text(160, 'Контактное лицо').default(''),
+  phone: z.string().trim().regex(PHONE_RE, 'Проверьте номер телефона'),
+  email: z.string().trim().max(200).refine(s => s === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s), 'Некорректный e-mail').optional(),
+  comment: text(1000, 'Комментарий').default(''),
+  /** Согласие с публичной офертой и обработкой персональных данных. */
+  consent: z.boolean().refine(v => v === true, 'Нужно согласие с условиями публичной оферты'),
+  lang: z.string().max(5).optional(),
+  referrer: z.string().max(2000).optional(),
+  utm: leadUtm.optional(),
+  /** Ловушка для ботов. */
+  website: z.string().max(500).optional(),
+});
+export const registrationUpdate = z.object({ status: z.enum(REGISTRATION_STATUSES).optional(), note: text(2000, 'Заметка').optional() });
+export type RegistrationInput = z.infer<typeof registrationInput>;
+export interface RegistrationDTO {
+  id: number; programId: number | null; eventId: number | null; programName: string; eventLabel: string; place: string; eventDate: string | null;
+  participantName: string; grade: (typeof GRADES)[number]; school: string; city: string; subjects: string; contactName: string;
+  phone: string; email: string | null; comment: string; amount: number | null;
+  lang: Lang | null; referrer: string | null; utm: LeadUtm | null;
+  status: (typeof REGISTRATION_STATUSES)[number]; note: string; createdAt: string; updatedAt: string;
+}
+/** Ответ POST /api/registrations: номер регистрации и что делать дальше (оплата, если она нужна). */
+export interface RegistrationCreated { ok: true; id: number; amount: number | null; paymentUrl: string | null }
 
 // ---------- Админы и вход ----------
 export const loginInput = z.object({ email: z.email('Введите e-mail'), password: z.string().min(1, 'Введите пароль').max(200) });

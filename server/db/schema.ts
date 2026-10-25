@@ -15,6 +15,7 @@ export const programCategory = pgEnum('program_category', ['science', 'robotics'
 export const partnerGroup = pgEnum('partner_group', ['schools', 'org', 'gov']);
 export const projectKind = pgEnum('project_kind', ['site', 'program']);
 export const leadStatus = pgEnum('lead_status', ['new', 'in_progress', 'done', 'spam']);
+export const registrationStatus = pgEnum('registration_status', ['new', 'confirmed', 'paid', 'cancelled', 'spam']);
 
 /** Переводы kk/en переводимых полей (русский — в обычных колонках). См. shared/i18n.ts. */
 const translations = <T>() => jsonb('translations').$type<Translations<T>>().notNull().default({});
@@ -51,6 +52,8 @@ export const programs = pgTable('programs', {
   color: text('color').notNull().default('#cd0929'),
   /** slug проекта из таблицы projects — для логотипа и ссылки «Сайт проекта». */
   projectSlug: text('project_slug'),
+  /** Ссылка на оплату участия (Kaspi Pay и т.п.) — показывается после регистрации на сайте. */
+  paymentUrl: text('payment_url'),
   sort: integer('sort').notNull().default(0),
   published: boolean('published').notNull().default(true),
   translations: translations<TranslatableFields['programs']>(),
@@ -101,10 +104,12 @@ export const news = pgTable('news', {
   /** Текст новости (Markdown-подобный простой текст). Пусто — ведём на externalUrl. */
   body: text('body').notNull().default(''),
   externalUrl: text('external_url'),
+  /** Номер новости на старом сайте (az-group.kz/news/<legacyId>) — для 301-редиректа старых адресов. */
+  legacyId: integer('legacy_id'),
   published: boolean('published').notNull().default(true),
   translations: translations<TranslatableFields['news']>(),
   ...timestamps,
-}, t => [index('news_date_idx').on(t.date)]);
+}, t => [index('news_date_idx').on(t.date), uniqueIndex('news_legacy_uq').on(t.legacyId)]);
 
 export const partners = pgTable('partners', {
   id: serial('id').primaryKey(),
@@ -160,6 +165,45 @@ export const leads = pgTable('leads', {
   // Поиск дублей (тот же телефон за последние минуты) и фильтр по IP для лимита частоты.
   index('leads_phone_created_idx').on(t.phone, t.createdAt),
   index('leads_ip_created_idx').on(t.ipHash, t.createdAt),
+]);
+
+/**
+ * Регистрации на мероприятия с сайта (/register). Название программы, дата и место копируются на момент
+ * регистрации — запись остаётся понятной, даже если мероприятие потом изменят или удалят.
+ */
+export const registrations = pgTable('registrations', {
+  id: serial('id').primaryKey(),
+  programId: integer('program_id').references(() => programs.id, { onDelete: 'set null' }),
+  eventId: integer('event_id').references(() => events.id, { onDelete: 'set null' }),
+  programName: text('program_name').notNull(),
+  eventLabel: text('event_label').notNull().default(''),
+  place: text('place').notNull().default(''),
+  eventDate: date('event_date'),
+  participantName: text('participant_name').notNull(),
+  /** Класс 1–12, teacher (педагог) или other. */
+  grade: text('grade').notNull(),
+  school: text('school').notNull().default(''),
+  city: text('city').notNull(),
+  subjects: text('subjects').notNull().default(''),
+  contactName: text('contact_name').notNull().default(''),
+  phone: text('phone').notNull(),
+  email: text('email'),
+  comment: text('comment').notNull().default(''),
+  /** Стоимость на момент регистрации, тенге; null — не указана. */
+  amount: integer('amount'),
+  lang: text('lang'),
+  referrer: text('referrer'),
+  utm: jsonb('utm').$type<LeadUtm>(),
+  status: registrationStatus('status').notNull().default('new'),
+  note: text('note').notNull().default(''),
+  ipHash: text('ip_hash'),
+  ...timestamps,
+}, t => [
+  index('registrations_status_idx').on(t.status),
+  index('registrations_created_idx').on(t.createdAt),
+  index('registrations_program_idx').on(t.programId),
+  index('registrations_phone_created_idx').on(t.phone, t.createdAt),
+  index('registrations_ip_created_idx').on(t.ipHash, t.createdAt),
 ]);
 
 /** Журнал действий администраторов. */

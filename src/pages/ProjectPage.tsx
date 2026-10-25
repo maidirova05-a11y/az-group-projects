@@ -11,7 +11,8 @@ import { projectPath } from '@shared/routes';
 import { EmptyState, PageTitle, Panel } from '../components/ui';
 import { useContent, useContentStatus } from '../content/useContent';
 import { toISODate, upcomingEvents } from '../content/calendar';
-import { safeHref, safeHrefOrNull, safeImgSrc } from '../content/safe-url';
+import { safeHrefOrNull, safeImgSrc } from '../content/safe-url';
+import { anchorProps, registerHref } from '../content/links';
 import { useI18n } from '../i18n';
 import { linkProps } from '../router';
 import { DateBox } from './events/DateBox';
@@ -76,10 +77,10 @@ export default function ProjectPage({ slug }: { slug: string }) {
         {upcoming.length ? (
           <ul className="upcoming">
             {upcoming.slice(0, 8).map(({ program, event }) => {
-              const reg = safeHrefOrNull(event.registrationUrl) ?? safeHrefOrNull(links.registration);
+              const reg = registerHref(event, program);
               return (
                 <li key={event.id}>
-                  <a {...(reg ? { href: reg, target: '_blank', rel: 'noreferrer' } : linkProps(calendarLink))}>
+                  <a {...anchorProps(reg)}>
                     <DateBox event={event} />
                     <div>
                       <strong>{program.name}: {event.label}</strong>
@@ -97,7 +98,7 @@ export default function ProjectPage({ slug }: { slug: string }) {
           </ul>
         ) : <EmptyState compact art="events" title={T.noDates} />}
         <div className="title-actions project-cta">
-          <a className="btn btn-primary" href={safeHref(links.registration)} target="_blank" rel="noreferrer"><CalendarDays size={17} aria-hidden="true" />{T.register}</a>
+          <a className="btn btn-primary" {...anchorProps(linked[0] ? registerHref(null, linked[0]) : links.registration)}><CalendarDays size={17} aria-hidden="true" />{T.register}</a>
           <a className="btn btn-ghost" {...linkProps('/contacts#request')}>{T.request}</a>
         </div>
       </Panel>

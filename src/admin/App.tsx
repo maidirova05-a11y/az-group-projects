@@ -19,6 +19,7 @@ const PAGES: Record<Exclude<AdminSection, 'not-found'>, ComponentType> = {
   news: lazy(() => import('./pages/News')),
   partners: lazy(() => import('./pages/Partners')),
   faqs: lazy(() => import('./pages/Faqs')),
+  registrations: lazy(() => import('./pages/Registrations')),
   leads: lazy(() => import('./pages/Leads')),
   settings: lazy(() => import('./pages/Settings')),
   admins: lazy(() => import('./pages/Admins')),

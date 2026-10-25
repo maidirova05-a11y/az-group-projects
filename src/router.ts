@@ -14,7 +14,9 @@ export type { Route };
  */
 
 /** Разделы сайта — как вкладки бокового меню egov.kz. Подписи — в словарях src/i18n/ui (nav.*). */
-export type NavKey = 'home' | 'events' | 'projects' | 'about' | 'news' | 'partners' | 'faq' | 'contacts';
+export type NavKey = 'home' | 'events' | 'projects' | 'about' | 'news' | 'partners' | 'faq' | 'contacts' | 'register' | 'offer';
+/** Ключ раздела (словари nav.*, seo.pages.*) по адресу; /register и /offer — страницы вне бокового меню. */
+export const routeKey = (path: Route): NavKey => (path === '/' ? 'home' : (path.slice(1) as NavKey));
 export interface NavItem { path: Route; key: NavKey; Icon: LucideIcon }
 
 export const NAV: NavItem[] = [

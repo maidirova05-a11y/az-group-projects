@@ -9,7 +9,7 @@ import type { ContentTranslationSource, Lang } from '@shared/i18n';
 import type { EventDTO, PublicContent } from '@shared/schemas';
 import { calendarPrograms } from '../data/calendar';
 import { companyPrograms, projects as siteProjects } from '../data/projects';
-import { about, achievements, contacts, faq, keyStats, links, news, newsUrl, partners } from '../data/site';
+import { about, achievements, contacts, faq, keyStats, links, news, partners } from '../data/site';
 import kkContent from '../i18n/content/kk';
 import enContent from '../i18n/content/en';
 
@@ -59,13 +59,13 @@ export function buildStaticContent(lang: Lang = 'ru'): PublicContent {
       .map((e, j) => overlay({
         id: ++eventId, programId: id, label: e.label, place: e.place,
         startDate: e.start ?? null, endDate: e.end ?? null, monthOnly: e.monthOnly ?? false,
-        registrationUrl: null, price: null, sort: j,
+        registrationUrl: null, price: e.price ?? null, sort: j,
       }, tr?.events[`${p.id}#${j}`]))
       // Как в API: по дате начала, события без даты — в конце.
       .sort((a, b) => (a.startDate ?? '9999').localeCompare(b.startDate ?? '9999') || a.sort - b.sort);
     return overlay({
       id, slug: p.id, name: p.name, subtitle: p.subtitle, category: p.category, color: p.color,
-      projectSlug: p.projectSlug ?? null, sort: i, published: true, events,
+      projectSlug: p.projectSlug ?? null, paymentUrl: p.paymentUrl ?? null, sort: i, published: true, events,
     }, tr?.programs[p.id]);
   });
 
@@ -100,7 +100,7 @@ export function buildStaticContent(lang: Lang = 'ru'): PublicContent {
     lang,
     programs,
     projects,
-    news: news.map(n => overlay({ id: n.id, title: n.title, date: n.date, image: n.image, body: n.body, externalUrl: newsUrl(n.id), published: true }, tr?.news[String(n.id)])),
+    news: news.map(n => overlay({ id: n.id, title: n.title, date: n.date, image: n.image, body: n.body, externalUrl: null, published: true }, tr?.news[String(n.id)])),
     partners: partners.map((p, i) => overlay({ id: i + 1, name: p.name, group: p.group, image: p.image ?? null, sort: i, published: true }, tr?.partners[p.name])),
     faqs: faq.map((f, i) => {
       const t = tr?.faqs[i];

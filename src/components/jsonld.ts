@@ -6,7 +6,7 @@
 import type { Lang } from '@shared/i18n';
 import type { FaqDTO, NewsDTO, ProgramDTO, ProjectDTO, PublicContent } from '@shared/schemas';
 import type { Dict } from '../i18n';
-import { localizeHref, type Route } from '../router';
+import { localizeHref, routeKey, type Route } from '../router';
 import { SITE_ORIGIN, absoluteImage, DEFAULT_OG_IMAGE } from './Seo';
 
 const LOCALE: Record<Lang, string> = { ru: 'ru-RU', kk: 'kk-KZ', en: 'en-GB' };
@@ -71,7 +71,7 @@ export function breadcrumbs(path: Route, lang: Lang, t: Dict, extra?: { name: st
     itemListElement: items.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name, item: x.item })),
   };
 }
-const nameKey = (path: Route): keyof Dict['nav'] => (path === '/' ? 'home' : (path.slice(1) as keyof Dict['nav']));
+const nameKey = (path: Route): keyof Dict['nav'] => routeKey(path);
 
 /** Веб-страница раздела: язык, принадлежность сайту, описание. */
 export function webPage(path: Route, lang: Lang, t: Dict, over: { name?: string; description?: string; url?: string } = {}): object {
@@ -114,7 +114,7 @@ export function events(programs: ProgramDTO[], today: string, lang: Lang, projec
         audience: { '@type': 'EducationalAudience', educationalRole: 'student' },
         offers: e.price != null ? {
           '@type': 'Offer', price: e.price, priceCurrency: 'KZT', availability: 'https://schema.org/InStock',
-          url: e.registrationUrl ?? pageUrl('/contacts', lang), validFrom: today,
+          url: e.registrationUrl && /^https?:/i.test(e.registrationUrl) ? e.registrationUrl : `${pageUrl('/register', lang)}?event=${e.id}`, validFrom: today,
         } : undefined,
       });
       if (out.length >= limit) return out;

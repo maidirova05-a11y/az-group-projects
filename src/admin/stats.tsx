@@ -9,7 +9,7 @@ import { api, errorMessage } from './api';
 export interface AdminStats {
   counts: {
     programs: number; events: number; upcomingEvents: number; projects: number; news: number;
-    partners: number; faqs: number; leadsNew: number; leadsTotal: number;
+    partners: number; faqs: number; leadsNew: number; leadsTotal: number; registrationsNew: number; registrationsTotal: number;
   };
   leadsByDay: { date: string; count: number }[];
   /** Источники заявок за 30 дней: utm_source, иначе хост перехода, иначе «direct». */

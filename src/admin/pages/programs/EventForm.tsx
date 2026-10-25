@@ -167,7 +167,7 @@ export function EventForm({ programId, programName, event, copyOf, places, onClo
             }}
           />
         </Field>
-        <Field label="Ссылка на регистрацию" wide error={urlError(form.error('registrationUrl'))} hint="https://… или адрес на сайте, начиная с /">
+        <Field label="Ссылка на регистрацию" wide error={urlError(form.error('registrationUrl'))} hint="Оставьте пустым — участники зарегистрируются на этом сайте (/register). Заполняйте, только если регистрация идёт на сайте партнёра.">
           <Input
             type="url"
             inputMode="url"

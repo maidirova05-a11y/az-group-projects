@@ -83,7 +83,7 @@ export default function Home() {
 
       <Panel title={t.popular}>
         <div className="tile-grid">
-          <Tile href={links.registration} Icon={FileText} label={t.tiles.registration} />
+          <Tile {...(links.registration.startsWith('/') ? { to: links.registration } : { href: links.registration })} Icon={FileText} label={t.tiles.registration} />
           <Tile to="/events" Icon={CalendarDays} label={t.tiles.calendar} />
           <Tile href={links.fibonacciResults} Icon={Award} label={t.tiles.results} />
           <Tile href={links.posterPdf} Icon={Download} label={t.tiles.poster} />

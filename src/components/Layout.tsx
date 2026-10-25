@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { anchorProps } from '../content/links';
 import { Ellipsis, Mail, MessageCircle, Phone, Search as SearchIcon, Send, X } from 'lucide-react';
 import { NAV, linkProps, type Route } from '../router';
 import { useContent } from '../content/useContent';
@@ -53,7 +54,7 @@ function Header({ onSearch }: { onSearch: () => void }) {
         </div>
         <button type="button" className="icon-btn" onClick={onSearch} aria-label={t.search}><SearchIcon size={20} /></button>
         <a className="topbar-phone" href={safeHref(contacts.phoneHref)}><Phone size={16} aria-hidden="true" />{contacts.phone}</a>
-        <a className="btn btn-primary btn-sm" href={safeHref(links.registration)} target="_blank" rel="noreferrer">{t.registration}</a>
+        <a className="btn btn-primary btn-sm" {...anchorProps(links.registration)}>{t.registration}</a>
       </div>
     </header>
   );
@@ -201,7 +202,7 @@ export default function Layout({ path, children }: { path: Route; children: Reac
             <li><a href={safeHref(contacts.mapUrl)} target="_blank" rel="noreferrer">{contacts.address}</a></li>
             <li><a href={safeHref(contacts.phoneHref)}>{contacts.phone}</a></li>
             <li><a href={safeHref(`mailto:${contacts.email}`)}>{contacts.email}</a></li>
-            <li><a href={safeHref(contacts.offer)} target="_blank" rel="noreferrer">{t.offer}</a></li>
+            <li><a {...anchorProps(contacts.offer)}>{t.offer}</a></li>
           </ul>
           <button type="button" className="footer-top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>{t.toTop}</button>
         </footer>
