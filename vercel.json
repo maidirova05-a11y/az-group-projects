@@ -2,13 +2,89 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.)?az-group\\.kz"
+        }
+      ],
+      "destination": "https://www.azgroup.kz/",
+      "permanent": true
+    },
+    {
+      "source": "/events",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.)?az-group\\.kz"
+        }
+      ],
+      "destination": "https://www.azgroup.kz/events",
+      "permanent": true
+    },
+    {
       "source": "/news/:id(\\d+)",
-      "destination": "/news?id=:id",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.)?az-group\\.kz"
+        }
+      ],
+      "destination": "https://www.azgroup.kz/api/legacy/news/:id",
+      "permanent": true
+    },
+    {
+      "source": "/public-offer",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.)?az-group\\.kz"
+        }
+      ],
+      "destination": "https://www.azgroup.kz/offer",
+      "permanent": true
+    },
+    {
+      "source": "/auth",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.)?az-group\\.kz"
+        }
+      ],
+      "destination": "https://www.azgroup.kz/register",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.)?az-group\\.kz"
+        }
+      ],
+      "destination": "https://www.azgroup.kz/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/news/:id(\\d+)",
+      "destination": "/api/legacy/news/:id",
       "permanent": true
     },
     {
       "source": "/:lang(kk|en)/news/:id(\\d+)",
-      "destination": "/:lang/news?id=:id",
+      "destination": "/api/legacy/news/:id?lang=:lang",
+      "permanent": true
+    },
+    {
+      "source": "/public-offer",
+      "destination": "/offer",
+      "permanent": true
+    },
+    {
+      "source": "/auth",
+      "destination": "/register",
       "permanent": true
     }
   ],

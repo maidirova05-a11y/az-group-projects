@@ -32,7 +32,7 @@ export interface ProgramDrawerProps {
 const SWATCHES = [...PROGRAM_COLORS];
 
 const emptyProgram = (category: Category, sort: number, color: string): ProgramInput => ({
-  name: '', slug: '', subtitle: '', category, color, projectSlug: null, sort, published: true,
+  name: '', slug: '', subtitle: '', category, color, projectSlug: null, paymentUrl: null, sort, published: true,
   translations: withAllFields(undefined, PROGRAM_TR),
 });
 
@@ -40,7 +40,7 @@ export function ProgramDrawer({ program, programs, projects, defaultCategory = '
   const toast = useToast();
   const confirm = useConfirm();
   const initial = useMemo<ProgramInput>(() => program
-    ? { name: program.name, slug: program.slug, subtitle: program.subtitle, category: program.category, color: program.color, projectSlug: program.projectSlug ?? null, sort: program.sort, published: program.published, translations: withAllFields(program.translations, PROGRAM_TR) }
+    ? { name: program.name, slug: program.slug, subtitle: program.subtitle, category: program.category, color: program.color, projectSlug: program.projectSlug ?? null, paymentUrl: program.paymentUrl ?? null, sort: program.sort, published: program.published, translations: withAllFields(program.translations, PROGRAM_TR) }
     : emptyProgram(defaultCategory, programs.reduce((m, p) => Math.max(m, p.sort + 1), 0),
       pickProgramColor(programs.map(p => p.color))),
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,6 +163,9 @@ export function ProgramDrawer({ program, programs, projects, defaultCategory = '
           </Field>
           <Field label="Связанный проект" error={form.error('projectSlug')} hint="Кнопка «Подробнее» в календаре ведёт на проект">
             <Select value={v.projectSlug ?? ''} placeholder="— не связана —" options={projectOptions} onChange={e => form.set('projectSlug', e.target.value || null)} />
+          </Field>
+          <Field label="Ссылка на оплату" wide error={form.error('paymentUrl')} hint="Kaspi Pay или другая ссылка: кнопка «Оплатить» появится у участника сразу после регистрации на сайте. Для бесплатных мероприятий оставьте пустым.">
+            <Input value={v.paymentUrl ?? ''} maxLength={2000} inputMode="url" placeholder="https://kaspi.kz/pay/..." onChange={e => form.set('paymentUrl', e.target.value.trim() ? e.target.value.trim() : null)} />
           </Field>
           <Field
             label="Адрес (слаг)"

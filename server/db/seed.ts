@@ -71,7 +71,7 @@ const mergeJson = (column: unknown, tr: Record<string, unknown>) =>
  * Применяет переводы к существующим строкам по естественным ключам (см. ContentTranslationSource):
  * программа — slug; событие — `${slug}#${индекс в src/data/calendar.ts}` (строка этой программы
  * с теми же русскими label+place, при повторах — с sort = индекс); проект — slug; новость — id из
- * src/data/site.ts (строка с тем же externalUrl или заголовком); партнёр — русское название;
+ * src/data/site.ts (строка с тем же legacyId, externalUrl или заголовком); партнёр — русское название;
  * FAQ — индекс в src/data/site.ts (строка с тем же русским вопросом).
  * Строки, которых нет (удалены или русский текст изменён в админке), пропускаются — см. missing.
  */
@@ -132,10 +132,10 @@ export async function applyTranslations(db: SeedDb | Tx, sources: TranslationSou
   }
 
   // Новости
-  const newsRows = await db.select({ id: schema.news.id, title: schema.news.title, externalUrl: schema.news.externalUrl }).from(schema.news);
+  const newsRows = await db.select({ id: schema.news.id, title: schema.news.title, externalUrl: schema.news.externalUrl, legacyId: schema.news.legacyId }).from(schema.news);
   for (const key of allKeys(s => s.news)) {
     const orig = siteNews.find(n => String(n.id) === key);
-    const row = orig && (newsRows.find(n => n.externalUrl === newsUrl(orig.id)) ?? newsRows.find(n => n.title === orig.title));
+    const row = orig && (newsRows.find(n => n.legacyId === orig.id) ?? newsRows.find(n => n.externalUrl === newsUrl(orig.id)) ?? newsRows.find(n => n.title === orig.title));
     if (!row) { result.missing.push(`news:${key}`); continue; }
     await write(schema.news, row.id, collect(s => s.news?.[key]));
   }
@@ -197,12 +197,12 @@ export async function seed(
     for (const [i, p] of calendarPrograms.entries()) {
       const [row] = await tx.insert(schema.programs).values({
         slug: p.id, name: p.name, subtitle: p.subtitle, category: p.category, color: p.color,
-        projectSlug: p.projectSlug ?? null, sort: i,
+        projectSlug: p.projectSlug ?? null, paymentUrl: p.paymentUrl ?? null, sort: i,
       }).returning({ id: schema.programs.id });
       if (p.events.length) {
         await tx.insert(schema.events).values(p.events.map((e, j) => ({
           programId: row.id, label: e.label, place: e.place,
-          startDate: e.start ?? null, endDate: e.end ?? null, monthOnly: e.monthOnly ?? false, sort: j,
+          startDate: e.start ?? null, endDate: e.end ?? null, monthOnly: e.monthOnly ?? false, price: e.price ?? null, sort: j,
         })));
       }
     }
@@ -219,7 +219,7 @@ export async function seed(
     ]);
 
     await tx.insert(schema.news).values(siteNews.map(n => ({
-      title: n.title, date: n.date, image: n.image, body: n.body, externalUrl: newsUrl(n.id),
+      title: n.title, date: n.date, image: n.image, body: n.body, externalUrl: null, legacyId: n.id,
     })));
 
     await tx.insert(schema.partners).values(sitePartners.map((p, i) => ({

@@ -13,6 +13,9 @@ import auth from './routes/auth.js';
 import publicRoutes from './routes/public.js';
 import leads from './routes/leads.js';
 import sitemap from './routes/sitemap.js';
+import registrations from './routes/registrations.js';
+import legacy from './routes/legacy.js';
+import adminRegistrations from './routes/admin/registrations.js';
 import adminContent from './routes/admin/content.js';
 import adminLeads from './routes/admin/leads.js';
 import adminAdmins from './routes/admin/admins.js';
@@ -42,6 +45,8 @@ app.get('/health', c => c.json({ ok: true }));
 // Публичная часть
 app.route('/public', publicRoutes); // GET /api/public/content
 app.route('/leads', leads);         // POST /api/leads
+app.route('/registrations', registrations); // POST /api/registrations
+app.route('/legacy', legacy);       // GET /api/legacy/news/:id — 301 со старых адресов az-group.kz
 app.route('/', sitemap);            // GET /api/sitemap.xml (на Vercel — /sitemap.xml)
 app.route('/auth', auth);           // POST /login, POST /logout, GET /me, POST /password
 
@@ -49,6 +54,7 @@ app.route('/auth', auth);           // POST /login, POST /logout, GET /me, POST 
 app.use('/admin/*', requireAdmin);
 app.route('/admin', adminContent);  // programs, events, projects, news, partners, faqs, settings, reorder
 app.route('/admin/leads', adminLeads);
+app.route('/admin/registrations', adminRegistrations);
 app.route('/admin/admins', adminAdmins);
 app.route('/admin/stats', adminStats);
 

@@ -113,7 +113,7 @@ describe('GET /api/admin/stats', () => {
   it('returns counts, 30 leadsByDay entries ending today (Almaty), recent audit', async () => {
     await db().insert(schema.leads).values({ name: 'Stats lead', phone: '+77010000010', topic: 't' });
     const s = await expectJson(await editor.get('/admin/stats'), 200);
-    expect(Object.keys(s.counts).sort()).toEqual(['events', 'faqs', 'leadsNew', 'leadsTotal', 'news', 'partners', 'programs', 'projects', 'upcomingEvents'].sort());
+    expect(Object.keys(s.counts).sort()).toEqual(['events', 'faqs', 'leadsNew', 'leadsTotal', 'news', 'partners', 'programs', 'projects', 'registrationsNew', 'registrationsTotal', 'upcomingEvents'].sort());
     for (const v of Object.values(s.counts)) expect(typeof v).toBe('number');
     expect(s.counts.programs).toBeGreaterThan(0);
     expect(s.counts.leadsTotal).toBeGreaterThanOrEqual(s.counts.leadsNew);

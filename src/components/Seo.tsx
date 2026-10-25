@@ -9,7 +9,7 @@
 import { useEffect } from 'react';
 import { LANGS } from '@shared/i18n';
 import { useI18n } from '../i18n';
-import { localizeHref, NAV, type Route } from '../router';
+import { localizeHref, routeKey, type Route } from '../router';
 
 export const SITE_ORIGIN = 'https://www.azgroup.kz';
 export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/images/og-cover.jpg`;
@@ -84,8 +84,7 @@ export interface SeoProps {
 export function useSeo({ path, title, description, keywords, search = '', image, article, jsonLd = [], noindex = false }: SeoProps) {
   const { lang, t } = useI18n();
   useEffect(() => {
-    const nav = NAV.find(n => n.path === path)!;
-    const page = t.seo.pages[nav.key];
+    const page = t.seo.pages[routeKey(path)];
     const fullTitle = title ? `${title}${t.seo.titleSuffix}` : page.title;
     const desc = description || page.description;
     const words = keywords || page.keywords;

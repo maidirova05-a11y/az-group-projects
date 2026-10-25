@@ -3,7 +3,7 @@ import { ArrowUpRight, MapPin, Wallet } from 'lucide-react';
 import type { EventDTO, ProgramDTO } from '@shared/schemas';
 import { useContent } from '../../content/useContent';
 import { calendarCategories, eventStatus } from '../../content/calendar';
-import { isExternal } from '../../content/links';
+import { isExternal, registerHref } from '../../content/links';
 import { safeHref } from '../../content/safe-url';
 import { Panel } from '../../components/ui';
 import { linkProps } from '../../router';
@@ -27,7 +27,7 @@ function EventRow({ event, program, today, featured }: { event: EventDTO; progra
   const priceText = usePriceText();
   const status = eventStatus(event, today);
   const badge = featured ? [T.badgeNearest, 'hot'] : status === 'current' ? [T.badgeCurrent, 'hot'] : status === 'past' ? [T.badgePast, 'muted'] : event.monthOnly ? [T.badgeMonthOnly, ''] : !event.startDate ? [T.badgeFlexible, ''] : null;
-  const showReg = !!event.registrationUrl && status !== 'past';
+  const showReg = status !== 'past';
   return (
     <li className={`event-row ${status === 'past' ? 'past' : ''}`}>
       <DateBox event={event} />
@@ -37,7 +37,7 @@ function EventRow({ event, program, today, featured }: { event: EventDTO; progra
         {(event.price != null || showReg) && (
           <span className="event-extra">
             {event.price != null && <span className="event-price"><Wallet size={12} aria-hidden="true" />{priceText(event.price)}</span>}
-            {showReg && <RegLink url={event.registrationUrl!} programName={program.name} />}
+            {showReg && <RegLink url={registerHref(event, program)} programName={program.name} />}
           </span>
         )}
       </div>

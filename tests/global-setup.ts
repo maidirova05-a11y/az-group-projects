@@ -15,7 +15,7 @@ export default async function setup() {
   try {
     const db = drizzle(client, { schema });
     await seed(db, { reset: true });
-    await client`TRUNCATE audit_log, leads, admins RESTART IDENTITY CASCADE`;
+    await client`TRUNCATE audit_log, leads, registrations, admins RESTART IDENTITY CASCADE`;
     for (const a of [OWNER, EDITOR]) {
       await db.insert(schema.admins).values({ email: a.email, name: a.name, role: a.role, passwordHash: await bcrypt.hash(a.password, 4) });
     }

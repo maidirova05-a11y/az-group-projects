@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { isExternal, registerHref } from '../../content/links';
 import { ArrowUpRight, CalendarDays, Filter, MapPin, Wallet, X } from 'lucide-react';
 import { useContent } from '../../content/useContent';
 import { safeHref } from '../../content/safe-url';
@@ -84,8 +85,10 @@ export function EventDialog({ occ, nearestId, returnTo, onClose, onOnly }: {
             {e.price != null && <div><dt><Wallet size={16} aria-hidden="true" /><span className="sr-only">{T.price}</span></dt><dd>{priceText(e.price)}</dd></div>}
           </dl>
           <div className="ev-dialog-actions">
-            {e.registrationUrl && occ.status !== 'past' && (
-              <RegLink url={e.registrationUrl} programName={p.name} className="btn btn-primary">{T.registration}<ArrowUpRight size={17} aria-hidden="true" /></RegLink>
+            {occ.status !== 'past' && (
+              <span onClickCapture={() => { if (!isExternal(registerHref(e, p))) close(); }}>
+                <RegLink url={registerHref(e, p)} programName={p.name} className="btn btn-primary">{T.registration}<ArrowUpRight size={17} aria-hidden="true" /></RegLink>
+              </span>
             )}
             {project?.url
               ? <a className="btn btn-ghost" href={safeHref(project.url)} target="_blank" rel="noreferrer">{T.projectSite}<ArrowUpRight size={17} aria-hidden="true" /></a>

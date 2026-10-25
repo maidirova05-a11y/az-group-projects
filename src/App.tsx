@@ -18,6 +18,8 @@ import Contacts from './pages/Contacts';
 const Events = lazy(() => import('./pages/Events'));
 const Projects = lazy(() => import('./pages/Projects'));
 const ProjectPage = lazy(() => import('./pages/ProjectPage'));
+const Register = lazy(() => import('./pages/Register'));
+const Offer = lazy(() => import('./pages/Offer'));
 
 /** Заглушка на время загрузки раздела: заголовок и пара карточек-скелетонов. */
 function PageSkeleton() {
@@ -105,6 +107,8 @@ export default function App() {
       <Suspense fallback={<PageSkeleton />}>
       {path === '/events' && <Events key={`${query.get('q') ?? ''}|${query.get('programs') ?? ''}`} query={query} />}
       {path === '/projects' && (slug ? <ProjectPage key={slug} slug={slug} /> : <Projects />)}
+      {path === '/register' && <Register query={query} />}
+      {path === '/offer' && <Offer />}
       </Suspense>
       {path === '/about' && <About />}
       {path === '/news' && <News key={articleId ?? ''} query={query} />}

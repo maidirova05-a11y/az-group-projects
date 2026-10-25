@@ -216,7 +216,7 @@ const t: ContentTranslationSource = {
   faqs: [
     {
       question: 'How do I register for an olympiad?',
-      answer: 'Open the “Events” section and click “Register” — you will be taken to your personal account on az-group.kz. Choose the olympiad, fill in the participant form and pay the entry fee there.',
+      answer: 'Click “Register” at the top of the site or “Take part” next to a date in the “Events” section. Choose the programme, city and date, fill in the participant form and accept the public offer. For paid olympiads a Kaspi payment button appears right after registration, and a manager will confirm your participation by phone.',
     },
     {
       question: 'Who can take part and how much does it cost?',

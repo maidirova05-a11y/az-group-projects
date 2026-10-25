@@ -10,7 +10,7 @@ import { THEME_TEXT } from '../content/theme';
 
 function NavBadge({ item }: { item: AdminNavItem }) {
   const { stats } = useAdminStats();
-  const n = item.section === 'leads' ? stats?.counts.leadsNew ?? 0 : 0;
+  const n = item.section === 'leads' ? stats?.counts.leadsNew ?? 0 : item.section === 'registrations' ? stats?.counts.registrationsNew ?? 0 : 0;
   if (!n) return null;
   return <span className="nav-badge"><span aria-hidden="true">{n > 99 ? '99+' : n}</span><span className="sr-only">, новых: {n}</span></span>;
 }
@@ -87,7 +87,7 @@ function Sidebar({ section }: { section: AdminSection }) {
   );
 }
 
-const TABS: AdminSection[] = ['dashboard', 'programs', 'news', 'leads'];
+const TABS: AdminSection[] = ['dashboard', 'programs', 'registrations', 'leads'];
 
 function MobileTabs({ section }: { section: AdminSection }) {
   const [more, setMore] = useState(false);

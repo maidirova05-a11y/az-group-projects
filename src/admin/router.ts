@@ -9,11 +9,11 @@
  */
 import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import {
-  CalendarDays, CircleHelp, Handshake, Inbox, LayoutDashboard, LayoutGrid, Newspaper, Settings, UserRound, Users, type LucideIcon,
+  CalendarDays, CircleHelp, ClipboardList, Handshake, Inbox, LayoutDashboard, LayoutGrid, Newspaper, Settings, UserRound, Users, type LucideIcon,
 } from 'lucide-react';
 
 export type AdminSection =
-  | 'dashboard' | 'programs' | 'projects' | 'news' | 'partners' | 'faqs' | 'leads' | 'settings' | 'admins' | 'account' | 'not-found';
+  | 'dashboard' | 'programs' | 'projects' | 'news' | 'partners' | 'faqs' | 'registrations' | 'leads' | 'settings' | 'admins' | 'account' | 'not-found';
 
 export interface AdminNavItem {
   section: Exclude<AdminSection, 'not-found'>;
@@ -39,6 +39,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { section: 'news', path: '/admin/news', label: 'Новости', short: 'Новости', title: 'Новости', Icon: Newspaper },
   { section: 'partners', path: '/admin/partners', label: 'Партнёры', short: 'Партнёры', title: 'Партнёры', Icon: Handshake },
   { section: 'faqs', path: '/admin/faqs', label: 'Вопросы', short: 'Вопросы', title: 'Частые вопросы', Icon: CircleHelp },
+  { section: 'registrations', path: '/admin/registrations', label: 'Регистрации', short: 'Регистрации', title: 'Регистрации на мероприятия', Icon: ClipboardList },
   { section: 'leads', path: '/admin/leads', label: 'Заявки', short: 'Заявки', title: 'Заявки', Icon: Inbox },
   { section: 'settings', path: '/admin/settings', label: 'Настройки сайта', short: 'Настройки', title: 'Настройки сайта', Icon: Settings },
   { section: 'admins', path: '/admin/admins', label: 'Администраторы', short: 'Админы', title: 'Администраторы', Icon: Users, ownerOnly: true },

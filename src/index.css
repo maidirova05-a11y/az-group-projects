@@ -847,3 +847,27 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
   .project-about-body { grid-template-columns: 1fr; }
   .project-about-body .project-logo { width: 100%; }
 }
+
+/* Регистрация (/register) */
+.reg-form { max-width: 720px; }
+.reg-group { border: 0; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.reg-group + .reg-group { padding-top: var(--space-3); border-top: 1px solid var(--line); }
+.reg-group legend { padding: 0; margin-bottom: var(--space-2); font-size: var(--fs-md); font-weight: 700; color: var(--ink); }
+.reg-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.reg-price { margin: 0; font-size: var(--fs-sm); color: var(--ink-2); }
+.reg-consent { display: grid !important; grid-template-columns: auto 1fr; align-items: start; gap: 10px; font-size: var(--fs-sm); color: var(--ink-2); cursor: pointer; }
+.reg-consent input { width: 18px; height: 18px !important; margin: 2px 0 0; padding: 0 !important; accent-color: var(--brand); }
+.reg-consent a { color: var(--brand-ink); font-weight: 600; }
+.form-success.reg-success { text-align: center; justify-items: center; }
+.reg-success h2 { font-size: var(--fs-xl, 24px); }
+.reg-number { font-weight: 700; color: var(--brand-ink); }
+.reg-actions { justify-content: center; margin-top: var(--space-2); }
+@media (max-width: 640px) { .reg-row { grid-template-columns: 1fr; } }
+
+/* Публичная оферта (/offer) */
+.offer-body { max-width: 820px; display: grid; gap: var(--space-2); line-height: var(--lh-body); color: var(--ink-2); }
+.offer-body h2 { margin-top: var(--space-3); font-size: var(--fs-md); font-weight: 700; color: var(--ink); }
+.offer-body p { margin: 0; }
+.offer-li { padding-left: 1.2em; position: relative; }
+.offer-li::before { content: '•'; position: absolute; left: 0.2em; color: var(--brand-ink); }
+.offer-back { margin-top: var(--space-4); display: inline-flex; align-items: center; gap: 6px; }
