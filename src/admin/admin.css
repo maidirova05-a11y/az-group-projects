@@ -30,7 +30,7 @@
   --side: 252px;
   --shadow: 0 1px 2px rgba(16, 24, 40, .05);
   --shadow-lg: 0 24px 60px rgba(16, 24, 40, .18);
-  --font: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font: 'Montserrat Variable', 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Роли цветов, которые различаются в светлой и тёмной теме */
   --brand-ink: #cd0929;          /* красный ТЕКСТ (в тёмной теме светлее, чем заливка --brand) */

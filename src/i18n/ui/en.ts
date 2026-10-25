@@ -234,6 +234,23 @@ export const en: Dict = {
     goToSite: 'Visit website',
     certificate: 'Partnership certificate',
     ecosystem: 'The AZ Group ecosystem',
+    page: {
+      about: 'About the project',
+      dates: 'Upcoming dates',
+      allDates: 'All dates in the calendar',
+      noDates: 'Dates for the new season will appear in the calendar. Call or message us on WhatsApp for the schedule.',
+      site: 'Project website',
+      request: 'Request participation',
+      register: 'Register',
+      details: 'More about the project',
+      others: 'Other AZ Group projects',
+      notFound: 'Project not found',
+      notFoundText: 'It may have been renamed or unpublished. See all AZ Group projects.',
+      allProjects: 'All projects',
+      seoTitle: (name: string, _tagline: string) => `${name}: registration and 2026–2027 dates`,
+      seoKeywords: (name: string, category: string, tagline: string) =>
+        `${name}, ${name} registration, ${name} 2026, ${name} Kazakhstan, ${tagline}, ${category.toLowerCase()} for students, participation fee, deadlines, certificate, AZ Group`,
+    },
     categories: {
       'Олимпиады': 'Olympiads',
       'Наука': 'Science',

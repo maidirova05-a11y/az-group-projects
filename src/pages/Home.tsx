@@ -76,7 +76,7 @@ export default function Home() {
           </div>
           {/* Талисман AZ Group — декоративный, в своей колонке: никогда не перекрывает заголовок и поиск. */}
           <div className="hero-mascot" aria-hidden="true">
-            <img src="/images/az-explorer.webp" alt="" width="1254" height="1254" loading="eager" decoding="async" />
+            <img src="/images/az-explorer.webp" alt="" width="720" height="720" loading="eager" decoding="async" />
           </div>
         </div>
       </Panel>

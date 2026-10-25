@@ -9,7 +9,8 @@ import { safeHref, safeHrefOrNull, safeImgSrc } from '../content/safe-url';
 import { categories } from '../data/projects';
 import { partnership } from '../data/site';
 import { useT, type Dict } from '../i18n';
-import { useHash, useScrollToHash } from '../router';
+import { linkProps, useHash, useScrollToHash } from '../router';
+import { projectPath } from '@shared/routes';
 import { programVars } from './events/color';
 
 /** Служебный id фильтра «Все» (не совпадает ни с одной категорией). */
@@ -74,10 +75,8 @@ function ProjectCard({ p, color }: { p: ProjectDTO; color: string }) {
       {url && <span className="project-foot">{p.domain || url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}<ArrowUpRight size={16} aria-hidden="true" /></span>}
     </>
   );
-  const style = programVars(color);
-  return url
-    ? <a className="project acc" style={style} id={p.slug} href={url} target="_blank" rel="noreferrer">{body}</a>
-    : <article className="project acc" style={style} id={p.slug}>{body}</article>;
+  // Карточка ведёт на страницу проекта (/projects/<slug>) — там описание, даты и ссылка на сайт проекта.
+  return <a className="project acc" style={programVars(color)} id={p.slug} {...linkProps(projectPath(p.slug))}>{body}</a>;
 }
 
 export default function Projects() {
@@ -122,7 +121,7 @@ export default function Projects() {
               <article key={p.id} className="program-item acc" style={programVars(projectColor(p, calendar))} id={p.slug}>
                 <img className="program-art illus" src={categoryArt(p.category, t.categories) ?? '/illustrations/empty-generic.svg'} alt="" width="64" height="64" loading="lazy" />
                 <div>
-                  <h3>{safeHrefOrNull(p.url) ? <a href={safeHref(p.url)} target="_blank" rel="noreferrer">{p.name}</a> : p.name}</h3>
+                  <h3><a {...linkProps(projectPath(p.slug))}>{p.name}</a></h3>
                   {p.tagline && <p className="project-tag">{p.tagline}</p>}
                   {p.description && <p>{p.description}</p>}
                 </div>

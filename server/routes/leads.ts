@@ -47,6 +47,14 @@ function cleanUtm(utm: LeadUtm | undefined): LeadUtm | null {
   return Object.keys(out).length ? out : null;
 }
 
+/** Ошибка PostgreSQL «колонка не существует» (42703) — в том числе обёрнутая Drizzle (cause). */
+export function isUndefinedColumn(e: unknown): boolean {
+  for (let x: unknown = e, i = 0; x && i < 4; x = (x as { cause?: unknown }).cause, i++) {
+    if ((x as { code?: unknown }).code === '42703') return true;
+  }
+  return false;
+}
+
 const r = new Hono<AppEnv>();
 
 r.post('/', async c => {
@@ -84,6 +92,9 @@ r.post('/', async c => {
       gt(schema.leads.createdAt, sql`now() - make_interval(mins => ${WINDOW_MINUTES})`),
     ));
     if (n >= LIMIT) return true;
+    // Второй замок — по телефону (отдельное пространство ключей: два int): параллельные отправки той же заявки
+    // с разных адресов (IPv4/IPv6, мобильная сеть) не проскочат мимо проверки дублей. Порядок замков всегда IP → телефон.
+    await tx.execute(sql`select pg_advisory_xact_lock(1, hashtext(${lead.phone}))`);
     // Та же заявка уже есть (повторная отправка формы) — отвечаем «принято», дубль не создаём.
     const [dup] = await tx.select({ id: schema.leads.id }).from(schema.leads).where(and(
       eq(schema.leads.phone, lead.phone),
@@ -93,7 +104,17 @@ r.post('/', async c => {
       gt(schema.leads.createdAt, sql`now() - make_interval(mins => ${DEDUPE_MINUTES})`),
     )).limit(1);
     if (dup) return false;
-    await tx.insert(schema.leads).values({ ...lead, ipHash });
+    try {
+      // Вложенная транзакция (savepoint): ошибка вставки не обрывает внешнюю транзакцию.
+      await tx.transaction(async sp => { await sp.insert(schema.leads).values({ ...lead, ipHash }); });
+    } catch (e) {
+      // База ещё без колонок lang/referrer/utm (миграция 0004 не применена) — заявку всё равно сохраняем.
+      if (!isUndefinedColumn(e)) throw e;
+      console.warn('[leads] миграция 0004 не применена — заявка сохранена без источника (npm run db:migrate)');
+      // Явный список колонок: Drizzle перечисляет все колонки схемы (в т.ч. отсутствующие в базе).
+      await tx.execute(sql`insert into leads (name, phone, topic, message, page, ip_hash)
+        values (${lead.name}, ${lead.phone}, ${lead.topic}, ${lead.message}, ${lead.page}, ${ipHash})`);
+    }
     return false;
   });
   if (limited) throw new ApiFail(429, 'rate_limited', 'Слишком много заявок, попробуйте позже');

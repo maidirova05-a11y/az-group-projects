@@ -4,12 +4,14 @@ import { eq } from 'drizzle-orm';
 import type { PublicContent } from '../shared/schemas';
 import { applyTranslations } from '../server/db/seed';
 import { Client, asEditor, asOwner, db, expectJson, schema, uniq } from './helpers';
+import { invalidatePublicCache } from '../server/lib/cache';
 
 let owner: Client;
 let editor: Client;
 beforeAll(async () => { owner = await asOwner(); editor = await asEditor(); });
 
 const content = async (lang?: string) => {
+  invalidatePublicCache(); // прямые записи в БД в тестах минуют audit()
   const res = await new Client().get(`/public/content${lang === undefined ? '' : `?lang=${lang}`}`);
   return { res, data: await expectJson<PublicContent & { lang: string }>(res, 200) };
 };

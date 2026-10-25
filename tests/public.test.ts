@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { eq, sql } from 'drizzle-orm';
 import { SETTINGS, type PublicContent } from '../shared/schemas';
-import { Client, db, expectJson, schema } from './helpers';
+import { asOwner, Client, db, expectJson, schema } from './helpers';
+import { invalidatePublicCache } from '../server/lib/cache';
 
 const getContent = async () => {
+  invalidatePublicCache(); // прямые записи в БД в тестах минуют audit()
   const res = await new Client().get('/public/content');
   return { res, data: await expectJson<PublicContent>(res, 200) };
 };
@@ -90,6 +92,31 @@ describe('GET /api/public/content', () => {
     }
     const restored = (await getContent()).data;
     expect(restored.faqs.find(f => f.id === faq.id)).toBeDefined();
+  });
+
+  it('caches the response in memory with ETag (304 on If-None-Match) and refreshes after an admin change', async () => {
+    const c = new Client();
+    const first = await c.get('/public/content');
+    const etag = first.headers.get('etag');
+    expect(etag).toMatch(/^"[A-Za-z0-9_-]+"$/);
+    const again = await c.get('/public/content', { headers: { 'If-None-Match': etag! } });
+    expect(again.status).toBe(304);
+    expect(await again.text()).toBe('');
+    expect(again.headers.get('etag')).toBe(etag);
+    // Изменение в админке сбрасывает кэш: новый вопрос виден сразу, ETag другой.
+    const owner = await asOwner();
+    const faq = await expectJson(await owner.post('/admin/faqs', { question: 'Cache test question?', answer: 'Yes', sort: 999, published: true }), 201);
+    try {
+      const after = await c.get('/public/content');
+      expect(after.status).toBe(200);
+      expect(after.headers.get('etag')).not.toBe(etag);
+      expect((await after.json()).faqs.some((f: { id: number }) => f.id === faq.id)).toBe(true);
+    } finally {
+      await owner.del(`/admin/faqs/${faq.id}`);
+    }
+    // Разные языки — разные записи кэша.
+    const kk = await c.get('/public/content?lang=kk');
+    expect(kk.headers.get('etag')).not.toBe(etag);
   });
 
   it('health and unknown routes', async () => {

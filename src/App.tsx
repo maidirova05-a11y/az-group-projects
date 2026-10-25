@@ -3,7 +3,8 @@ import Layout from './components/Layout';
 import { SITE_ORIGIN, useSeo } from './components/Seo';
 import * as ld from './components/jsonld';
 import { toISODate } from './content/calendar';
-import { useContent } from './content/useContent';
+import { useContent, useContentStatus } from './content/useContent';
+import { projectPath } from '@shared/routes';
 import { useI18n } from './i18n';
 import { localizeHref, useRoute } from './router';
 import Home from './pages/Home';
@@ -16,6 +17,7 @@ import Contacts from './pages/Contacts';
 // Тяжёлые разделы (календарь, экосистема проектов) — отдельными чанками, грузятся при первом заходе.
 const Events = lazy(() => import('./pages/Events'));
 const Projects = lazy(() => import('./pages/Projects'));
+const ProjectPage = lazy(() => import('./pages/ProjectPage'));
 
 /** Заглушка на время загрузки раздела: заголовок и пара карточек-скелетонов. */
 function PageSkeleton() {
@@ -31,18 +33,31 @@ function PageSkeleton() {
 const clip = (s: string, n = 160) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
 
 export default function App() {
-  const { path, query } = useRoute();
+  const { path, query, slug } = useRoute();
+  const { settled } = useContentStatus();
   const { lang, t } = useI18n();
   const content = useContent();
   const { news, faqs, programs, projects, settings } = content;
   const [today] = useState(() => toISODate(new Date()));
   const articleId = path === '/news' ? query.get('id') : null;
   const article = articleId ? news.find(n => String(n.id) === articleId && n.body.trim()) : undefined;
+  const project = path === '/projects' && slug ? projects.find(p => p.slug === slug) : undefined;
+  // Несуществующий проект (после загрузки живых данных) — страница «не найдено», не индексируем.
+  const missingProject = !!slug && !project && settled;
 
   // Структурированные данные раздела (schema.org). Организация и сайт — на каждой странице.
   const jsonLd = useMemo(() => {
     const url = (p: string) => `${SITE_ORIGIN}${localizeHref(p, lang)}`;
     const graph: (object | null)[] = [ld.organization(settings, t, lang), ld.website(lang, t)];
+    if (project) {
+      const projectUrl = url(projectPath(project.slug));
+      const linked = programs.filter(p => p.projectSlug === project.slug);
+      graph.push(ld.breadcrumbs('/projects', lang, t, { name: project.name, url: projectUrl }));
+      graph.push(ld.webPage('/projects', lang, t, { name: project.name, url: projectUrl, description: clip(project.description || project.tagline) }));
+      graph.push(...ld.projectBrands([project], lang));
+      graph.push(...ld.events(linked, today, lang, projects));
+      return graph.filter((x): x is object => !!x);
+    }
     if (article) {
       const articleUrl = `${url('/news')}?id=${article.id}`;
       graph.push(ld.breadcrumbs('/news', lang, t, { name: article.title, url: articleUrl }));
@@ -69,15 +84,18 @@ export default function App() {
         break;
     }
     return graph.filter((x): x is object => !!x);
-  }, [article, path, lang, t, settings, programs, projects, faqs, news, today]);
+  }, [article, project, path, lang, t, settings, programs, projects, faqs, news, today]);
 
+  const P = t.projects.page;
   useSeo({
     path,
-    title: article?.title,
-    description: article ? clip(article.body.replace(/\s+/g, ' ').trim()) : undefined,
-    search: article ? `?id=${article.id}` : '',
-    image: article?.image,
+    title: project ? P.seoTitle(project.name, project.tagline) : missingProject ? P.notFound : article?.title,
+    description: project ? clip(project.description || project.tagline) : article ? clip(article.body.replace(/\s+/g, ' ').trim()) : undefined,
+    keywords: project ? P.seoKeywords(project.name, project.category, project.tagline) : undefined,
+    search: slug ? `/${slug}` : article ? `?id=${article.id}` : '',
+    image: project?.logo ?? article?.image,
     article: article ? { published: article.date } : null,
+    noindex: missingProject,
     jsonLd,
   });
 
@@ -86,7 +104,7 @@ export default function App() {
       {path === '/' && <Home />}
       <Suspense fallback={<PageSkeleton />}>
       {path === '/events' && <Events key={`${query.get('q') ?? ''}|${query.get('programs') ?? ''}`} query={query} />}
-      {path === '/projects' && <Projects />}
+      {path === '/projects' && (slug ? <ProjectPage key={slug} slug={slug} /> : <Projects />)}
       </Suspense>
       {path === '/about' && <About />}
       {path === '/news' && <News key={articleId ?? ''} query={query} />}
