@@ -219,7 +219,7 @@ export async function seed(
     ]);
 
     await tx.insert(schema.news).values(siteNews.map(n => ({
-      title: n.title, date: n.date, image: n.image, body: '', externalUrl: newsUrl(n.id),
+      title: n.title, date: n.date, image: n.image, body: n.body, externalUrl: newsUrl(n.id),
     })));
 
     await tx.insert(schema.partners).values(sitePartners.map((p, i) => ({
