@@ -100,7 +100,7 @@ export function buildStaticContent(lang: Lang = 'ru'): PublicContent {
     lang,
     programs,
     projects,
-    news: news.map(n => overlay({ id: n.id, title: n.title, date: n.date, image: n.image, body: '', externalUrl: newsUrl(n.id), published: true }, tr?.news[String(n.id)])),
+    news: news.map(n => overlay({ id: n.id, title: n.title, date: n.date, image: n.image, body: n.body, externalUrl: newsUrl(n.id), published: true }, tr?.news[String(n.id)])),
     partners: partners.map((p, i) => overlay({ id: i + 1, name: p.name, group: p.group, image: p.image ?? null, sort: i, published: true }, tr?.partners[p.name])),
     faqs: faq.map((f, i) => {
       const t = tr?.faqs[i];

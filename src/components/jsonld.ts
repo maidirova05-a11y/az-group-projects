@@ -26,7 +26,8 @@ export function organization(settings: PublicContent['settings'], t: Dict, lang:
     name: 'AZ Group',
     alternateName: ['AZ Group Kazakhstan', 'АЗ Групп'],
     url: pageUrl('/', lang),
-    logo: `${SITE_ORIGIN}/favicon.svg`,
+    // Google принимает логотип только растровым (не SVG), не меньше 112×112.
+    logo: `${SITE_ORIGIN}/icon-512.png`,
     image: DEFAULT_OG_IMAGE,
     description: t.seo.pages.about.description,
     email: contacts.email || undefined,
