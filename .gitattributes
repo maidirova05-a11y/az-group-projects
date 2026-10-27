@@ -1,2 +1,4 @@
 # HTML с inline-скриптами: всегда LF, иначе на Windows (CRLF) меняется sha256 скрипта и CSP в vercel.json его блокирует.
 *.html text eol=lf
+# Скрипты запускаются в Linux (Docker, CI, сервер) — только LF.
+*.sh text eol=lf
