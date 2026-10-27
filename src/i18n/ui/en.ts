@@ -50,7 +50,7 @@ export const en: Dict = {
       contacts: {
         title: 'Contact AZ Group — Astana, Phone, WhatsApp, Participation Request',
         description: 'Get in touch with AZ Group: phone, WhatsApp, email and office address in Astana (8 Tokpanov St.). Leave a request and we will advise on olympiads, ITECX, camps abroad and school partnerships.',
-        keywords: 'AZ Group contacts Astana, AZ Group phone WhatsApp, olympiad participation request, sign up for an olympiad, advice on olympiads and camps, az-group.kz, leave a request, AZ Group Astana 8 Tokpanov St',
+        keywords: 'AZ Group contacts Astana, AZ Group phone WhatsApp, olympiad participation request, sign up for an olympiad, advice on olympiads and camps, azgroup.kz, leave a request, AZ Group Astana 8 Tokpanov St',
       },
       register: {
         title: 'Register for Fibonacci, ITECX, Astana Tech Cup 2026–2027 — AZ Group',

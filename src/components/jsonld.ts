@@ -19,7 +19,7 @@ const plain = (s: string) => s.replace(/\s+/g, ' ').trim();
 /** Организация: контакты, адрес, соцсети — для карточки бренда в поиске. */
 export function organization(settings: PublicContent['settings'], t: Dict, lang: Lang): object {
   const { contacts } = settings;
-  const sameAs = [contacts.instagram, contacts.taplink, 'https://az-group.kz'].filter(Boolean);
+  const sameAs = [contacts.instagram, contacts.taplink].filter(Boolean);
   return {
     '@type': ['Organization', 'EducationalOrganization'],
     '@id': ORG_ID,

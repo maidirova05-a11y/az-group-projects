@@ -44,7 +44,7 @@ export const offer: Record<Lang, OfferText> = {
       },
       {
         "t": "p",
-        "x": "2.2. Перечень, содержание, сроки, формат, продолжительность и стоимость услуг указываются на официальном сайте Исполнителя https://az-group.kz , в информационных письмах и официальных материалах компании."
+        "x": "2.2. Перечень, содержание, сроки, формат, продолжительность и стоимость услуг указываются на официальном сайте Исполнителя https://www.azgroup.kz, в информационных письмах и официальных материалах компании."
       },
       {
         "t": "p",
@@ -254,7 +254,7 @@ export const offer: Record<Lang, OfferText> = {
       },
       {
         "t": "p",
-        "x": "2.2. Қызметтердің тізбесі, мазмұны, мерзімі, форматы, ұзақтығы және құны Орындаушының https://az-group.kz ресми сайтында, ақпараттық хаттарында және ресми материалдарында көрсетіледі."
+        "x": "2.2. Қызметтердің тізбесі, мазмұны, мерзімі, форматы, ұзақтығы және құны Орындаушының https://www.azgroup.kz ресми сайтында, ақпараттық хаттарында және ресми материалдарында көрсетіледі."
       },
       {
         "t": "p",
@@ -456,7 +456,7 @@ export const offer: Record<Lang, OfferText> = {
       },
       {
         "t": "p",
-        "x": "2.2. The list, content, duration, format, schedule, and cost of services are specified on the official website of the Service Provider at https://az-group.kz , in informational letters, and in the official materials of the company."
+        "x": "2.2. The list, content, duration, format, schedule, and cost of services are specified on the official website of the Service Provider at https://www.azgroup.kz, in informational letters, and in the official materials of the company."
       },
       {
         "t": "p",
