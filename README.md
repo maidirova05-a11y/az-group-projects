@@ -89,4 +89,6 @@ npm run dev                      # сайт + API одной командой
 5. **CSP:** если меняли inline-`<script>` в `index.html` или `admin.html` (даже отступ), выполните `node scripts/csp-hashes.mjs` и обновите хэши в `script-src` в `vercel.json`; перед деплоем — `node scripts/csp-hashes.mjs --check`.
 6. **Sitemap:** `GET /api/sitemap.xml` (`server/routes/sitemap.ts`) строится из базы: разделы (`shared/routes.ts`) × языки с hreflang и опубликованные новости с текстом, `lastmod` по дате изменения. Новый раздел добавляйте в `SITE_ROUTES` в `shared/routes.ts`; страницы проектов `/projects/<slug>` попадают в sitemap автоматически. `public/robots.txt` закрывает `/admin` и `/api`, склеивает параметры фильтров календаря (`Clean-param`) и указывает на sitemap.
 
+**Свой сервер вместо Vercel:** `compose.yaml` поднимает сайт, API и базу в Docker (`server/node.ts` повторяет правила `vercel.json`, миграции применяются при старте). Переезд всех проектов компании на сервер api.azgroup.kz — `docs/SERVER.md`.
+
 Канонический домен — `https://www.azgroup.kz`. Регистрация (`/register`), оферта (`/offer`) и новости — на этом сайте; как связать старый домен az-group.kz (301 постранично, переезд в Google/Яндекс) — `docs/OLD-SITE.md`.

@@ -1,0 +1,76 @@
+# Caddy на сервере api.azgroup.kz: HTTPS для всех сайтов (сертификаты Let's Encrypt
+# выпускаются и продлеваются сами, как только A-запись домена указывает на сервер).
+#   sudo cp deploy/server/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
+# Порты — deploy/server/projects.txt.
+
+{
+	email admin@azgroup.kz
+}
+
+(site) {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:{args[0]} {
+		# Настоящий адрес посетителя — для лимитов и защиты входа в админки.
+		header_up X-Real-IP {remote_host}
+		header_up -Cf-Connecting-Ip
+		header_up -X-Vercel-Forwarded-For
+	}
+}
+
+onerlab.kz {
+	import site 3101
+}
+www.onerlab.kz {
+	redir https://onerlab.kz{uri} 308
+}
+
+astanatechcup.kz {
+	import site 3102
+}
+www.astanatechcup.kz {
+	redir https://astanatechcup.kz{uri} 308
+}
+
+itecx.kz {
+	import site 3103
+}
+www.itecx.kz {
+	redir https://itecx.kz{uri} 308
+}
+
+www.ascora.education {
+	import site 3104
+}
+ascora.education {
+	redir https://www.ascora.education{uri} 308
+}
+
+smarthub-kz.com {
+	import site 3105
+}
+www.smarthub-kz.com {
+	redir https://smarthub-kz.com{uri} 308
+}
+
+# Старый домен az-group.kz тоже идёт в приложение: постраничные 301 на новые адреса
+# делает оно само (правила — redirects в vercel.json).
+www.azgroup.kz, az-group.kz, www.az-group.kz {
+	import site 3106
+}
+azgroup.kz {
+	redir https://www.azgroup.kz{uri} 308
+}
+
+atlantia-olympiads.kz {
+	import site 3107
+}
+www.atlantia-olympiads.kz {
+	redir https://atlantia-olympiads.kz{uri} 308
+}
+
+fibonacci-olympiads.kz {
+	import site 3108
+}
+www.fibonacci-olympiads.kz {
+	redir https://fibonacci-olympiads.kz{uri} 308
+}

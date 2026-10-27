@@ -1,0 +1,46 @@
+# AZ Group на своём сервере: сайт + API + собственная база Postgres.
+#
+#   cp docker.env.example docker.env   # и заполнить
+#   docker compose up -d --build
+#
+# Сайт слушает только 127.0.0.1:3106 — наружу его отдаёт Caddy с HTTPS
+# (docs/SERVER.md). Миграции сервер применяет сам при старте.
+# DATABASE_URL здесь намеренно не берётся из окружения: контейнер всегда
+# работает со своей базой.
+
+name: azgroup
+
+services:
+  db:
+    image: postgres:${POSTGRES_MAJOR:-17}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  app:
+    build: .
+    image: azgroup-app
+    restart: unless-stopped
+    env_file: docker.env
+    environment:
+      DATABASE_URL: postgresql://app:app@db:5432/app
+      # Перед сайтом один прокси — Caddy, он перезаписывает X-Forwarded-For.
+      TRUST_PROXY: "1"
+    ports:
+      - "127.0.0.1:${APP_PORT:-3106}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data:

@@ -1,0 +1,16 @@
+.git
+.github
+.claude
+.21st
+.vercel
+node_modules
+dist
+dist-server
+coverage
+tmp
+output
+.env
+.env.*
+docker.env
+*.log
+vercel-domain-*.jpg
