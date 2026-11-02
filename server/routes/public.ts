@@ -9,6 +9,7 @@ import type { AppEnv } from '../types.js';
 import { db, schema } from '../db/client.js';
 import { SETTINGS, type EventDTO, type ProgramDTO, type PublicContent, type SettingKey } from '../../shared/schemas.js';
 import { localize, localizeSetting, parseLang } from '../lib/i18n.js';
+import { log } from '../lib/logger.js';
 import { cached, respondCached } from '../lib/cache.js';
 import { about, achievements, contacts, keyStats, links } from '../../src/data/site.js';
 
@@ -66,7 +67,7 @@ export async function buildPublicContent(lang: ReturnType<typeof parseLang>): Pr
   const resolved = {} as Record<SettingKey, unknown>;
   for (const key of SETTING_KEYS) {
     const parsed = stored.has(key) ? SETTINGS[key].safeParse(stored.get(key)) : undefined;
-    if (parsed && !parsed.success) console.warn(`[public] настройка "${key}" повреждена — используется значение по умолчанию`);
+    if (parsed && !parsed.success) log.warn('public: настройка повреждена — используется значение по умолчанию', { key });
     // Переводы применяем и к значению по умолчанию: строка настройки могла остаться только с translations.
     resolved[key] = localizeSetting(parsed?.success ? parsed.data : DEFAULT_SETTINGS[key], storedTr.get(key), lang);
   }

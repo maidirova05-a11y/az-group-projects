@@ -40,6 +40,7 @@ describe('POST /api/leads', () => {
     for (let i = 0; i < 5; i++) expect((await c.post('/leads', valid(uniq('RL')), { csrf: false })).status).toBe(201);
     const blocked = await c.post('/leads', valid(uniq('RL')), { csrf: false });
     const data = await expectJson(blocked, 429);
+    expect(blocked.headers.get('retry-after')).toBe('600');
     expect(data.error.code).toBeTruthy();
     expect((await new Client().post('/leads', valid(uniq('RL2')), { csrf: false })).status).toBe(201);
   });
