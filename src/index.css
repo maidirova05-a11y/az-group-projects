@@ -250,7 +250,7 @@ p { text-wrap: pretty; }
 }
 /* Сегменты темы в листе «Ещё» */
 .sheet-prefs { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
-.sheet-prefs-title { font-size: var(--fs-xs); font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.sheet-prefs-title { font-size: var(--fs-xs); font-weight: 700; color: var(--muted); }
 .theme-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: var(--radius-sm); background: var(--tile); }
 .theme-seg button {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: var(--tap); padding: 6px 4px;
@@ -455,8 +455,8 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .fact strong { display: block; font-size: 15.5px; line-height: var(--lh-snug); }
 .fact span:not(.tile-icon) { font-size: var(--fs-sm); color: var(--muted); }
 
-.nearest { background: var(--feature-bg); color: var(--feature-ink); box-shadow: inset 0 0 0 1px var(--feature-ring); background-image: radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--brand) 22%, transparent), transparent 55%); }
-.nearest-label { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--feature-accent); }
+.nearest { background: var(--feature-bg); color: var(--feature-ink); box-shadow: inset 0 0 0 1px var(--feature-ring); }
+.nearest-label { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); font-weight: 700; color: var(--feature-accent); }
 .pulse { width: 8px; height: 8px; border-radius: 50%; background: #ff4d68; box-shadow: 0 0 0 0 rgba(255, 77, 104, .6); animation: pulse 2s infinite; }
 @keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(255, 77, 104, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 104, 0); } }
 .nearest-body { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; margin-top: 14px; }

@@ -200,9 +200,6 @@ export default function NeuralHub() {
             top: layout.cy - hub.h / 2,
           }}
         >
-          {!reduceMotion && (
-            <span className="absolute inset-0 -z-10 animate-ping rounded-2xl bg-brand-red/10 [animation-duration:3s]" />
-          )}
           <img
             src="/logos/azgroup.png"
             alt="AZ Group"
