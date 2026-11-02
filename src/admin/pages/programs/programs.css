@@ -7,7 +7,7 @@
 .pg-main { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; padding: 4px 0; border: 0; background: none; text-align: left; cursor: pointer; color: inherit; font: inherit; border-radius: 8px; }
 .pg-main:hover .pg-name { color: var(--brand-ink); }
 .pg-main:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-.pg-name { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+.pg-name { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
 .pg-sub { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
 .pg-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 8px; }
 .pg-next { font-size: 13px; white-space: nowrap; }
@@ -16,7 +16,7 @@
 
 .pg-events { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); }
 .pg-events-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-.pg-events-head h3 { font-size: 16px; font-weight: 700; }
+.pg-events-head h3 { font-size: 16px; font-weight: 600; }
 .pg-events .table-wrap { margin: 0; }
 .pg-ev-label { font-weight: 600; }
 .pg-nowrap { white-space: nowrap; }

@@ -55,7 +55,6 @@
   --glass-card: color-mix(in srgb, var(--card) 94%, transparent);
   --hover-veil: color-mix(in srgb, var(--card) 72%, transparent);
   --scrim: rgba(15, 17, 21, .45);
-  --skeleton-hi: #ffffff;
 
   /* Отступы (шаг 4px) */
   --space-1: 4px;
@@ -142,7 +141,6 @@
   --feature-ring: #2e333a;
 
   --scrim: rgba(0, 0, 0, .62);
-  --skeleton-hi: #343a42;
 
   --shadow-1: 0 1px 2px rgba(0, 0, 0, .4);
   --shadow-2: 0 8px 22px -8px rgba(0, 0, 0, .6);
@@ -240,7 +238,7 @@ p { text-wrap: pretty; }
 }
 .theme-menu button:hover, .theme-menu button:focus-visible { background: var(--tile); }
 .theme-menu button:focus-visible { outline-offset: -2px; }
-.theme-menu button.on { font-weight: 700; }
+.theme-menu button.on { font-weight: 600; }
 .theme-menu button svg { flex: none; color: var(--muted); }
 .theme-menu button.on svg { color: var(--brand-ink); }
 .theme-menu-check { margin-left: auto; }
@@ -250,7 +248,7 @@ p { text-wrap: pretty; }
 }
 /* Сегменты темы в листе «Ещё» */
 .sheet-prefs { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
-.sheet-prefs-title { font-size: var(--fs-xs); font-weight: 700; color: var(--muted); }
+.sheet-prefs-title { font-size: var(--fs-xs); font-weight: 600; color: var(--muted); }
 .theme-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: var(--radius-sm); background: var(--tile); }
 .theme-seg button {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: var(--tap); padding: 6px 4px;
@@ -263,7 +261,7 @@ p { text-wrap: pretty; }
 .lang-switch { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: var(--radius-pill); background: var(--tile); }
 .lang-switch a {
   display: inline-grid; place-items: center; min-width: 34px; height: 30px; padding: 0 8px;
-  border-radius: var(--radius-pill); color: var(--ink-2); font-size: var(--fs-xs); font-weight: 700; letter-spacing: .02em;
+  border-radius: var(--radius-pill); color: var(--ink-2); font-size: var(--fs-xs); font-weight: 600;
   transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 .lang-switch a:hover { color: var(--ink); background: var(--card); }
@@ -273,7 +271,7 @@ p { text-wrap: pretty; }
 .lang-switch-sheet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: var(--radius-sm); }
 .lang-switch-sheet a, .sheet .lang-switch-sheet a {
   display: flex; align-items: center; justify-content: center; height: auto; min-height: var(--tap); padding: 6px 4px;
-  border-radius: var(--radius-xs); background: transparent; font-size: var(--fs-ui); font-weight: 700;
+  border-radius: var(--radius-xs); background: transparent; font-size: var(--fs-ui); font-weight: 600;
 }
 .sheet .lang-switch-sheet a.on { background: var(--card); box-shadow: var(--shadow-1); }
 /* Плавная смена цветов: класс ставит theme.ts только на время переключения (не при загрузке). */
@@ -314,7 +312,7 @@ html.theme-switching, html.theme-switching *, html.theme-switching *::before, ht
 .sidebar nav a:hover { color: var(--ink); background: var(--hover-veil); }
 .sidebar nav a:hover svg { opacity: 1; }
 .sidebar nav a:active { background: var(--card); }
-.sidebar nav a.active { color: var(--ink); font-weight: 700; background: var(--card); box-shadow: var(--shadow-1); }
+.sidebar nav a.active { color: var(--ink); font-weight: 600; background: var(--card); box-shadow: var(--shadow-1); }
 .sidebar nav a.active svg { color: var(--brand-ink); opacity: 1; }
 .sidebar-bottom { display: grid; gap: 14px; }
 .sidebar-social { display: flex; gap: var(--space-1); }
@@ -330,7 +328,7 @@ html.theme-switching, html.theme-switching *, html.theme-switching *::before, ht
 /* ---------- Карточки ---------- */
 .panel { background: var(--card); border-radius: var(--radius); padding: var(--space-6); min-width: 0; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-5); }
-.panel-head h2 { display: flex; align-items: center; gap: 10px; font-size: var(--fs-lg); font-weight: 700; line-height: var(--lh-tight); letter-spacing: -.01em; }
+.panel-head h2 { display: flex; align-items: center; gap: 10px; font-size: var(--fs-lg); font-weight: 600; line-height: var(--lh-tight); letter-spacing: -.01em; }
 .panel-head h2 svg { flex: none; }
 .panel-lead { color: var(--muted); margin: calc(var(--space-3) * -1) 0 18px; max-width: var(--measure); }
 .more-link { display: inline-flex; align-items: center; gap: 2px; min-height: 32px; font-size: var(--fs-ui); font-weight: 600; color: var(--brand-ink); border-radius: var(--radius-xs); text-underline-offset: 3px; }
@@ -344,7 +342,7 @@ html.theme-switching, html.theme-switching *, html.theme-switching *::before, ht
 .crumbs a:hover { color: var(--brand-ink); }
 .crumbs [aria-current='page'] { color: var(--ink-2); font-weight: 500; }
 .page-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; }
-.page-title h1 { font-size: clamp(26px, 3vw, 34px); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+.page-title h1 { font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -.02em; line-height: 1.15; }
 .page-title p { margin-top: var(--space-2); color: var(--muted); max-width: 720px; line-height: var(--lh-body); }
 .page-title p a { color: var(--brand-ink); font-weight: 600; text-underline-offset: 3px; }
 .page-title p a:hover { text-decoration: underline; }
@@ -420,7 +418,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .hero .panel-head .hero-kicker { font-size: var(--fs-md); font-weight: 500; line-height: var(--lh-tight); }
 /* Баннер всегда на фото с тёмным оверлеем — текст белый в обеих темах. */
 .hero-banner { display: grid; justify-items: center; gap: 14px; padding: var(--space-16) var(--space-6) 72px; text-align: center; color: #fff; background-color: #2a1d22; background-size: cover; background-position: center; }
-.hero-banner h1 { max-width: 760px; font-size: clamp(24px, 3.2vw, 38px); line-height: 1.18; font-weight: 700; letter-spacing: -.02em; text-shadow: 0 1px 12px rgba(0, 0, 0, .25); }
+.hero-banner h1 { max-width: 760px; font-size: clamp(24px, 3.2vw, 38px); line-height: 1.18; font-weight: 600; letter-spacing: -.02em; }
 .hero-banner > p { max-width: 60ch; font-size: var(--fs-base); opacity: .92; margin-bottom: 10px; }
 .hero-banner .search { color: var(--ink); }
 
@@ -437,7 +435,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 var(--space-4); }
 .stats div { padding: var(--space-4); border-radius: var(--radius-sm); background: var(--tile); display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 6px; }
-.stats dd { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -.02em; color: var(--brand-ink); line-height: 1; font-variant-numeric: tabular-nums; }
+.stats dd { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -.02em; color: var(--brand-ink); line-height: 1; font-variant-numeric: tabular-nums; }
 .stats dt { font-size: 12.5px; color: var(--muted); line-height: 1.35; }
 .stats.wide { grid-template-columns: repeat(4, 1fr); margin: 0; }
 
@@ -456,11 +454,10 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .fact span:not(.tile-icon) { font-size: var(--fs-sm); color: var(--muted); }
 
 .nearest { background: var(--feature-bg); color: var(--feature-ink); box-shadow: inset 0 0 0 1px var(--feature-ring); }
-.nearest-label { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); font-weight: 700; color: var(--feature-accent); }
-.pulse { width: 8px; height: 8px; border-radius: 50%; background: #ff4d68; box-shadow: 0 0 0 0 rgba(255, 77, 104, .6); animation: pulse 2s infinite; }
-@keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(255, 77, 104, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 104, 0); } }
+.nearest-label { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); font-weight: 600; color: var(--feature-accent); }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: #ff4d68; }
 .nearest-body { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; margin-top: 14px; }
-.nearest-body .nearest-title { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); font-size: var(--fs-xl); font-weight: 700; line-height: var(--lh-tight); margin-top: 0; color: var(--feature-ink); }
+.nearest-body .nearest-title { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); font-size: var(--fs-xl); font-weight: 600; line-height: var(--lh-tight); margin-top: 0; color: var(--feature-ink); }
 .nearest-body p { color: var(--feature-muted); font-size: var(--fs-ui); margin-top: var(--space-1); }
 .nearest .datebox { background: #fff; color: #1d1f23; }
 .nearest .btn-primary:focus-visible { outline-color: var(--feature-ink); }
@@ -484,7 +481,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .program > header { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
 .program-mark { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--plate); color: var(--accent); }
 .program-mark img { width: 28px; height: 28px; object-fit: contain; }
-.program h3 { font-size: 15.5px; font-weight: 700; line-height: var(--lh-snug); }
+.program h3 { font-size: 15.5px; font-weight: 600; line-height: var(--lh-snug); }
 .program header p { font-size: 12.5px; color: var(--muted); }
 .event-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; flex: 1; align-content: start; }
 .event-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); padding: var(--space-2) 10px var(--space-2) var(--space-2); border-radius: var(--radius-md); background: var(--card); }
@@ -499,7 +496,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .program > footer a:hover { text-decoration: underline; }
 
 .datebox { display: grid; place-items: center; align-content: center; flex: none; width: 52px; height: 52px; border-radius: var(--radius-md); background: var(--brand-soft); color: var(--brand-ink); text-align: center; line-height: 1; }
-.datebox strong { font-size: 19px; font-weight: 800; text-transform: capitalize; font-variant-numeric: tabular-nums; }
+.datebox strong { font-size: 19px; font-weight: 600; text-transform: capitalize; font-variant-numeric: tabular-nums; }
 .datebox.wide strong { font-size: 13.5px; }
 /* Было opacity .8 — 10.5px текст падал ниже 4.5:1. */
 .datebox small { font-size: var(--fs-2xs); font-weight: 600; margin-top: 3px; }
@@ -518,7 +515,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .project-logo { display: grid; place-items: center; height: 96px; margin-bottom: 6px; border-radius: var(--radius-md); background: var(--plate); padding: 0 18px; }
 .project-logo img { max-width: 80%; object-fit: contain; }
 .project .badge { align-self: flex-start; background: var(--card); }
-.project h3, .program-item h3 { font-size: var(--fs-md); font-weight: 700; line-height: var(--lh-snug); }
+.project h3, .program-item h3 { font-size: var(--fs-md); font-weight: 600; line-height: var(--lh-snug); }
 .project-tag { font-size: var(--fs-sm); font-weight: 600; color: var(--brand-ink); }
 .project p:not(.project-tag), .program-item p:not(.project-tag) { font-size: 13.5px; color: var(--ink-2); line-height: var(--lh-body); }
 .project-foot { margin-top: auto; padding-top: var(--space-2); display: flex; align-items: center; justify-content: space-between; font-size: var(--fs-sm); font-weight: 600; color: var(--muted); transition: color var(--t-fast) var(--ease); }
@@ -528,18 +525,18 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .program-item div { display: grid; gap: var(--space-1); align-content: start; min-width: 0; }
 .partnership-body { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--space-6); align-items: center; }
 .partnership-body img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); }
-.partnership-body h3 { font-size: var(--fs-lg); font-weight: 700; line-height: var(--lh-tight); }
+.partnership-body h3 { font-size: var(--fs-lg); font-weight: 600; line-height: var(--lh-tight); }
 .partnership-body p { color: var(--ink-2); margin: var(--space-2) 0 var(--space-4); max-width: var(--measure); line-height: var(--lh-body); }
 
 /* ---------- О компании ---------- */
 .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
 .pillar { display: flex; flex-direction: column; gap: 10px; }
 .pillar img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: var(--radius-sm); background: var(--tile); margin-bottom: 6px; }
-.pillar h2 { font-size: var(--fs-lg); font-weight: 700; line-height: var(--lh-tight); }
+.pillar h2 { font-size: var(--fs-lg); font-weight: 600; line-height: var(--lh-tight); }
 .pillar p { color: var(--ink-2); font-size: 14.5px; line-height: var(--lh-body); max-width: var(--measure); }
 .achievements { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: var(--space-3); }
 .achievements li { display: grid; gap: 6px; align-content: start; padding: 18px; border-radius: var(--radius-sm); background: var(--tile); }
-.achievements strong { font-size: 20px; font-weight: 800; color: var(--brand-ink); letter-spacing: -.01em; line-height: var(--lh-tight); }
+.achievements strong { font-size: 20px; font-weight: 600; color: var(--brand-ink); letter-spacing: -.01em; line-height: var(--lh-tight); }
 .achievements span { font-size: 13.5px; color: var(--ink-2); line-height: var(--lh-snug); }
 
 /* ---------- Партнёры ---------- */
@@ -550,10 +547,10 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .partner .badge { background: var(--card); white-space: normal; }
 .partner-logo { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: var(--radius-md); background: var(--plate); overflow: hidden; }
 .partner-logo img { width: 100%; height: 100%; object-fit: contain; padding: var(--space-1); }
-.partner-logo.initials { font-weight: 800; font-size: var(--fs-md); color: var(--brand-ink); background: var(--brand-soft); }
+.partner-logo.initials { font-weight: 600; font-size: var(--fs-md); color: var(--brand-ink); background: var(--brand-soft); }
 .empty-text { color: var(--muted); }
 .cta { display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; background: var(--brand-soft); }
-.cta h2 { font-size: var(--fs-lg); font-weight: 700; line-height: var(--lh-tight); }
+.cta h2 { font-size: var(--fs-lg); font-weight: 600; line-height: var(--lh-tight); }
 .cta p { color: var(--ink-2); margin-top: var(--space-1); font-size: var(--fs-ui); max-width: var(--measure); }
 
 /* ---------- Вопросы ---------- */
@@ -613,10 +610,6 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
   display: block;
   border-radius: var(--radius-sm);
   background-color: var(--tile);
-  background-image: linear-gradient(90deg, transparent 0, color-mix(in srgb, var(--skeleton-hi) 70%, transparent) 50%, transparent 100%);
-  background-size: 200% 100%;
-  background-repeat: no-repeat;
-  background-position: 150% 0;
   color: transparent !important;
   pointer-events: none;
   -webkit-user-select: none;
@@ -629,10 +622,6 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .skeleton-tile { min-height: 140px; }
 .page-skeleton { display: grid; gap: var(--space-4); }
 .page-skeleton-title { height: 1.8em; width: 46%; }
-@media (prefers-reduced-motion: no-preference) {
-  .skeleton { animation: skeleton-shimmer 1.4s var(--ease) infinite; }
-}
-@keyframes skeleton-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
 
 /* ---------- Адаптив ---------- */
 /* Планшет: меню сворачивается в узкую колонку значков, как у egov.kz. */
@@ -645,7 +634,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
   .sidebar-cta { justify-content: center; padding: 0; width: var(--tap); height: var(--tap); min-height: var(--tap); margin: 0 auto; border-radius: 50%; }
   .sidebar-cta span, .sidebar-copy, .label-full { display: none; }
   /* Короткие подписи рейки: «Мероприятия» целиком — шрифт чуть меньше, а не другое слово. */
-  .label-short { display: inline; max-width: 100%; font-size: 10.5px; letter-spacing: -.015em; -webkit-hyphens: auto; hyphens: auto; overflow-wrap: anywhere; }
+  .label-short { display: inline; max-width: 100%; font-size: 11px; -webkit-hyphens: auto; hyphens: auto; overflow-wrap: anywhere; }
   .content { padding-right: var(--space-4); }
   .stats.wide { grid-template-columns: repeat(2, 1fr); }
   .pillars { grid-template-columns: 1fr; }
@@ -717,7 +706,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
   }
   .tabbar a, .tabbar button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 52px; padding: 6px 0; border: 0; border-radius: var(--radius-md); background: none; color: var(--muted); font-size: var(--fs-2xs); font-weight: 600; cursor: pointer; transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
   /* Подпись вкладки: полное название раздела («Мероприятия») — шрифт чуть меньше, а не другое слово. */
-  .tabbar span { max-width: 100%; padding: 0 2px; font-size: 10.5px; letter-spacing: -.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tabbar span { max-width: 100%; padding: 0 2px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tabbar a:active, .tabbar button:active { background: var(--tile); }
   .tabbar a:focus-visible, .tabbar button:focus-visible { outline-offset: -2px; }
   .tabbar .active { color: var(--brand-ink); }
@@ -776,8 +765,6 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   a.tile:hover, .project:hover, .contact-list a:hover, .upcoming a:hover, .news-card:hover img, a.tile:hover .tile-icon { transform: none; }
-  .pulse { animation: none; }
-  .skeleton { animation: none; }
 }
 
 /* Высокий контраст Windows */
@@ -852,7 +839,7 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .reg-form { max-width: 720px; }
 .reg-group { border: 0; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
 .reg-group + .reg-group { padding-top: var(--space-3); border-top: 1px solid var(--line); }
-.reg-group legend { padding: 0; margin-bottom: var(--space-2); font-size: var(--fs-md); font-weight: 700; color: var(--ink); }
+.reg-group legend { padding: 0; margin-bottom: var(--space-2); font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
 .reg-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
 .reg-price { margin: 0; font-size: var(--fs-sm); color: var(--ink-2); }
 .reg-consent { display: grid !important; grid-template-columns: auto 1fr; align-items: start; gap: 10px; font-size: var(--fs-sm); color: var(--ink-2); cursor: pointer; }
@@ -860,13 +847,13 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 .reg-consent a { color: var(--brand-ink); font-weight: 600; }
 .form-success.reg-success { text-align: center; justify-items: center; }
 .reg-success h2 { font-size: var(--fs-xl, 24px); }
-.reg-number { font-weight: 700; color: var(--brand-ink); }
+.reg-number { font-weight: 600; color: var(--brand-ink); }
 .reg-actions { justify-content: center; margin-top: var(--space-2); }
 @media (max-width: 640px) { .reg-row { grid-template-columns: 1fr; } }
 
 /* Публичная оферта (/offer) */
 .offer-body { max-width: 820px; display: grid; gap: var(--space-2); line-height: var(--lh-body); color: var(--ink-2); }
-.offer-body h2 { margin-top: var(--space-3); font-size: var(--fs-md); font-weight: 700; color: var(--ink); }
+.offer-body h2 { margin-top: var(--space-3); font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
 .offer-body p { margin: 0; }
 .offer-li { padding-left: 1.2em; position: relative; }
 .offer-li::before { content: '•'; position: absolute; left: 0.2em; color: var(--brand-ink); }
