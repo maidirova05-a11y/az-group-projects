@@ -837,7 +837,9 @@ a.tile:hover .tile-icon { transform: scale(1.05); }
 
 /* Регистрация (/register) */
 .reg-form { max-width: 720px; }
-.reg-group { border: 0; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.reg-group { border: 0; margin: 0; min-width: 0; padding: 0; display: grid; gap: var(--space-3); }
+.reg-group > .field { min-width: 0; }
+.reg-group .field > * { min-width: 0; max-width: 100%; }
 .reg-group + .reg-group { padding-top: var(--space-3); border-top: 1px solid var(--line); }
 .reg-group legend { padding: 0; margin-bottom: var(--space-2); font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
 .reg-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }

@@ -8,6 +8,21 @@ import { SAFE_HREF_MESSAGE, isSafeHref } from './url.js';
 
 export { isSafeHref, SAFE_HREF_PROTOCOLS, SAFE_HREF_MESSAGE } from './url.js';
 
+/**
+ * Сообщения zod по умолчанию (английские) для случаев, где у схемы нет своего текста: пропущенное поле,
+ * неверный тип, лишняя длина. Остальное (свои тексты схем) не затрагивается.
+ */
+z.config({
+  customError: iss => {
+    if (iss.code === 'invalid_type') return iss.input === undefined ? 'Обязательное поле' : 'Некорректное значение';
+    if (iss.code === 'too_small') return iss.origin === 'string' ? 'Слишком короткое значение' : 'Значение слишком маленькое';
+    if (iss.code === 'too_big') return iss.origin === 'string' ? 'Слишком длинное значение' : 'Значение слишком большое';
+    if (iss.code === 'invalid_value' || iss.code === 'invalid_format') return 'Некорректное значение';
+    if (iss.code === 'unrecognized_keys') return 'Лишние поля в запросе';
+    return undefined;
+  },
+});
+
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Дата в формате ГГГГ-ММ-ДД');
 /** Ссылка: только http(s):, mailto:, tel: или путь сайта `/…` (не `//host`). См. shared/url.ts. */
 const safeHref = (max = 2000) => z.string().trim().max(max, `Ссылка: не длиннее ${max} символов`).refine(isSafeHref, SAFE_HREF_MESSAGE);
