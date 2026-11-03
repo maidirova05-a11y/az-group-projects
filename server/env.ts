@@ -7,6 +7,18 @@ function need(name: string, fallback?: string): string {
 
 const isProd = () => process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
 
+/**
+ * Проверка всех обязательных переменных разом (fail-fast при старте и для /api/health/ready).
+ * Возвращает список проблем; значения секретов в сообщения не попадают.
+ */
+export function envProblems(): string[] {
+  const problems: string[] = [];
+  for (const read of [() => env.databaseUrl, () => env.jwtSecret, () => env.ipSalt]) {
+    try { read(); } catch (e) { problems.push(e instanceof Error ? e.message : String(e)); }
+  }
+  return problems;
+}
+
 export const env = {
   get databaseUrl() { return need('DATABASE_URL'); },
   /** Секрет подписи сессий админки (JWT HS256). Минимум 32 символа, не значение-пример из .env.example. */

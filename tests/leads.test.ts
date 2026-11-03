@@ -16,6 +16,12 @@ describe('POST /api/leads', () => {
     expect(rows[0].ipHash).toBeTruthy();
   });
 
+  it('reports missing required fields in Russian, not zod English', async () => {
+    const res = await new Client().post('/leads', {}, { csrf: false });
+    const data = await expectJson(res, 422);
+    expect(data.error.fields).toEqual({ name: 'Обязательное поле', phone: 'Обязательное поле', topic: 'Обязательное поле' });
+  });
+
   it('returns 422 with field errors for invalid input', async () => {
     const res = await new Client().post('/leads', { name: '', phone: '12', topic: '' }, { csrf: false });
     const data = await expectJson(res, 422);
@@ -40,6 +46,7 @@ describe('POST /api/leads', () => {
     for (let i = 0; i < 5; i++) expect((await c.post('/leads', valid(uniq('RL')), { csrf: false })).status).toBe(201);
     const blocked = await c.post('/leads', valid(uniq('RL')), { csrf: false });
     const data = await expectJson(blocked, 429);
+    expect(blocked.headers.get('retry-after')).toBe('600');
     expect(data.error.code).toBeTruthy();
     expect((await new Client().post('/leads', valid(uniq('RL2')), { csrf: false })).status).toBe(201);
   });

@@ -40,7 +40,7 @@ export const admins = pgTable('admins', {
    */
   sessionVersion: integer('session_version').notNull().default(0),
   ...timestamps,
-}, t => [uniqueIndex('admins_email_uq').on(t.email)]);
+}, t => [uniqueIndex('admins_email_lower_uq').on(sql`lower(${t.email})`)]);
 
 /** Программы календаря (Fibonacci, Atlantia, ITECX…). */
 export const programs = pgTable('programs', {

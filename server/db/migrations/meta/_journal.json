@@ -57,6 +57,13 @@
       "when": 1792947310849,
       "tag": "0007_move_from_old_site",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793651567052,
+      "tag": "0008_admins_email_lower_unique",
+      "breakpoints": true
     }
   ]
 }

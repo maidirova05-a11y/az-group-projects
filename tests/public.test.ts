@@ -119,9 +119,12 @@ describe('GET /api/public/content', () => {
     expect(kk.headers.get('etag')).not.toBe(etag);
   });
 
-  it('health and unknown routes', async () => {
+  it('health, readiness and unknown routes', async () => {
     const c = new Client();
     expect(await expectJson(await c.get('/health'), 200)).toEqual({ ok: true });
+    expect(await expectJson(await c.get('/health/ready'), 200)).toEqual({ ok: true, checks: { env: true, db: true } });
+    const hr = await c.get('/health');
+    expect(hr.headers.get('x-request-id')).toBeTruthy();
     const nf = await expectJson(await c.get('/nope'), 404);
     expect(nf.error.code).toBe('not_found');
   });

@@ -119,7 +119,7 @@ export default function Register({ query }: { query: URLSearchParams }) {
       const data = (await res.json().catch(() => null)) as ApiError | null;
       if (res.status === 422 && data?.error.fields) {
         const fields: Partial<Record<Field | 'consent', string>> = {};
-        for (const k of Object.keys(data.error.fields)) if ((ORDER as string[]).includes(k)) fields[k as Field] = T.errors[k] ?? data.error.fields[k];
+        for (const k of Object.keys(data.error.fields)) if ((ORDER as string[]).includes(k)) fields[k as Field] = T.errors[k] ?? T.checkFields;
         setErrors(fields); setStatus({ kind: 'error', message: T.checkFields }); focusFirst(fields);
         return;
       }

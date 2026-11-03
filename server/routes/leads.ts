@@ -4,6 +4,7 @@ import { and, count, eq, gt, sql } from 'drizzle-orm';
 import type { AppEnv } from '../types.js';
 import { db, schema } from '../db/client.js';
 import { ApiFail, assertJson, body } from '../lib/http.js';
+import { log } from '../lib/logger.js';
 import { clientIp, hashIp } from '../lib/ratelimit.js';
 import { leadInput, type LeadUtm } from '../../shared/schemas.js';
 import { LANGS, type Lang } from '../../shared/i18n.js';
@@ -110,14 +111,14 @@ r.post('/', async c => {
     } catch (e) {
       // База ещё без колонок lang/referrer/utm (миграция 0004 не применена) — заявку всё равно сохраняем.
       if (!isUndefinedColumn(e)) throw e;
-      console.warn('[leads] миграция 0004 не применена — заявка сохранена без источника (npm run db:migrate)');
+      log.warn('leads: миграция 0004 не применена — заявка сохранена без источника (npm run db:migrate)');
       // Явный список колонок: Drizzle перечисляет все колонки схемы (в т.ч. отсутствующие в базе).
       await tx.execute(sql`insert into leads (name, phone, topic, message, page, ip_hash)
         values (${lead.name}, ${lead.phone}, ${lead.topic}, ${lead.message}, ${lead.page}, ${ipHash})`);
     }
     return false;
   });
-  if (limited) throw new ApiFail(429, 'rate_limited', 'Слишком много заявок, попробуйте позже');
+  if (limited) throw new ApiFail(429, 'rate_limited', 'Слишком много заявок, попробуйте позже', undefined, WINDOW_MINUTES * 60);
   return c.json({ ok: true }, 201);
 });
 

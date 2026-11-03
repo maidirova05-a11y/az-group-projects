@@ -12,7 +12,7 @@
 .ops-wa { color: var(--success) !important; }
 .ops-preview { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-width: 160px; max-width: 320px; color: var(--ink-2); font-size: 13.5px; word-break: break-word; }
 .ops-page { font-size: 12.5px; color: var(--muted); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
-.data-table tr.ops-unread td.td-primary { font-weight: 700; }
+.data-table tr.ops-unread td.td-primary { font-weight: 600; }
 .ops-name { display: grid; gap: 1px; }
 .ops-name small { font-size: 12px; color: var(--muted); font-weight: 500; }
 .ops-check-cell { width: 36px; }
@@ -40,11 +40,11 @@
 .ops-form-foot .ops-foot-note { margin-right: auto; font-size: 13px; color: var(--muted); }
 .ops-form-foot .ops-foot-note.warn { color: var(--warning); font-weight: 600; }
 .ops-subhead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 22px 0 10px; }
-.ops-subhead h3 { font-size: 15px; font-weight: 700; margin: 0; }
+.ops-subhead h3 { font-size: 15px; font-weight: 600; margin: 0; }
 .ops-subhead span { font-size: 12.5px; color: var(--muted); }
 .ops-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .ops-list-item { display: flex; gap: 8px; align-items: flex-start; padding: 12px; border-radius: var(--radius-sm); background: var(--tile); }
-.ops-list-num { flex: none; width: 24px; height: 24px; margin-top: 8px; display: grid; place-items: center; border-radius: 8px; background: var(--card); font-size: 12px; font-weight: 700; color: var(--muted); }
+.ops-list-num { flex: none; width: 24px; height: 24px; margin-top: 8px; display: grid; place-items: center; border-radius: 8px; background: var(--card); font-size: 12px; font-weight: 600; color: var(--muted); }
 .ops-list-body { flex: 1; min-width: 0; display: grid; gap: 10px; }
 .ops-list-tools { flex: none; display: flex; flex-direction: column; gap: 2px; }
 .ops-list-add { margin-top: 10px; }

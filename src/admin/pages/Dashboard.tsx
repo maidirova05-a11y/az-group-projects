@@ -4,7 +4,6 @@ import {
   Activity, CalendarDays, CalendarPlus, ClipboardList, Handshake, Inbox, LayoutGrid, Newspaper, RefreshCw, type LucideIcon,
 } from 'lucide-react';
 import { linkProps } from '../router';
-import { useAuth } from '../auth';
 import { useAdminStats, type AdminStats } from '../stats';
 import { Badge, EmptyState, ErrorState, IconButton, PageHeader, Panel, Skeleton, fmt } from '../ui';
 
@@ -142,17 +141,13 @@ function LeadSources({ sources, langs }: { sources: AdminStats['leadsBySource'];
 
 export default function Dashboard() {
   const { stats, loading, error, reload } = useAdminStats();
-  const { admin } = useAuth();
-  const greeting = useMemo(() => {
-    const h = new Date().getHours();
-    return h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
-  }, []);
+  const today = useMemo(() => new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }), []);
 
   return (
     <>
       <PageHeader
         title="Обзор"
-        description={admin ? `${greeting}, ${admin.name}!` : undefined}
+        description={today}
         actions={<IconButton icon={RefreshCw} label="Обновить данные" variant="ghost" onClick={() => void reload()} loading={loading && !!stats} />}
       />
 

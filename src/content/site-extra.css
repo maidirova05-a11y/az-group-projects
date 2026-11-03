@@ -38,10 +38,6 @@
 .hero-mascot { align-self: end; margin-bottom: calc(var(--space-10) * -1 + var(--space-2)); pointer-events: none; user-select: none; }
 .hero-mascot img { width: 100%; height: auto; filter: drop-shadow(0 14px 24px rgba(16, 24, 40, .16)); }
 :root[data-theme="dark"] .hero-mascot img { filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .55)); }
-@media (prefers-reduced-motion: no-preference) {
-  .hero-mascot img { animation: az-float 6s ease-in-out infinite; }
-  @keyframes az-float { 50% { transform: translateY(-8px); } }
-}
 @media (max-width: 1100px) {
   .hero .hero-banner.hero-illustrated { --mascot: 190px; padding: var(--space-8) var(--space-5) var(--space-8) var(--space-6); }
   .hero-mascot { margin-bottom: calc(var(--space-8) * -1 + var(--space-2)); }
@@ -65,7 +61,7 @@
 .panel-head h2 .cat-icon { color: var(--accent, var(--brand)); }
 .event-extra { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin-top: 2px; }
 .event-price { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--fs-xs); font-weight: 600; color: var(--ink-2); }
-.event-reg { display: inline-flex; align-items: center; gap: 2px; min-height: 24px; font-size: var(--fs-xs); font-weight: 700; color: var(--accent-ink, var(--brand-ink)); border-radius: 6px; text-underline-offset: 3px; }
+.event-reg { display: inline-flex; align-items: center; gap: 2px; min-height: 24px; font-size: var(--fs-xs); font-weight: 600; color: var(--accent-ink, var(--brand-ink)); border-radius: 6px; text-underline-offset: 3px; }
 .event-reg:hover { text-decoration: underline; }
 :root[data-theme="dark"] .event-reg { color: var(--brand-ink); }
 @media (pointer: coarse) { .event-reg { min-height: var(--tap); } }
@@ -73,7 +69,7 @@
 /* ---------- Пустые состояния ---------- */
 .empty-state { display: grid; justify-items: center; gap: var(--space-3); text-align: center; padding: var(--space-6) var(--space-4); color: var(--muted); }
 .empty-state .illus { width: 168px; height: auto; }
-.empty-state-title { font-size: 17px; font-weight: 700; color: var(--ink); max-width: 40ch; line-height: var(--lh-tight); }
+.empty-state-title { font-size: 17px; font-weight: 600; color: var(--ink); max-width: 40ch; line-height: var(--lh-tight); }
 .empty-state.compact { padding: var(--space-3) var(--space-2); gap: var(--space-2); font-size: var(--fs-sm); }
 .empty-state.compact .illus { width: 96px; }
 .empty-state.compact .empty-state-title { font-size: var(--fs-ui); }
@@ -100,7 +96,7 @@ article.project:hover { transform: none; box-shadow: none; background: var(--til
 .article { display: grid; gap: var(--space-3); max-width: 860px; padding: var(--space-6) var(--space-8) var(--space-8); }
 .article-back { justify-self: start; }
 .article time { font-size: var(--fs-sm); color: var(--muted); font-weight: 500; }
-.article h1 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 700; line-height: 1.2; letter-spacing: -.015em; }
+.article h1 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 600; line-height: 1.2; letter-spacing: -.015em; }
 .article-image { margin: var(--space-2) 0; }
 .article-image img, span.article-image.skeleton { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-sm); }
 .article-body { display: grid; gap: var(--space-4); margin-top: var(--space-2); }
@@ -128,7 +124,7 @@ article.project:hover { transform: none; box-shadow: none; background: var(--til
 .hp-field { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 .form-success { display: grid; justify-items: start; gap: var(--space-3); padding: var(--space-5); border-radius: var(--radius-sm); background: var(--tile); }
 .form-success > svg { color: var(--brand-ink); }
-.form-success h3 { font-size: var(--fs-lg); font-weight: 700; line-height: var(--lh-tight); }
+.form-success h3 { font-size: var(--fs-lg); font-weight: 600; line-height: var(--lh-tight); }
 .form-success h3:focus { outline: none; }
 .form-success p { color: var(--ink-2); font-size: var(--fs-ui); max-width: var(--measure); }
 .form-success a { color: var(--brand-ink); font-weight: 600; white-space: nowrap; }

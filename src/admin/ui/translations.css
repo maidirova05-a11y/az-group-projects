@@ -1,6 +1,6 @@
 /* Переводы контента (src/admin/ui/Translations.tsx): вкладки языков, оригинал, счётчики, бейджи. */
 .tr-tabs { display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--tile); justify-self: start; flex-wrap: wrap; }
-.tr-tab { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 7px 14px; border-radius: 9px; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--muted); cursor: pointer; }
+.tr-tab { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 7px 14px; border-radius: 9px; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; }
 .tr-tab:hover { color: var(--ink); }
 .tr-tab[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
 .tr-tab-count { font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); }
@@ -9,7 +9,7 @@
 .tr-dot.partial { background: var(--warning); }
 .tr-dot.error { background: var(--danger); box-shadow: 0 0 0 3px var(--danger-soft); }
 .tr-orig { display: block; font-size: 12.5px; line-height: 1.5; color: var(--muted); background: var(--tile); border-radius: var(--radius-xs); padding: 7px 10px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 132px; overflow: auto; }
-.tr-orig-tag { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; color: var(--ink-2); margin-right: 6px; }
+.tr-orig-tag { font-size: 10.5px; font-weight: 600; color: var(--ink-2); margin-right: 6px; }
 .tr-orig-empty { font-style: italic; }
 .tr-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
 .tr-copy { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; padding: 2px 0; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--brand-ink); cursor: pointer; }
@@ -22,5 +22,5 @@
 .tr-badges .badge { padding: 1px 8px; font-size: 11.5px; }
 .tr-list { display: grid; gap: 12px; }
 .tr-item { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
-.tr-item-num { font-size: 12px; font-weight: 700; color: var(--muted); }
+.tr-item-num { font-size: 12px; font-weight: 600; color: var(--muted); }
 .tr-panel { display: grid; gap: 16px; align-content: start; min-width: 0; }
