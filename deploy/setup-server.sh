@@ -41,4 +41,7 @@ nginx -t && systemctl reload nginx
 install -m 755 "$APP/deploy/backup.sh" /usr/local/bin/azgroup-site-backup
 echo '30 3 * * * root /usr/local/bin/azgroup-site-backup' > /etc/cron.d/azgroup-site-backup
 
+install -m 755 "$APP/deploy/auto-deploy.sh" /usr/local/bin/azgroup-autodeploy
+echo '*/2 * * * * root /usr/local/bin/azgroup-autodeploy >> /var/log/azgroup-deploy.log 2>&1' > /etc/cron.d/azgroup-autodeploy
+
 echo "Готово. Дальше: заполнить $APP/.env.production → bash $APP/deploy/deploy.sh"
