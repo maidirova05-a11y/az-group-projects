@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { and, eq, gt, lt, sql } from 'drizzle-orm';
 import type { AppEnv } from '../types.js';
 import { ApiFail, body } from '../lib/http.js';
+import { log } from '../lib/logger.js';
 import { audit } from '../lib/audit.js';
 import { db, schema } from '../db/client.js';
 import { loginInput, passwordChange } from '../../shared/schemas.js';
@@ -44,7 +45,7 @@ async function recentFailures(email: string, ip: string): Promise<{ pair: number
       ));
     return { pair: row?.pair ?? 0, email: row?.email ?? 0 };
   } catch (e) {
-    console.error('login rate check failed, using memory fallback', e);
+    log.error('login rate check failed, using memory fallback', e);
     return { pair: memCount(`${email}|${ip}`, since.getTime()), email: memCount(`${email}|*`, emailSince.getTime()) };
   }
 }
@@ -68,7 +69,7 @@ async function maybePruneFailures() {
       lt(schema.auditLog.createdAt, new Date(Date.now() - PRUNE_AFTER_MS)),
     ));
   } catch (e) {
-    console.error('login_failed prune failed', e);
+    log.error('login_failed prune failed', e);
   }
 }
 
@@ -83,10 +84,10 @@ r.post('/login', async c => {
 
   const fails = await recentFailures(email, ip);
   if (fails.pair >= MAX_FAILS) {
-    throw new ApiFail(429, 'too_many_attempts', 'Слишком много попыток входа. Попробуйте через 15 минут');
+    throw new ApiFail(429, 'too_many_attempts', 'Слишком много попыток входа. Попробуйте через 15 минут', undefined, WINDOW_MS / 1000);
   }
   if (fails.email >= MAX_EMAIL_FAILS) {
-    throw new ApiFail(429, 'too_many_attempts', 'Слишком много попыток входа для этого e-mail. Попробуйте через час');
+    throw new ApiFail(429, 'too_many_attempts', 'Слишком много попыток входа для этого e-mail. Попробуйте через час', undefined, EMAIL_WINDOW_MS / 1000);
   }
 
   const [admin] = await db().select().from(schema.admins)

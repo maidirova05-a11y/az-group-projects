@@ -91,7 +91,7 @@ r.post('/', async c => {
     const [row] = await tx.insert(schema.registrations).values({ ...reg, ipHash }).returning({ id: schema.registrations.id });
     return row.id;
   });
-  if (result == null) throw new ApiFail(429, 'rate_limited', 'Слишком много регистраций, попробуйте позже');
+  if (result == null) throw new ApiFail(429, 'rate_limited', 'Слишком много регистраций, попробуйте позже', undefined, WINDOW_MINUTES * 60);
 
   // Оплата нужна, если мероприятие платное или цена не указана, а у программы есть ссылка на оплату.
   const paymentUrl = program.paymentUrl && reg.amount !== 0 ? program.paymentUrl : null;

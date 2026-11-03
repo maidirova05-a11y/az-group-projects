@@ -121,7 +121,7 @@ export const en: Dict = {
   },
 
   home: {
-    heroPanel: 'Educational opportunities start here!',
+    heroPanel: 'Educational opportunities start here',
     heroTitle: 'Olympiads, championships, science conferences and study abroad',
     heroLead: 'International opportunities for students, teachers and schools in Kazakhstan',
     popular: 'Popular',
@@ -358,7 +358,7 @@ export const en: Dict = {
     checkFields: 'Please check the form fields',
     tooMany: 'Too many registrations, please try again later',
     failed: 'Could not send the registration. Check your connection and try again — or message us on WhatsApp.',
-    doneTitle: 'You are registered!',
+    doneTitle: 'You are registered',
     doneNumber: (id: number) => `Registration number: ${id}`,
     donePay: 'To secure your place, pay for participation via Kaspi. In the payment comment, include the participant’s name and the registration number.',
     doneFree: 'A manager will contact you to confirm participation.',
