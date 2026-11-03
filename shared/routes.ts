@@ -4,7 +4,7 @@
  */
 import { DEFAULT_LANG, type Lang } from './i18n.js';
 
-export const SITE_ROUTES = ['/', '/events', '/projects', '/about', '/news', '/partners', '/faq', '/contacts', '/register', '/offer'] as const;
+export const SITE_ROUTES = ['/', '/events', '/projects', '/about', '/news', '/partners', '/faq', '/contacts', '/register', '/offer', '/privacy'] as const;
 export type Route = (typeof SITE_ROUTES)[number];
 
 /** Слаг страницы проекта: латиница, цифры, дефис (как projects.slug в базе). */

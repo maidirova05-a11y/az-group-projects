@@ -18,7 +18,7 @@ const url = (path: string, lang: (typeof LANGS)[number]) => `${SITE_ORIGIN}${rou
 const day = (d: Date | string) => (typeof d === 'string' ? d : d.toISOString().slice(0, 10));
 
 /** Приоритет и частота обновления раздела. */
-const PRIORITY: Record<string, string> = { '/': '1.0', '/events': '0.9', '/register': '0.9', '/projects': '0.8', '/faq': '0.7', '/news': '0.7', '/offer': '0.3' };
+const PRIORITY: Record<string, string> = { '/': '1.0', '/events': '0.9', '/register': '0.9', '/projects': '0.8', '/faq': '0.7', '/news': '0.7', '/offer': '0.3', '/privacy': '0.3' };
 const WEEKLY = new Set(['/', '/events', '/news']);
 
 function entry(path: string, lastmod: string | null, priority: string, changefreq: string): string {

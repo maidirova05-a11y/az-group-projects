@@ -264,7 +264,7 @@ export default function Register({ query }: { query: URLSearchParams }) {
               onChange={e => { setConsent(e.target.checked); if (errors.consent) setErrors(({ consent: _, ...rest }) => rest); }}
               aria-invalid={errors.consent ? true : undefined} aria-describedby={errors.consent ? `${uid}-consent-err` : undefined}
             />
-            <span>{T.consentBefore}<a href={localizeHref('/offer')} target="_blank" rel="noreferrer">{T.consentLink}</a>{T.consentAfter}</span>
+            <span>{T.consentBefore}<a href={localizeHref('/offer')} target="_blank" rel="noreferrer">{T.consentLink}</a>{T.consentMiddle}<a href={localizeHref('/privacy')} target="_blank" rel="noreferrer">{T.consentPrivacyLink}</a>{T.consentAfter}</span>
           </label>
           {err('consent')}
 

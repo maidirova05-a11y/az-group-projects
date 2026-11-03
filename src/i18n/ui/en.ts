@@ -62,6 +62,11 @@ export const en: Dict = {
         description: 'Terms of participation in AZ Group educational events: olympiads, championships, trainings, camps. Payment and refund procedure and AZ GROUP LLC details.',
         keywords: 'AZ Group public offer, olympiad participation terms, payment and refund, AZ GROUP LLC details',
       },
+      privacy: {
+        title: 'AZ Group Privacy Policy — Personal Data',
+        description: 'How AZ Group collects, stores and protects participants\' personal data, including minors: what data is collected, purposes, retention periods and parents\' rights.',
+        keywords: 'AZ Group privacy policy, participants\' personal data, legal representative consent, children\'s data protection',
+      },
     },
   },
 
@@ -76,6 +81,7 @@ export const en: Dict = {
     contacts: { label: 'Contacts', short: 'Contacts', title: 'Contact AZ Group in Astana' },
     register: { label: 'Registration', short: 'Register', title: 'Registration for olympiads and events' },
     offer: { label: 'Public offer', short: 'Offer', title: 'Public offer' },
+    privacy: { label: 'Privacy Policy', short: 'Privacy', title: 'Privacy Policy' },
   },
 
   layout: {
@@ -97,6 +103,7 @@ export const en: Dict = {
     leaveRequest: 'Send a request',
     footerAbout: 'A leading international education company in Kazakhstan and the CIS.',
     offer: 'Public offer',
+    privacy: 'Privacy Policy',
     toTop: 'Back to top',
     crumbs: 'Breadcrumbs',
     home: 'Home',
@@ -341,7 +348,9 @@ export const en: Dict = {
     optional: '— optional',
     consentBefore: 'I accept the ',
     consentLink: 'public offer',
-    consentAfter: ' and agree to the processing of personal data',
+    consentMiddle: ', have read the ',
+    consentPrivacyLink: 'privacy policy',
+    consentAfter: ' and consent to the processing of the participant\'s personal data. If the participant is a minor, I confirm that I am their legal representative or have the legal representative\'s consent',
     price: 'Price',
     submit: 'Register',
     sending: 'Sending…',
@@ -353,7 +362,7 @@ export const en: Dict = {
       city: 'Enter the city',
       phone: 'Check the phone number',
       email: 'Check the email',
-      consent: 'You need to accept the public offer',
+      consent: 'You need to accept the public offer and agree to the privacy policy',
     },
     checkFields: 'Please check the form fields',
     tooMany: 'Too many registrations, please try again later',
