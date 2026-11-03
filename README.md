@@ -80,7 +80,11 @@ npm run dev                      # сайт + API одной командой
 
 Светлая, тёмная или «как в системе» — переключатель в шапке (на телефоне — в листе «Ещё»), выбор хранится в `localStorage['az-theme']`. Inline-скрипт в `index.html` ставит тему до первой отрисовки (без вспышки), логика — `src/content/theme.ts`. Цвета — CSS-переменные в `src/index.css`.
 
-## Сборка и деплой (Vercel)
+## Деплой на Hoster.kz (VPS)
+
+Основной хостинг — VPS на Hoster.kz: nginx → Node (`server/prod.ts`) → PostgreSQL. Пошаговая инструкция, перенос базы из Neon и DNS — [docs/HOSTER-KZ.md](docs/HOSTER-KZ.md), скрипты — `deploy/`. Обновление: `bash /opt/az-group/deploy/deploy.sh`.
+
+## Сборка и деплой (Vercel, запасной вариант)
 
 1. В настройках проекта Vercel задайте переменные `DATABASE_URL` (лучше pooled-строку Neon/Supabase), `JWT_SECRET`, `IP_SALT`.
 2. Миграции к боевой базе применяются автоматически при production-деплое: Vercel запускает `npm run vercel-build` (`scripts/vercel-build.mjs` → `server/db/migrate.ts`, затем сборка). Preview-деплои базу не трогают; отключить — переменная `SKIP_DB_MIGRATE=1`. Вручную: временно подставьте боевую строку в `DATABASE_URL` в `.env.local` и выполните `npm run db:migrate`. Сид на проде — только для пустой базы. Форма заявок работает и на базе без новых колонок (сохраняет заявку без источника), но админка заявок требует актуальной схемы.
