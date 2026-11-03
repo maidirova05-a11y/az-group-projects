@@ -22,7 +22,7 @@ BRANCH=claude/optimistic-gauss-3glq1p bash setup-server.sh
 ## 3. Переменные окружения
 
 ```bash
-nano /opt/az-group-site-site/.env.production
+nano /opt/az-group-site/.env.production
 ```
 
 - `DATABASE_URL` — с паролем из шага 2;
@@ -51,7 +51,7 @@ rm /tmp/azgroup.dump
 ## 5. Запуск и проверка
 
 ```bash
-bash /opt/az-group-site-site/deploy/deploy.sh      # git pull, npm ci, сборка, миграции, перезапуск, проверка /api/health
+bash /opt/az-group-site/deploy/deploy.sh      # git pull, npm ci, сборка, миграции, перезапуск, проверка /api/health
 ```
 
 Проверка до смены DNS — со своего компьютера подставьте IP в hosts (`IP_СЕРВЕРА www.azgroup.kz`) или `curl -H 'Host: www.azgroup.kz' http://IP_СЕРВЕРА/api/health`.
@@ -74,7 +74,7 @@ certbot --nginx -d azgroup.kz -d www.azgroup.kz -d az-group.kz -d www.az-group.k
 - Отправьте `https://www.azgroup.kz/sitemap.xml` в Google Search Console / Яндекс Вебмастер заново только если менялся домен — здесь он тот же.
 - Vercel-проект оставьте на пару дней как запасной, затем удалите; Neon-базу — после того как убедитесь, что бэкапы сервера работают.
 - В Hoster.kz включите **снимки/бекапы** всего сервера (вкладки «Снимки», «Бекапы») — это дополнение к `pg_dump`.
-- Обновление сайта: `git push` в `main` → на сервере `bash /opt/az-group-site-site/deploy/deploy.sh`.
+- Обновление сайта — **автоматически**: слияние в `main` → в течение 2 минут сервер сам подтягивает код, собирает, применяет миграции и перезапускает сайт (`deploy/auto-deploy.sh`, cron каждые 2 минуты). Журнал: `tail -f /var/log/azgroup-deploy.log` (`OK` — успех, `FAILED` — деплой не прошёл, сайт остаётся на прежней версии, тот же коммит повторно не пробуется). Вручную: `bash /opt/az-group-site/deploy/deploy.sh`. На уже настроенном сервере автодеплой ставится так: `install -m 755 /opt/az-group-site/deploy/auto-deploy.sh /usr/local/bin/azgroup-autodeploy` и cron-файл `/etc/cron.d/azgroup-autodeploy` со строкой `*/2 * * * * root /usr/local/bin/azgroup-autodeploy >> /var/log/azgroup-deploy.log 2>&1`.
 - Логи: `journalctl -u azgroup-site -f`, `tail -f /var/log/nginx/error.log`.
 
 ## Что изменилось в коде

@@ -82,7 +82,7 @@ npm run dev                      # сайт + API одной командой
 
 ## Деплой на Hoster.kz (VPS)
 
-Основной хостинг — VPS на Hoster.kz: nginx → Node (`server/prod.ts`) → PostgreSQL. Пошаговая инструкция, перенос базы из Neon и DNS — [docs/HOSTER-KZ.md](docs/HOSTER-KZ.md), скрипты — `deploy/`. Обновление: `bash /opt/az-group-site-site/deploy/deploy.sh`.
+Основной хостинг — VPS на Hoster.kz: nginx → Node (`server/prod.ts`) → PostgreSQL. Пошаговая инструкция, перенос базы из Neon и DNS — [docs/HOSTER-KZ.md](docs/HOSTER-KZ.md), скрипты — `deploy/`. Обновление — автоматически после слияния в `main` (cron на сервере, `deploy/auto-deploy.sh`); вручную: `bash /opt/az-group-site/deploy/deploy.sh`.
 
 ## Сборка и деплой (Vercel, запасной вариант)
 
