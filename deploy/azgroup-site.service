@@ -1,0 +1,18 @@
+[Unit]
+Description=AZ Group site (Node, port 3200)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=azsite
+WorkingDirectory=/opt/az-group-site
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
