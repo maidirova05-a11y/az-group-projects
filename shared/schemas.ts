@@ -210,7 +210,7 @@ export const registrationInput = z.object({
   email: z.string().trim().max(200).refine(s => s === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s), 'Некорректный e-mail').optional(),
   comment: text(1000, 'Комментарий').default(''),
   /** Согласие с публичной офертой и обработкой персональных данных. */
-  consent: z.boolean().refine(v => v === true, 'Нужно согласие с условиями публичной оферты'),
+  consent: z.boolean().refine(v => v === true, 'Нужно принять оферту и согласиться с политикой конфиденциальности'),
   lang: z.string().max(5).optional(),
   referrer: z.string().max(2000).optional(),
   utm: leadUtm.optional(),

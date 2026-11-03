@@ -203,6 +203,7 @@ export default function Layout({ path, children }: { path: Route; children: Reac
             <li><a href={safeHref(contacts.phoneHref)}>{contacts.phone}</a></li>
             <li><a href={safeHref(`mailto:${contacts.email}`)}>{contacts.email}</a></li>
             <li><a {...anchorProps(contacts.offer)}>{t.offer}</a></li>
+            <li><a {...anchorProps('/privacy')}>{t.privacy}</a></li>
           </ul>
           <button type="button" className="footer-top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>{t.toTop}</button>
         </footer>
