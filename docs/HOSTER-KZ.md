@@ -13,16 +13,16 @@
 
 ```bash
 ssh root@IP_СЕРВЕРА
-curl -fsSL https://raw.githubusercontent.com/maidirova05-a11y/az-group-projects/main/deploy/setup-server.sh -o setup-server.sh
-bash setup-server.sh
+curl -fsSL https://raw.githubusercontent.com/maidirova05-a11y/az-group-projects/claude/optimistic-gauss-3glq1p/deploy/setup-server.sh -o setup-server.sh
+BRANCH=claude/optimistic-gauss-3glq1p bash setup-server.sh
 ```
 
-Скрипт ставит Node 22, PostgreSQL, nginx, certbot, firewall; создаёт пользователя `azgroup`, базу и ежедневный бэкап (03:00, 14 дней в `/var/backups/azgroup`). **Пароль БД выводится один раз** — сохраните его. Репозиторий приватный? Тогда сначала склонируйте его в `/opt/az-group` вручную (deploy key или токен), скрипт это увидит.
+Скрипт ставит Node 22, PostgreSQL, nginx, certbot, firewall; создаёт пользователя `azgroup`, базу и ежедневный бэкап (03:00, 14 дней в `/var/backups/azgroup`). **Пароль БД выводится один раз** — сохраните его. Репозиторий приватный? Тогда сначала склонируйте его в `/opt/az-group-site` вручную (deploy key или токен), скрипт это увидит.
 
 ## 3. Переменные окружения
 
 ```bash
-nano /opt/az-group/.env.production
+nano /opt/az-group-site-site/.env.production
 ```
 
 - `DATABASE_URL` — с паролем из шага 2;
@@ -42,16 +42,16 @@ scp azgroup.dump root@IP_СЕРВЕРА:/tmp/
 На сервере:
 
 ```bash
-sudo -u postgres pg_restore --no-owner --role=azgroup -d azgroup /tmp/azgroup.dump
+sudo -u postgres pg_restore --no-owner --role=azgroup_site -d azgroup_site /tmp/azgroup.dump
 rm /tmp/azgroup.dump
 ```
 
-Если база была пустой/новой — вместо переноса: `cd /opt/az-group && sudo -u azgroup npm run db:migrate:prod && sudo -u azgroup npm run db:seed` (сид — только для пустой базы) и `npm run admin:create:prod` (заполните `ADMIN_EMAIL`/`ADMIN_PASSWORD` в `.env.production`, потом очистите пароль).
+Если база была пустой/новой — вместо переноса: `cd /opt/az-group-site && sudo -u azsite npm run db:migrate:prod && sudo -u azsite npm run db:seed` (сид — только для пустой базы) и `npm run admin:create:prod` (заполните `ADMIN_EMAIL`/`ADMIN_PASSWORD` в `.env.production`, потом очистите пароль).
 
 ## 5. Запуск и проверка
 
 ```bash
-bash /opt/az-group/deploy/deploy.sh      # git pull, npm ci, сборка, миграции, перезапуск, проверка /api/health
+bash /opt/az-group-site-site/deploy/deploy.sh      # git pull, npm ci, сборка, миграции, перезапуск, проверка /api/health
 ```
 
 Проверка до смены DNS — со своего компьютера подставьте IP в hosts (`IP_СЕРВЕРА www.azgroup.kz`) или `curl -H 'Host: www.azgroup.kz' http://IP_СЕРВЕРА/api/health`.
@@ -74,8 +74,8 @@ certbot --nginx -d azgroup.kz -d www.azgroup.kz -d az-group.kz -d www.az-group.k
 - Отправьте `https://www.azgroup.kz/sitemap.xml` в Google Search Console / Яндекс Вебмастер заново только если менялся домен — здесь он тот же.
 - Vercel-проект оставьте на пару дней как запасной, затем удалите; Neon-базу — после того как убедитесь, что бэкапы сервера работают.
 - В Hoster.kz включите **снимки/бекапы** всего сервера (вкладки «Снимки», «Бекапы») — это дополнение к `pg_dump`.
-- Обновление сайта: `git push` в `main` → на сервере `bash /opt/az-group/deploy/deploy.sh`.
-- Логи: `journalctl -u azgroup -f`, `tail -f /var/log/nginx/error.log`.
+- Обновление сайта: `git push` в `main` → на сервере `bash /opt/az-group-site-site/deploy/deploy.sh`.
+- Логи: `journalctl -u azgroup-site -f`, `tail -f /var/log/nginx/error.log`.
 
 ## Что изменилось в коде
 

@@ -3,5 +3,5 @@
 set -euo pipefail
 DIR=/var/backups/azgroup
 mkdir -p "$DIR"
-sudo -u postgres pg_dump -Fc azgroup > "$DIR/azgroup-$(date +%F).dump"
+sudo -u postgres pg_dump -Fc azgroup_site > "$DIR/azgroup-site-$(date +%F).dump"
 find "$DIR" -name '*.dump' -mtime +14 -delete

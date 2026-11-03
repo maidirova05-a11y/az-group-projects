@@ -1,50 +1,44 @@
 #!/usr/bin/env bash
-# Первичная настройка чистого Ubuntu 22.04/24.04 на Hoster.kz. Запускать от root: bash setup-server.sh
-# Идемпотентен: повторный запуск ничего не ломает.
+# Настройка Node-сайта на сервере, где УЖЕ работают другие проекты (Django на :8000, eurika на :3100).
+# Ничего чужого не трогает: свои пользователь azsite, база azgroup_site, порт 3200, сайт nginx azgroup-site.
+# Firewall и сайт nginx default не меняются. Идемпотентен. Запуск от root: bash setup-server.sh
 set -euo pipefail
 REPO="${REPO:-https://github.com/maidirova05-a11y/az-group-projects.git}"
 BRANCH="${BRANCH:-main}"
-APP=/opt/az-group
+APP=/opt/az-group-site
 
-apt-get update
-apt-get install -y curl git nginx postgresql ufw certbot python3-certbot-nginx ca-certificates gnupg sudo
-
-# Node.js 22 LTS
+apt-get install -y curl git nginx postgresql certbot python3-certbot-nginx sudo
 if ! command -v node >/dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 20 ]; then
-  curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-  apt-get install -y nodejs
+  echo "Нужен Node.js 20+"; exit 1
 fi
 
-id azgroup >/dev/null 2>&1 || useradd --system --create-home --shell /usr/sbin/nologin azgroup
+id azsite >/dev/null 2>&1 || useradd --system --create-home --shell /usr/sbin/nologin azsite
 
-# База данных
-if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='azgroup'" | grep -q 1; then
+# База: отдельная роль и база, существующие проекты не затрагиваются
+if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='azgroup_site'" | grep -q 1; then
   DBPASS="$(openssl rand -hex 16)"
-  sudo -u postgres psql -c "CREATE ROLE azgroup LOGIN PASSWORD '$DBPASS'"
-  sudo -u postgres createdb -O azgroup azgroup
-  echo "Пароль БД (впишите в .env.production): $DBPASS"
+  sudo -u postgres psql -c "CREATE ROLE azgroup_site LOGIN PASSWORD '$DBPASS'"
+  echo "ПАРОЛЬ БД (впишите в .env.production): $DBPASS"
 fi
+sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='azgroup_site'" | grep -q 1 \
+  || sudo -u postgres createdb -O azgroup_site azgroup_site
 
-# Код
 if [ ! -d "$APP/.git" ]; then git clone --branch "$BRANCH" "$REPO" "$APP"; fi
-chown -R azgroup:azgroup "$APP"
+chown -R azsite:azsite "$APP"
 if [ ! -f "$APP/.env.production" ]; then
   cp "$APP/deploy/env.production.example" "$APP/.env.production"
-  chown azgroup:azgroup "$APP/.env.production"; chmod 600 "$APP/.env.production"
-  echo ">>> Заполните $APP/.env.production (DATABASE_URL, JWT_SECRET, IP_SALT), затем: bash $APP/deploy/deploy.sh"
+  chown azsite:azsite "$APP/.env.production"; chmod 600 "$APP/.env.production"
 fi
 
-# systemd, nginx, firewall
-cp "$APP/deploy/azgroup.service" /etc/systemd/system/azgroup.service
-systemctl daemon-reload && systemctl enable azgroup
-cp "$APP/deploy/nginx.conf" /etc/nginx/sites-available/azgroup
-ln -sf /etc/nginx/sites-available/azgroup /etc/nginx/sites-enabled/azgroup
-rm -f /etc/nginx/sites-enabled/default
+cp "$APP/deploy/azgroup-site.service" /etc/systemd/system/azgroup-site.service
+systemctl daemon-reload && systemctl enable azgroup-site
+
+# nginx: только наш новый файл; существующие сайты не трогаем
+cp "$APP/deploy/nginx.conf" /etc/nginx/sites-available/azgroup-site
+ln -sf /etc/nginx/sites-available/azgroup-site /etc/nginx/sites-enabled/azgroup-site
 nginx -t && systemctl reload nginx
-ufw allow OpenSSH && ufw allow 'Nginx Full' && ufw --force enable
 
-# Ежедневный бэкап БД в 03:00
-install -m 755 "$APP/deploy/backup.sh" /usr/local/bin/azgroup-backup
-echo '0 3 * * * root /usr/local/bin/azgroup-backup' > /etc/cron.d/azgroup-backup
+install -m 755 "$APP/deploy/backup.sh" /usr/local/bin/azgroup-site-backup
+echo '30 3 * * * root /usr/local/bin/azgroup-site-backup' > /etc/cron.d/azgroup-site-backup
 
-echo "Готово. Дальше: заполнить .env.production → deploy.sh → certbot (см. docs/HOSTER-KZ.md)"
+echo "Готово. Дальше: заполнить $APP/.env.production → bash $APP/deploy/deploy.sh"
