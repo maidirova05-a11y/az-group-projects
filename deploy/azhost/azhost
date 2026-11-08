@@ -1,0 +1,367 @@
+#!/usr/bin/env bash
+# azhost — подключение проектов на общий сервер: Docker Compose + nginx + HTTPS + автодеплой + бекапы баз.
+# Команды: azhost help. Устанавливается deploy/azhost/install.sh в /usr/local/bin/azhost (от root).
+set -euo pipefail
+
+ETC=${AZHOST_ETC:-/etc/azhost}
+APPS=${AZHOST_APPS:-/opt/apps}
+LIB=${AZHOST_LIB:-/opt/azhost}
+SRC=${AZHOST_SRC:-/opt/azhost-src}
+BACKUPS=${AZHOST_BACKUPS:-/var/backups/apps}
+STATE=${AZHOST_STATE:-/var/lib/azhost}
+NGX_AV=${AZHOST_NGX_AV:-/etc/nginx/sites-available}
+NGX_EN=${AZHOST_NGX_EN:-/etc/nginx/sites-enabled}
+CF_CONF=${AZHOST_CF_CONF:-/etc/nginx/azhost-cloudflare.conf}
+PG18=/usr/lib/postgresql/18/bin
+export COMPOSE_PARALLEL_LIMIT=1   # собирать образы по одному: сервер небольшой
+
+die() { echo "Ошибка: $*" >&2; exit 1; }
+say() { echo "• $*"; }
+[ "$(id -u)" = 0 ] || die "запускайте от root"
+# общие настройки (необязательно): EMAIL для certbot
+# shellcheck disable=SC1091
+[ -f "$ETC/azhost.conf" ] && . "$ETC/azhost.conf"
+
+load() {
+  [ -f "$ETC/$1.conf" ] || die "проект «$1» не найден (список: azhost status)"
+  # shellcheck disable=SC1090
+  . "$ETC/$1.conf"
+  DIR="$APPS/$1"
+}
+
+# docker compose для проекта: dc <имя> <аргументы…>
+dc() {
+  local n=$1; shift; load "$n"
+  local files=()
+  if [ "$TYPE" = static-fn ]; then files=(-f compose.azhost-static.yaml); else files=(-f compose.yaml); fi
+  [ -f "$DIR/compose.azhost.yaml" ] && files+=(-f compose.azhost.yaml)
+  (cd "$DIR" && docker compose -p "$n" "${files[@]}" "$@")
+}
+
+has_service() { local list; list=$(dc "$1" config --services 2>/dev/null) || return 1; grep -qx "$2" <<<"$list"; }
+
+http_code() { curl -s -o /dev/null -m 10 -w '%{http_code}' -H "Host: $2" "http://127.0.0.1:$1/" || true; }
+
+prepare_static() {  # копирует мини-сервер в каталог проекта
+  load "$1"
+  [ "$TYPE" = static-fn ] || return 0
+  mkdir -p "$DIR/.azhost"
+  cp "$LIB/static-fn/Dockerfile" "$LIB/static-fn/Dockerfile.dockerignore" "$LIB/static-fn/server.cjs" "$DIR/.azhost/"
+}
+
+port_free() {
+  local listening; listening=$(ss -ltn 2>/dev/null | awk '{print $4}')
+  grep -E "[:.]$1\$" >/dev/null <<<"$listening" && return 1
+  grep -lE "^PORT=\"?$1\"?\$" "$ETC"/*.conf >/dev/null 2>&1 && return 1
+  return 0
+}
+
+write_vhost() {
+  load "$1"
+  local cf=""; [ "${CLOUDFLARE:-0}" = 1 ] && cf="    include $CF_CONF;"
+  cat > "$NGX_AV/app-$1" <<EOF
+# azhost: $1 (не править вручную — файл пересоздаётся командой azhost add/vhost; certbot дописывает блоки HTTPS)
+server {
+    listen 80;
+    listen [::]:80;
+    server_name $DOMAINS;
+    client_max_body_size 5m;
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml application/xml text/plain;
+    gzip_min_length 1024;
+$cf
+    location / {
+        proxy_pass http://127.0.0.1:$PORT;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host \$host;
+        # Перезаписываем, а не дописываем: клиент не может подделать свой IP
+        proxy_set_header X-Forwarded-For \$remote_addr;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        # заголовок Vercel приложения считают доверенным — клиентскую копию убираем
+        proxy_set_header X-Vercel-Forwarded-For "";
+        proxy_read_timeout 60s;
+    }
+}
+EOF
+  ln -sf "$NGX_AV/app-$1" "$NGX_EN/app-$1"
+}
+
+nginx_reload() { nginx -t >/dev/null 2>&1 || { nginx -t; die "конфигурация nginx с ошибкой, nginx не перезагружен"; }; systemctl reload nginx; }
+
+cmd_add() {
+  local name=${1:-}; local repo=${2:-}; shift 2 2>/dev/null || true
+  [ -n "$name" ] && [ -n "$repo" ] || die "использование: azhost add <имя> <git-url> <домен> [домен…] [--port N] [--branch B] [--cloudflare]"
+  [[ $name =~ ^[a-z0-9-]{2,40}$ ]] || die "имя: латиница в нижнем регистре, цифры, дефис"
+  [ ! -f "$ETC/$name.conf" ] || die "проект «$name» уже подключён"
+  local domains=() port="" branch="" cloudflare=0
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --port) port=$2; shift 2;;
+      --branch) branch=$2; shift 2;;
+      --cloudflare) cloudflare=1; shift;;
+      -*) die "неизвестный параметр $1";;
+      *) [[ $1 =~ ^[a-z0-9.-]+\.[a-z]{2,}$ ]] || die "некорректный домен: $1"; domains+=("$1"); shift;;
+    esac
+  done
+  [ ${#domains[@]} -gt 0 ] || die "укажите хотя бы один домен"
+  local dir="$APPS/$name"
+  [ ! -e "$dir" ] || die "каталог $dir уже существует"
+
+  say "клонирую $repo"
+  git clone -q --depth 50 ${branch:+-b "$branch"} "$repo" "$dir"
+  branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
+
+  local type
+  if [ -f "$dir/compose.yaml" ]; then type=compose
+  elif [ -f "$dir/index.html" ] && [ -d "$dir/api" ]; then type=static-fn
+  else rm -rf "$dir"; die "не распознан тип проекта: нет ни compose.yaml, ни index.html + api/"; fi
+
+  if [ -z "$port" ]; then
+    if [ $type = compose ]; then port=$(grep -oE 'APP_PORT:-[0-9]+' "$dir/compose.yaml" | head -1 | grep -oE '[0-9]+$' || true); fi
+    if [ -z "$port" ]; then port=3106; while ! port_free $port; do port=$((port+1)); done; fi
+  fi
+  port_free "$port" || { rm -rf "$dir"; die "порт $port занят другим проектом или службой (укажите другой: --port N)"; }
+
+  mkdir -p "$ETC"
+  cat > "$ETC/$name.conf" <<EOF
+NAME="$name"
+REPO="$repo"
+BRANCH="$branch"
+DOMAINS="${domains[*]}"
+PORT="$port"
+TYPE="$type"
+CLOUDFLARE="$cloudflare"
+MEM_APP="512m"
+MEM_DB="384m"
+EOF
+  chmod 600 "$ETC/$name.conf"
+  # каталог проекта: служебные файлы не попадают в git
+  { echo "docker.env"; echo ".env"; echo "compose.azhost*.yaml"; echo ".azhost/"; echo ".azhost-started"; } >> "$dir/.git/info/exclude"
+  printf 'APP_PORT=%s\nPOSTGRES_MAJOR=18\n' "$port" > "$dir/.env"
+
+  if [ $type = static-fn ]; then
+    cat > "$dir/docker.env" <<'EOF'
+# Секреты проекта (значения — как в Vercel → Settings → Environment Variables). В git не попадает.
+# Адрес портала Bitrix24 вида https://<портал>.bitrix24.kz/rest/<пользователь>/<код>/
+BITRIX_WEBHOOK_URL=
+# Необязательно:
+# BITRIX_DEAL_CATEGORY_ID=
+# BITRIX_DEAL_STAGE_ID=
+# BITRIX_STATUS_ID=
+# BITRIX_SOURCE_ID=
+# BITRIX_ASSIGNED_BY_ID=
+EOF
+    cat > "$dir/compose.azhost-static.yaml" <<EOF
+name: $name
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .azhost/Dockerfile
+    image: azhost-$name
+    restart: unless-stopped
+    env_file: docker.env
+    ports:
+      - "127.0.0.1:\${APP_PORT}:3000"
+    mem_limit: 256m
+EOF
+  else
+    if [ -f "$dir/docker.env.example" ]; then cp "$dir/docker.env.example" "$dir/docker.env"; else : > "$dir/docker.env"; fi
+  fi
+  chmod 600 "$dir/docker.env"
+  prepare_static "$name"
+
+  # ограничения памяти для app/db — только для существующих служб
+  if [ $type = compose ]; then
+    local services; services=$(dc "$name" config --services) || die "docker compose не смог прочитать compose.yaml проекта"
+    local override="services:"$'\n'
+    for s in app db; do
+      if grep -qx "$s" <<<"$services"; then
+        local mem='${MEM_APP:-512m}'; [ $s = db ] && mem='${MEM_DB:-384m}'
+        override+="  $s:"$'\n'"    restart: unless-stopped"$'\n'"    mem_limit: $mem"$'\n'
+      fi
+    done
+    printf '%s' "$override" > "$dir/compose.azhost.yaml"
+    printf 'MEM_APP=%s\nMEM_DB=%s\n' 512m 384m >> "$dir/.env"
+  fi
+
+  if [ "$cloudflare" = 1 ]; then cf_conf; fi
+  write_vhost "$name"; nginx_reload
+  say "проект «$name» подключён: тип $type, порт $port, домены: ${domains[*]}"
+  cat <<EOF
+
+Дальше:
+  1) azhost env $name          # заполнить секреты (docker.env)
+  2) azhost up $name           # собрать и запустить
+  3) azhost db-import $name --from-url   # перенести данные из старой базы (если у проекта есть база)
+  4) проверить: azhost status
+  5) переключить DNS на этот сервер, затем: azhost ssl $name
+EOF
+}
+
+cf_conf() {
+  [ -f "$CF_CONF" ] && return 0
+  say "загружаю адреса Cloudflare (для определения реального IP посетителей)"
+  { curl -fsS https://www.cloudflare.com/ips-v4; echo; curl -fsS https://www.cloudflare.com/ips-v6; echo; } | grep -E '^[0-9a-f:./]+$' | sed 's/.*/set_real_ip_from &;/' > "$CF_CONF.tmp"
+  echo "real_ip_header CF-Connecting-IP;" >> "$CF_CONF.tmp"
+  mv "$CF_CONF.tmp" "$CF_CONF"
+}
+
+cmd_env() {
+  load "${1:?имя проекта}"
+  "${EDITOR:-nano}" "$DIR/docker.env"
+  chmod 600 "$DIR/docker.env"
+  say "готово. Применить: azhost up $1"
+}
+
+cmd_up() {
+  local n=${1:?имя проекта}; load "$n"
+  prepare_static "$n"
+  say "собираю и запускаю «$n» (первый раз может занять несколько минут)"
+  dc "$n" up -d --build
+  touch "$DIR/.azhost-started"
+  sleep 5
+  dc "$n" ps
+  say "ответ сайта локально (Host: ${DOMAINS%% *}): HTTP $(http_code "$PORT" "${DOMAINS%% *}")"
+}
+
+cmd_down() { dc "${1:?имя проекта}" down; rm -f "$APPS/$1/.azhost-started"; }
+
+cmd_logs() { local n=${1:?имя проекта}; shift; dc "$n" logs --tail 100 -f "$@"; }
+
+cmd_status() {
+  shopt -s nullglob
+  printf '%-22s %-11s %-6s %-9s %s\n' ПРОЕКТ ТИП ПОРТ HTTP ДОМЕНЫ
+  for f in "$ETC"/*.conf; do
+    [ "$(basename "$f")" = azhost.conf ] && continue
+    ( . "$f"
+      local state="не запущен"
+      if [ -f "$APPS/$NAME/.azhost-started" ]; then state=$(http_code "$PORT" "${DOMAINS%% *}"); fi
+      printf '%-22s %-11s %-6s %-9s %s\n' "$NAME" "$TYPE" "$PORT" "$state" "$DOMAINS" )
+  done
+  echo; echo "Память:"; free -h | sed -n 1,3p
+  echo; echo "Контейнеры:"; docker ps --format 'table {{.Names}}\t{{.Status}}' 2>/dev/null | head -30
+}
+
+cmd_ssl() {
+  local n=${1:?имя проекта}; load "$n"
+  local ip; ip=$(curl -4 -fsS -m 8 https://api.ipify.org 2>/dev/null || true)
+  if [ "${CLOUDFLARE:-0}" != 1 ] && [ -n "$ip" ]; then
+    for d in $DOMAINS; do
+      local got; got=$(getent ahostsv4 "$d" | awk '{print $1}' | sort -u | tr '\n' ' ')
+      case " $got " in *" $ip "*) ;; *) die "DNS: $d указывает на «${got:-ничего}», а сервер — $ip. Поменяйте A-запись и подождите несколько минут";; esac
+    done
+  fi
+  local args=(); for d in $DOMAINS; do args+=(-d "$d"); done
+  certbot --nginx "${args[@]}" --redirect --non-interactive --agree-tos ${EMAIL:+-m "$EMAIL"}
+  say "HTTPS включён для: $DOMAINS"
+}
+
+cmd_db_import() {
+  local n=${1:?имя проекта}; local src=${2:-}; load "$n"
+  [ "$TYPE" = compose ] || die "у проекта нет базы данных"
+  has_service "$n" db || die "в compose проекта нет службы db"
+  local dump="$src"
+  if [ "$src" = --from-url ]; then
+    local url; read -rsp "Вставьте строку подключения СТАРОЙ базы (ввод скрыт) и нажмите Enter: " url; echo
+    [ -n "$url" ] || die "строка пустая"
+    dump="/root/$n.dump"
+    local pgd=pg_dump; [ -x "$PG18/pg_dump" ] && pgd="$PG18/pg_dump"
+    say "снимаю дамп ($pgd)"
+    "$pgd" --no-owner --no-acl -Fc "$url" -f "$dump" || { rm -f "$dump"; die "не удалось снять дамп"; }
+    unset url
+  fi
+  [ -f "$dump" ] || die "файл дампа не найден: $dump"
+  say "запускаю базу и останавливаю приложение на время переноса"
+  dc "$n" up -d db
+  for _ in $(seq 1 30); do dc "$n" exec -T db sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' >/dev/null 2>&1 && break; sleep 2; done
+  dc "$n" stop app >/dev/null 2>&1 || true
+  say "загружаю данные"
+  set +e
+  dc "$n" exec -T db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner --no-acl' < "$dump"
+  local rc=$?; set -e
+  [ $rc -eq 0 ] && say "данные загружены" || say "pg_restore завершился с кодом $rc (предупреждения про отсутствующие объекты при --clean нормальны); проверьте счётчики ниже"
+  [ "$src" = --from-url ] && rm -f "$dump"
+  dc "$n" up -d
+  dc "$n" exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "select relname || chr(58) || n_live_tup from pg_stat_user_tables order by n_live_tup desc limit 8"' || true
+}
+
+cmd_backup() {
+  shopt -s nullglob
+  mkdir -p "$BACKUPS"
+  for f in "$ETC"/*.conf; do
+    [ "$(basename "$f")" = azhost.conf ] && continue
+    ( . "$f"
+      [ "$TYPE" = compose ] || exit 0
+      [ -f "$APPS/$NAME/.azhost-started" ] || exit 0
+      running=$(dc "$NAME" ps --status running --services 2>/dev/null || true)
+      grep -qx db <<<"$running" || exit 0
+      mkdir -p "$BACKUPS/$NAME"
+      out="$BACKUPS/$NAME/$NAME-$(date +%F).dump"
+      if dc "$NAME" exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc' > "$out.tmp"; then mv "$out.tmp" "$out"; echo "$(date -Is) backup $NAME ok"; else rm -f "$out.tmp"; echo "$(date -Is) backup $NAME FAILED"; fi
+      find "$BACKUPS/$NAME" -name '*.dump' -mtime +14 -delete )
+  done
+}
+
+cmd_autodeploy() {
+  shopt -s nullglob
+  exec 9>/var/lock/azhost-deploy.lock; flock -n 9 || exit 0
+  mkdir -p "$STATE"
+  for f in "$ETC"/*.conf; do
+    [ "$(basename "$f")" = azhost.conf ] && continue
+    ( . "$f"
+      d="$APPS/$NAME"
+      [ -f "$d/.azhost-started" ] || exit 0
+      cd "$d"
+      git fetch -q origin "$BRANCH" 2>/dev/null || exit 0
+      new=$(git rev-parse FETCH_HEAD)
+      [ "$(git rev-parse HEAD)" = "$new" ] && exit 0
+      [ -f "$STATE/$NAME.failed" ] && [ "$(cat "$STATE/$NAME.failed")" = "$new" ] && exit 0
+      echo "$(date -Is) deploy $NAME ${new:0:7}"
+      git reset -q --hard "$new"
+      prepare_static "$NAME"
+      if dc "$NAME" up -d --build; then
+        rm -f "$STATE/$NAME.failed"; echo "$(date -Is) OK $NAME ${new:0:7}"
+      else
+        echo "$new" > "$STATE/$NAME.failed"; echo "$(date -Is) FAILED $NAME ${new:0:7}"
+      fi )
+  done
+}
+
+cmd_vhost() { load "${1:?имя проекта}"; [ "${CLOUDFLARE:-0}" = 1 ] && cf_conf; write_vhost "$1"; nginx_reload; say "nginx-сайт пересоздан (если уже был HTTPS — выполните azhost ssl $1)"; }
+
+cmd_update() {
+  [ -d "$SRC/.git" ] || die "нет $SRC"
+  git -C "$SRC" pull -q --ff-only
+  bash "$SRC/deploy/azhost/install.sh" --no-packages
+}
+
+cmd_help() {
+  cat <<'EOF'
+azhost — проекты на общем сервере (Docker Compose + nginx + HTTPS)
+
+  add <имя> <git-url> <домен…> [--port N] [--branch B] [--cloudflare]   подключить проект
+  env <имя>                      заполнить секреты (docker.env)
+  up <имя>                       собрать и запустить
+  down <имя>                     остановить (данные остаются)
+  db-import <имя> --from-url     перенести базу из старой (строка подключения вводится скрыто)
+  db-import <имя> <файл.dump>    загрузить готовый дамп
+  ssl <имя>                      выпустить HTTPS-сертификат (после смены DNS)
+  vhost <имя>                    пересоздать nginx-сайт
+  status                         сводка по всем проектам и памяти
+  logs <имя> [служба]            журнал контейнеров
+  backup                         дамп баз (cron, ежедневно)
+  autodeploy                     обновление проектов по main (cron, каждые 3 минуты)
+  update                         обновить сам azhost
+EOF
+}
+
+cmd=${1:-help}; shift || true
+case $cmd in
+  add) cmd_add "$@";; env) cmd_env "$@";; up) cmd_up "$@";; down) cmd_down "$@";; logs) cmd_logs "$@";;
+  status) cmd_status;; ssl) cmd_ssl "$@";; db-import) cmd_db_import "$@";; backup) cmd_backup;;
+  autodeploy) cmd_autodeploy;; vhost) cmd_vhost "$@";; update) cmd_update;; help|-h|--help) cmd_help;;
+  *) cmd_help; exit 1;;
+esac
