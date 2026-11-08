@@ -1,0 +1,68 @@
+{
+  "_comment": "План переезда: порядок — от простых проектов к сложным. Домены взяты из кода проектов; перед запуском migrate-all каждый домен подтверждается вопросом. Секретов здесь нет.",
+  "projects": [
+    {
+      "name": "atlantia",
+      "repo": "https://github.com/maidirova05-a11y/atlantia-olympiads-kz",
+      "domains": ["atlantia-olympiads.kz", "www.atlantia-olympiads.kz"],
+      "import_db": false,
+      "cloudflare": false,
+      "required_env": ["BITRIX_WEBHOOK_URL"],
+      "note": "Заявки с формы: после запуска база новая (старой не было)."
+    },
+    {
+      "name": "fibonacci",
+      "repo": "https://github.com/maidirova05-a11y/fibonacci-olympiads-kz",
+      "domains": ["fibonacci-olympiads.kz", "www.fibonacci-olympiads.kz"],
+      "import_db": false,
+      "cloudflare": false,
+      "required_env": ["BITRIX_WEBHOOK_URL", "RESULTS_SESSION_SECRET", "RESEND_API_KEY", "MAIL_FROM"],
+      "note": "Кабинет результатов хранится в Postgres: после переезда загрузите результаты заново (import-results). Секрет сессий лучше взять прежний."
+    },
+    {
+      "name": "smarthub",
+      "repo": "https://github.com/maidirova05-a11y/smarthub-kz",
+      "domains": ["smarthub-kz.com", "www.smarthub-kz.com"],
+      "import_db": true,
+      "cloudflare": false,
+      "required_env": ["ADMIN_PASSWORD", "ADMIN_SECRET"],
+      "note": "Заявки и админка; база переносится из Neon."
+    },
+    {
+      "name": "itecx",
+      "repo": "https://github.com/maidirova05-a11y/itecx-landing",
+      "domains": ["itecx.kz", "www.itecx.kz"],
+      "import_db": true,
+      "cloudflare": false,
+      "required_env": ["ADMIN_PASSWORD_HASH", "TOKEN_SECRET"],
+      "note": "Заявки и админка; база переносится из Neon."
+    },
+    {
+      "name": "onerlab",
+      "repo": "https://github.com/maidirova05-a11y/onerlab",
+      "domains": ["onerlab.kz", "www.onerlab.kz"],
+      "import_db": true,
+      "cloudflare": false,
+      "required_env": ["ADMIN_PASSWORD_HASH", "ADMIN_SESSION_SECRET"],
+      "note": "Next.js + Prisma; миграции Prisma применяются при запуске, база переносится из Neon."
+    },
+    {
+      "name": "astanatechcup",
+      "repo": "https://github.com/maidirova05-a11y/astanatechcup",
+      "domains": ["astanatechcup.kz", "www.astanatechcup.kz"],
+      "import_db": true,
+      "cloudflare": false,
+      "required_env": ["ENCRYPTION_KEY", "CSRF_SECRET", "ADMIN_PASSWORD_HASH", "JUDGE_PASSWORD_HASH"],
+      "note": "ENCRYPTION_KEY — ТОЛЬКО прежний (из Vercel), иначе персональные данные станут нечитаемыми. Stripe/Turnstile — по необходимости."
+    },
+    {
+      "name": "ascora",
+      "repo": "https://github.com/maidirova05-a11y/Ascora-Education",
+      "domains": ["www.ascora.education", "ascora.education"],
+      "import_db": true,
+      "cloudflare": true,
+      "required_env": ["JWT_SECRET"],
+      "note": "Домен за Cloudflare: на время выпуска сертификата поставьте режим SSL «Full». Bitrix24 и Google Sheets — по необходимости."
+    }
+  ]
+}

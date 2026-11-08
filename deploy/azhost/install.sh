@@ -34,8 +34,11 @@ fi
 mkdir -p /etc/azhost /opt/apps /opt/azhost /var/backups/apps /var/lib/azhost
 install -m 755 "$HERE/azhost" /usr/local/bin/azhost
 rm -rf /opt/azhost/static-fn && cp -r "$HERE/static-fn" /opt/azhost/static-fn
+install -m 644 "$HERE/projects.json" /opt/azhost/projects.json
+mkdir -p /root/azhost-secrets && chmod 700 /root/azhost-secrets
 
 echo '*/3 * * * * root /usr/local/bin/azhost autodeploy >> /var/log/azhost.log 2>&1' > /etc/cron.d/azhost-autodeploy
 echo '50 3 * * * root /usr/local/bin/azhost backup >> /var/log/azhost.log 2>&1' > /etc/cron.d/azhost-backup
+echo '*/5 * * * * root /usr/local/bin/azhost watch >> /var/log/azhost.log 2>&1' > /etc/cron.d/azhost-watch
 
 echo "Готово. Справка: azhost help"
