@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+test
+tests
+docs
+scripts
+*.md
+*.csv
+*.docx
+*.doc
+docker.env
+.env
+compose*.yaml
