@@ -259,35 +259,6 @@ cmd_ssl() {
   say "HTTPS включён для: $DOMAINS"
 }
 
-cmd_db_import() {
-  local n=${1:?имя проекта}; local src=${2:-}; load "$n"
-  [ "$TYPE" = compose ] || die "у проекта нет базы данных"
-  has_service "$n" db || die "в compose проекта нет службы db"
-  local dump="$src"
-  if [ "$src" = --from-url ]; then
-    local url; read -rsp "Вставьте строку подключения СТАРОЙ базы (ввод скрыт) и нажмите Enter: " url; echo
-    [ -n "$url" ] || die "строка пустая"
-    dump="/root/$n.dump"
-    local pgd=pg_dump; [ -x "$PG18/pg_dump" ] && pgd="$PG18/pg_dump"
-    say "снимаю дамп ($pgd)"
-    "$pgd" --no-owner --no-acl -Fc "$url" -f "$dump" || { rm -f "$dump"; die "не удалось снять дамп"; }
-    unset url
-  fi
-  [ -f "$dump" ] || die "файл дампа не найден: $dump"
-  say "запускаю базу и останавливаю приложение на время переноса"
-  dc "$n" up -d db
-  for _ in $(seq 1 30); do dc "$n" exec -T db sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' >/dev/null 2>&1 && break; sleep 2; done
-  dc "$n" stop app >/dev/null 2>&1 || true
-  say "загружаю данные"
-  set +e
-  dc "$n" exec -T db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner --no-acl' < "$dump"
-  local rc=$?; set -e
-  [ $rc -eq 0 ] && say "данные загружены" || say "pg_restore завершился с кодом $rc (предупреждения про отсутствующие объекты при --clean нормальны); проверьте счётчики ниже"
-  [ "$src" = --from-url ] && rm -f "$dump"
-  dc "$n" up -d
-  dc "$n" exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "select relname || chr(58) || n_live_tup from pg_stat_user_tables order by n_live_tup desc limit 8"' || true
-}
-
 cmd_backup() {
   shopt -s nullglob
   mkdir -p "$BACKUPS"
@@ -338,6 +309,356 @@ cmd_update() {
   bash "$SRC/deploy/azhost/install.sh" --no-packages
 }
 
+# ───────────────────────── проверки, перенос по шагам, наблюдатель ─────────────────────────
+
+notify() {  # notify <текст>: в журнал и (если настроено в /etc/azhost/azhost.conf: TG_TOKEN, TG_CHAT) в Telegram
+  echo "$(date -Is) $*"
+  if [ -n "${TG_TOKEN:-}" ] && [ -n "${TG_CHAT:-}" ]; then
+    curl -s -m 10 -o /dev/null "https://api.telegram.org/bot$TG_TOKEN/sendMessage" --data-urlencode "chat_id=$TG_CHAT" --data-urlencode "text=azhost: $*" || true
+  fi
+}
+
+server_ip() {
+  local ip=${SERVER_IP:-}
+  [ -n "$ip" ] || ip=$(curl -4 -fsS -m 8 https://api.ipify.org 2>/dev/null || true)
+  echo "$ip"
+}
+
+dns_ips() { getent ahostsv4 "$1" 2>/dev/null | awk '{print $1}' | sort -u | tr '\n' ' ' || true; }
+
+# Строки таблиц: «схема.таблица|число». SQL читается из stdin, запускается переданной командой.
+COUNTS_SQL="select table_schema || '.' || table_name || '|' || (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name), false, true, '')))[1]::text from information_schema.tables where table_type = 'BASE TABLE' and table_schema not in ('pg_catalog', 'information_schema') order by 1"
+counts_local() { dc "$1" exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At' <<<"$COUNTS_SQL"; }
+
+V_FAIL=0; V_WARN=0
+v_ok()   { echo "  ✓ $*"; }
+v_bad()  { echo "  ✗ $*"; V_FAIL=$((V_FAIL+1)); }
+v_warn() { echo "  ! $*"; V_WARN=$((V_WARN+1)); }
+
+local_code() { curl -s -o /dev/null -m 15 -w '%{http_code}' -H "Host: $2" "http://127.0.0.1:$1$3" || true; }
+
+# Пути из sitemap.xml проекта (локально), не больше 30
+sitemap_paths() {
+  curl -s -m 15 -H "Host: $2" "http://127.0.0.1:$1/sitemap.xml" 2>/dev/null | grep -oE '<loc>[^<]+</loc>' | sed -E 's#</?loc>##g; s#^https?://[^/]+##' | grep -E '^/' | awk '!s[$0]++' | head -30 || true
+}
+
+cmd_verify() {
+  local n=${1:?имя проекта}; shift
+  local mode=local oldbase=""
+  while [ $# -gt 0 ]; do
+    case $1 in --public) mode=public; shift;; --old) oldbase=$2; shift 2;; *) die "неизвестный параметр $1";; esac
+  done
+  load "$n"; V_FAIL=0; V_WARN=0
+  local d1=${DOMAINS%% *}
+  if [ "$mode" = local ]; then echo "Проверка «$n» (до переключения DNS)"; else echo "Проверка «$n» (после переключения DNS, по HTTPS)"; fi
+
+  if [ "$mode" = local ]; then
+    # 1) контейнеры
+    local ps; ps=$(dc "$n" ps -a --format json 2>/dev/null | jq -r '[.Service, .State, (.Health // ""), ((.ExitCode // 0)|tostring)] | join("|")' 2>/dev/null || true)
+    if [ -z "$ps" ]; then v_bad "контейнеры не найдены (azhost up $n)"; else
+      while IFS='|' read -r svc st health code; do
+        if [ "$st" = running ] && { [ -z "$health" ] || [ "$health" = healthy ]; }; then v_ok "служба $svc работает"
+        elif [ "$st" = exited ] && [ "$code" = 0 ]; then v_ok "служба $svc завершилась штатно"
+        else v_bad "служба $svc: состояние «$st» ${health:+($health) }код $code (azhost logs $n $svc)"; fi
+      done <<<"$ps"
+    fi
+    # 2) главная и страницы из sitemap
+    local c; c=$(local_code "$PORT" "$d1" /)
+    case $c in 200) v_ok "главная отвечает 200";; 301|302|307|308) v_ok "главная отвечает редиректом $c";; *) v_bad "главная отвечает $c";; esac
+    local p bad=0 total=0
+    while read -r p; do
+      [ -n "$p" ] || continue; total=$((total+1))
+      c=$(local_code "$PORT" "$d1" "$p")
+      case $c in 200|301|302|307|308) ;; *) bad=$((bad+1)); v_bad "страница $p отвечает $c";; esac
+    done < <(sitemap_paths "$PORT" "$d1")
+    [ "$total" -gt 0 ] && [ "$bad" = 0 ] && v_ok "все $total страниц из sitemap отвечают"
+    [ "$total" = 0 ] && v_warn "sitemap.xml не найден: проверена только главная"
+    # 3) здоровье API
+    local h=""; for hp in /api/health /__health; do [ "$(local_code "$PORT" "$d1" $hp)" = 200 ] && { h=$hp; break; }; done
+    [ -n "$h" ] && v_ok "проверка здоровья $h: 200" || v_warn "адрес проверки здоровья не найден (/api/health, /__health)"
+    # 4) база данных
+    if [ "$TYPE" = compose ] && has_service "$n" db; then
+      local cnt; cnt=$(counts_local "$n" 2>/dev/null || true)
+      if [ -z "$cnt" ]; then v_bad "база недоступна или пуста (нет таблиц)"; else
+        local rows; rows=$(awk -F'|' '{s+=$2} END{print s+0}' <<<"$cnt")
+        v_ok "база: $(wc -l <<<"$cnt") таблиц, строк всего $rows"
+        [ "$rows" = 0 ] && [ -f "$STATE/$n.data" ] && v_bad "в базе 0 строк, хотя данные уже переносились"
+      fi
+    fi
+    # 5) сравнение со старым сайтом (пока домен ещё указывает не на этот сервер)
+    local ip got; ip=$(server_ip); got=$(dns_ips "$d1")
+    if [ -z "$oldbase" ] && [ "${CLOUDFLARE:-0}" != 1 ] && [ -n "$ip" ] && [[ " $got " != *" $ip "* ]]; then oldbase="https://$d1"; fi
+    if [ -n "$oldbase" ]; then
+      echo "  — сравнение со старым сайтом: $oldbase"
+      local path same=0 diff=0
+      for path in / $(sitemap_paths "$PORT" "$d1" | head -12); do
+        local o nw; o=$(curl -s -L -m 20 -o /tmp/azh.old -w '%{http_code} %{size_download}' "$oldbase$path" || true)
+        nw=$(curl -s -m 20 -o /tmp/azh.new -w '%{http_code} %{size_download}' -H "Host: $d1" "http://127.0.0.1:$PORT$path" || true)
+        local oc=${o%% *} osz=${o##* } nc=${nw%% *} nsz=${nw##* }
+        if [ "$oc" = 200 ] && ! [[ $nc =~ ^(200|301|302|307|308)$ ]]; then v_bad "$path: на старом сайте 200, на новом $nc"; diff=$((diff+1)); continue; fi
+        if [ "$oc" = 200 ] && [ "$nc" = 200 ]; then
+          local ot nt; ot=$(grep -oiE '<title>[^<]*' /tmp/azh.old | head -1); nt=$(grep -oiE '<title>[^<]*' /tmp/azh.new | head -1)
+          if [ "$ot" != "$nt" ]; then v_warn "$path: заголовок отличается («${ot#<title>}» → «${nt#<title>}»)"; diff=$((diff+1))
+          elif [ "$osz" -gt 0 ] && [ $(( (nsz > osz ? nsz-osz : osz-nsz) * 100 / osz )) -gt 25 ]; then v_warn "$path: размер страницы отличается ($osz → $nsz байт)"; diff=$((diff+1))
+          else same=$((same+1)); fi
+        fi
+      done
+      [ "$diff" = 0 ] && v_ok "страницы совпадают со старым сайтом ($same проверено)"
+      rm -f /tmp/azh.old /tmp/azh.new
+    fi
+  else
+    # публичная проверка по HTTPS
+    local d
+    for d in $DOMAINS; do
+      local code; code=$(curl -s -o /dev/null -m 20 -w '%{http_code}' "https://$d/" || true)
+      case $code in 200|301|302|307|308) v_ok "https://$d отвечает $code";; *) v_bad "https://$d отвечает $code";; esac
+      local red; red=$(curl -s -o /dev/null -m 15 -w '%{redirect_url}' "http://$d/" || true)
+      [[ $red == https://* ]] && v_ok "http://$d перенаправляет на https" || v_warn "http://$d не перенаправляет на https"
+      local end; end=$(echo | timeout 15 openssl s_client -servername "$d" -connect "$d:443" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2 || true)
+      if [ -n "$end" ]; then
+        local days=$(( ($(date -d "$end" +%s) - $(date +%s)) / 86400 ))
+        [ "$days" -ge 14 ] && v_ok "сертификат $d действует ещё $days дн." || v_bad "сертификат $d истекает через $days дн."
+      else v_bad "сертификат $d не получен"; fi
+    done
+    [ "$(curl -s -o /dev/null -m 15 -w '%{http_code}' "https://$d1/robots.txt" || true)" = 200 ] && v_ok "robots.txt доступен" || v_warn "robots.txt не отдаётся"
+  fi
+  echo "Итог: ошибок $V_FAIL, предупреждений $V_WARN"
+  [ "$V_FAIL" = 0 ]
+}
+
+# ── перенос базы (с подсчётом строк до и после) ──
+cmd_db_import() {
+  local n=${1:?имя проекта}; local src=${2:-}; load "$n"
+  [ "$TYPE" = compose ] || die "у проекта нет базы данных"
+  has_service "$n" db || die "в compose проекта нет службы db"
+  mkdir -p "$STATE"
+  local dump="$src" srccounts=""
+  if [ "$src" = --from-url ]; then
+    local url=${SRC_DB_URL:-}
+    [ -n "$url" ] || { read -rsp "Вставьте строку подключения СТАРОЙ базы (ввод скрыт) и нажмите Enter: " url; echo; }
+    [ -n "$url" ] || die "строка пустая"
+    dump="/root/$n.dump"
+    local pgd=pg_dump psql=psql
+    [ -x "$PG18/pg_dump" ] && pgd="$PG18/pg_dump" && psql="$PG18/psql"
+    say "считаю строки в старой базе"
+    srccounts=$("$psql" "$url" -At -c "$COUNTS_SQL" 2>/dev/null || true)
+    [ -n "$srccounts" ] && say "старая база: $(wc -l <<<"$srccounts") таблиц, строк $(awk -F'|' '{s+=$2} END{print s+0}' <<<"$srccounts")" || say "не удалось посчитать строки в старой базе (сравнение будет пропущено)"
+    say "снимаю дамп ($pgd)"
+    "$pgd" --no-owner --no-acl -Fc "$url" -f "$dump" || { rm -f "$dump"; die "не удалось снять дамп"; }
+    unset url
+  fi
+  [ -f "$dump" ] || die "файл дампа не найден: $dump"
+  say "запускаю базу и останавливаю приложение на время переноса"
+  dc "$n" up -d db
+  for _ in $(seq 1 30); do dc "$n" exec -T db sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' >/dev/null 2>&1 && break; sleep 2; done
+  dc "$n" stop app >/dev/null 2>&1 || true
+  say "загружаю данные"
+  set +e
+  dc "$n" exec -T db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner --no-acl' < "$dump"
+  local rc=$?; set -e
+  [ $rc -eq 0 ] && say "данные загружены" || say "pg_restore завершился с кодом $rc (предупреждения про отсутствующие объекты при --clean нормальны)"
+  [ "$src" = --from-url ] && rm -f "$dump"
+  # сравнение: ничего не должно потеряться
+  local tgt; tgt=$(counts_local "$n" 2>/dev/null || true)
+  local mism=0
+  if [ -n "$srccounts" ]; then
+    local line t s cnt
+    while IFS='|' read -r t s; do
+      [ -n "$t" ] || continue
+      cnt=$(awk -F'|' -v t="$t" '$1==t{print $2}' <<<"$tgt")
+      if [ "${cnt:-missing}" != "$s" ]; then echo "  ✗ $t: в старой базе $s, в новой ${cnt:-нет таблицы}"; mism=$((mism+1)); fi
+    done <<<"$srccounts"
+    [ "$mism" = 0 ] && echo "  ✓ все таблицы совпали по числу строк ($(wc -l <<<"$srccounts") таблиц)"
+  fi
+  dc "$n" up -d
+  if [ "$mism" = 0 ] && [ -n "$tgt" ]; then date -Is > "$STATE/$n.data"; return 0; fi
+  [ -z "$tgt" ] && echo "  ✗ в новой базе нет таблиц"
+  return 1
+}
+
+# ── перенос проекта по шагам (можно запускать повторно: продолжит с места остановки) ──
+MANIFEST=${AZHOST_MANIFEST:-$LIB/projects.json}
+SECRETS=${AZHOST_SECRETS:-/root/azhost-secrets}
+
+step_done() { grep -qx "$2" "$STATE/$1.steps" 2>/dev/null; }
+step_mark() { mkdir -p "$STATE"; echo "$2" >> "$STATE/$1.steps"; }
+
+merge_env_file() {  # merge_env_file <файл-источник> <файл-приёмник>: строки KEY=VALUE заменяют одноимённые
+  local src=$1 dst=$2 line key
+  touch "$dst"
+  while IFS= read -r line; do
+    [[ $line =~ ^[A-Za-z_][A-Za-z0-9_]*= ]] || continue
+    key=${line%%=*}
+    grep -v "^$key=" "$dst" > "$dst.tmp" || true
+    printf '%s\n' "$line" >> "$dst.tmp"; mv "$dst.tmp" "$dst"
+  done < "$src"
+  chmod 600 "$dst"
+}
+
+cmd_migrate() {
+  local n=${1:?имя проекта}; shift || true
+  local yes=0; [ "${1:-}" = --yes ] && yes=1
+  [ -f "$MANIFEST" ] || die "нет манифеста проектов: $MANIFEST"
+  local e; e=$(jq -c --arg n "$n" '.projects[] | select(.name==$n)' "$MANIFEST")
+  [ -n "$e" ] || die "проекта «$n» нет в манифесте (список: jq -r '.projects[].name' $MANIFEST)"
+  local repo domains import_db cf
+  repo=$(jq -r .repo <<<"$e"); domains=$(jq -r '.domains|join(" ")' <<<"$e")
+  import_db=$(jq -r .import_db <<<"$e"); cf=$(jq -r .cloudflare <<<"$e")
+  mkdir -p "$STATE"
+  echo; echo "══════ Перенос «$n» ══════"; jq -r '.note // empty' <<<"$e" | sed 's/^/Заметка: /'
+
+  # 1. подготовка
+  if ! step_done "$n" preflight; then
+    local mem disk; mem=$(awk '/MemAvailable/{print int($2/1024)}' /proc/meminfo); disk=$(df -BG --output=avail / | tail -1 | tr -dc 0-9)
+    echo "Память доступно: ${mem} МБ, диск свободно: ${disk} ГБ"
+    [ "$mem" -ge 700 ] || { notify "«$n»: мало свободной памяти (${mem} МБ), перенос остановлен"; die "мало свободной памяти (${mem} МБ): освободите или поднимите тариф"; }
+    [ "$disk" -ge 5 ] || die "мало места на диске (${disk} ГБ)"
+    step_mark "$n" preflight
+  fi
+
+  # 2. подключение
+  if [ ! -f "$ETC/$n.conf" ]; then
+    # shellcheck disable=SC2086
+    cmd_add "$n" "$repo" $domains $( [ "$cf" = true ] && echo --cloudflare )
+  fi
+  load "$n"
+
+  # 3. секреты: из готовых файлов $SECRETS/<имя>.env (и <имя>.build.env для значений сборки) или вручную
+  if ! step_done "$n" secrets; then
+    [ -f "$SECRETS/$n.env" ] && { merge_env_file "$SECRETS/$n.env" "$DIR/docker.env"; say "секреты взяты из $SECRETS/$n.env"; }
+    [ -f "$SECRETS/$n.build.env" ] && merge_env_file "$SECRETS/$n.build.env" "$DIR/.env"
+    local miss=() k
+    while read -r k; do grep -qE "^$k=.+" "$DIR/docker.env" || miss+=("$k"); done < <(jq -r '.required_env[]' <<<"$e")
+    if [ ${#miss[@]} -gt 0 ]; then
+      echo "Не заполнены обязательные секреты: ${miss[*]}"
+      if [ -t 0 ] && [ "$yes" = 0 ]; then
+        "${EDITOR:-nano}" "$DIR/docker.env"; chmod 600 "$DIR/docker.env"
+        miss=(); while read -r k; do grep -qE "^$k=.+" "$DIR/docker.env" || miss+=("$k"); done < <(jq -r '.required_env[]' <<<"$e")
+      fi
+      [ ${#miss[@]} -eq 0 ] || { notify "«$n»: ждёт секреты (${miss[*]}); положите их в $SECRETS/$n.env и повторите azhost migrate $n"; die "заполните секреты: ${miss[*]} (файл $SECRETS/$n.env или azhost env $n), затем повторите azhost migrate $n"; }
+    fi
+    step_mark "$n" secrets
+  fi
+
+  # 4. запуск
+  if ! step_done "$n" up; then cmd_up "$n"; step_mark "$n" up; fi
+
+  # 5. данные
+  if [ "$import_db" = true ] && ! step_done "$n" data; then
+    local urlfile="$SECRETS/$n.dburl"
+    if [ -f "$urlfile" ]; then SRC_DB_URL=$(tr -d '\r\n' < "$urlfile") cmd_db_import "$n" --from-url || { notify "«$n»: перенос данных не прошёл проверку (число строк)"; die "данные перенесены не полностью — см. выше; DNS не трогайте. После разбора: azhost migrate $n"; }
+    elif [ -t 0 ]; then cmd_db_import "$n" --from-url || die "данные перенесены не полностью — см. выше; DNS не трогайте"
+    else notify "«$n»: ждёт строку подключения старой базы ($urlfile)"; die "положите строку подключения старой базы в $urlfile (или запустите команду в терминале)"; fi
+    step_mark "$n" data
+  fi
+
+  # 6. проверка до переключения DNS (включая сравнение со старым сайтом)
+  if ! step_done "$n" verify_local; then
+    if cmd_verify "$n"; then step_mark "$n" verify_local; else notify "«$n»: проверка до переключения DNS не пройдена"; die "проверка не пройдена — исправьте и повторите azhost migrate $n; DNS пока не менять"; fi
+  fi
+
+  # 7. DNS: ждём, пока домены укажут на этот сервер
+  if ! step_done "$n" dns; then
+    local ip; ip=$(server_ip)
+    echo; echo "ТЕПЕРЬ ВАШЕ ДЕЙСТВИЕ: в панели хостера задайте A-записи на IP сервера ${ip:-<IP сервера>} для: $domains"
+    if [ "$cf" = true ]; then
+      echo "Домен за Cloudflare: в Cloudflare направьте записи на этот IP, SSL-режим «Full»."
+      if [ -t 0 ] && [ "$yes" = 0 ]; then read -rp "Когда сделаете — нажмите Enter: " _; fi
+    else
+      notify "«$n»: сайт проверен и готов; поменяйте DNS ($domains → ${ip:-IP сервера}). После этого перенос продолжится сам"
+      local waited=0 all d
+      while :; do
+        all=1; for d in $domains; do [[ " $(dns_ips "$d") " == *" $ip "* ]] || all=0; done
+        [ "$all" = 1 ] && break
+        [ "$waited" -ge 3600 ] && die "DNS не обновился за час; поменяйте записи и повторите azhost migrate $n"
+        [ $((waited % 300)) = 0 ] && echo "  ждём DNS ($((waited/60)) мин)…"
+        sleep 30; waited=$((waited+30))
+      done
+      echo "DNS обновился"
+    fi
+    step_mark "$n" dns
+  fi
+
+  # 8–9. HTTPS и публичная проверка
+  if ! step_done "$n" ssl; then cmd_ssl "$n"; step_mark "$n" ssl; fi
+  if ! step_done "$n" verify_public; then
+    sleep 5
+    if cmd_verify "$n" --public; then step_mark "$n" verify_public; else notify "«$n»: публичная проверка после HTTPS не пройдена"; die "публичная проверка не пройдена — смотрите выше; повторить: azhost migrate $n"; fi
+  fi
+  step_mark "$n" done
+  notify "«$n» перенесён: $domains работает на сервере. Старый хостинг можно отключить через несколько дней"
+}
+
+cmd_migrate_all() {
+  local yes=""; [ "${1:-}" = --yes ] && yes=--yes
+  [ -f "$MANIFEST" ] || die "нет манифеста проектов: $MANIFEST"
+  local n d
+  while read -r n; do
+    if step_done "$n" done; then echo "• «$n» уже перенесён"; continue; fi
+    d=$(jq -r --arg n "$n" '.projects[]|select(.name==$n)|.domains|join(" ")' "$MANIFEST")
+    if [ -z "$yes" ] && [ -t 0 ]; then
+      read -rp "Переносим «$n» ($d)? Домены верные? [y — да / s — пропустить / q — выход]: " a
+      case $a in y|Y|д|Д) ;; s|S) continue;; *) echo "Остановлено."; return 0;; esac
+    fi
+    cmd_migrate "$n" $yes || { echo "Остановлено на «$n». Исправьте причину и снова: azhost migrate-all"; return 1; }
+  done < <(jq -r '.projects[].name' "$MANIFEST")
+  echo "Все проекты из манифеста перенесены."
+}
+
+cmd_migrate_status() {
+  [ -f "$MANIFEST" ] || die "нет манифеста проектов: $MANIFEST"
+  printf '%-15s %-34s %s\n' ПРОЕКТ ДОМЕНЫ ШАГ
+  local n d last
+  while read -r n; do
+    d=$(jq -r --arg n "$n" '.projects[]|select(.name==$n)|.domains[0]' "$MANIFEST")
+    last=$(tail -1 "$STATE/$n.steps" 2>/dev/null || true)
+    printf '%-15s %-34s %s\n' "$n" "$d" "${last:-не начат}"
+  done < <(jq -r '.projects[].name' "$MANIFEST")
+}
+
+# ── наблюдатель (cron каждые 5 минут): сайт не отвечает → один перезапуск → уведомление ──
+cmd_watch() {
+  shopt -s nullglob
+  mkdir -p "$STATE"
+  for f in "$ETC"/*.conf; do
+    [ "$(basename "$f")" = azhost.conf ] && continue
+    ( . "$f"
+      [ -f "$APPS/$NAME/.azhost-started" ] || exit 0
+      d1=${DOMAINS%% *}
+      code=$(local_code "$PORT" "$d1" /)
+      if [[ $code =~ ^(200|301|302|307|308)$ ]]; then
+        if [ -f "$STATE/$NAME.down" ]; then rm -f "$STATE/$NAME.down"; notify "«$NAME» снова отвечает ($code)"; fi
+        exit 0
+      fi
+      if [ ! -f "$STATE/$NAME.down" ]; then
+        notify "«$NAME» не отвечает ($code), перезапускаю"
+        dc "$NAME" up -d >/dev/null 2>&1 || true
+        sleep 25
+        code=$(local_code "$PORT" "$d1" /)
+        if [[ $code =~ ^(200|301|302|307|308)$ ]]; then notify "«$NAME» восстановлен после перезапуска"; exit 0; fi
+        date -Is > "$STATE/$NAME.down"; notify "«$NAME» НЕ восстановился (HTTP $code): azhost logs $NAME"
+      fi )
+  done
+  local used; used=$(df --output=pcent / | tail -1 | tr -dc 0-9)
+  if [ "${used:-0}" -ge 85 ] && [ ! -f "$STATE/disk.warned" ]; then notify "диск заполнен на ${used}%"; date -Is > "$STATE/disk.warned"; fi
+  [ "${used:-0}" -lt 80 ] && rm -f "$STATE/disk.warned"
+  return 0
+}
+
+cmd_secrets() {  # azhost secrets <имя> [env|dburl|build]: ввод секретов проекта в защищённый каталог (для migrate)
+  local n=${1:?имя проекта}; local what=${2:-env}
+  mkdir -p "$SECRETS"; chmod 700 "$SECRETS"
+  case $what in
+    env) "${EDITOR:-nano}" "$SECRETS/$n.env"; chmod 600 "$SECRETS/$n.env";;
+    build) "${EDITOR:-nano}" "$SECRETS/$n.build.env"; chmod 600 "$SECRETS/$n.build.env";;
+    dburl)
+      local url; read -rsp "Строка подключения СТАРОЙ базы проекта «$n» (ввод скрыт) и Enter: " url; echo
+      [ -n "$url" ] || die "строка пустая"
+      ( umask 077; printf '%s\n' "$url" > "$SECRETS/$n.dburl" ); unset url; say "сохранено в $SECRETS/$n.dburl";;
+    *) die "использование: azhost secrets <имя> [env|build|dburl]";;
+  esac
+}
+
 cmd_help() {
   cat <<'EOF'
 azhost — проекты на общем сервере (Docker Compose + nginx + HTTPS)
@@ -347,7 +668,13 @@ azhost — проекты на общем сервере (Docker Compose + nginx
   up <имя>                       собрать и запустить
   down <имя>                     остановить (данные остаются)
   db-import <имя> --from-url     перенести базу из старой (строка подключения вводится скрыто)
-  db-import <имя> <файл.dump>    загрузить готовый дамп
+  db-import <имя> <файл.dump>    загрузить готовый дамп (при --from-url сверяется число строк в каждой таблице)
+  verify <имя> [--public]        проверить проект (до смены DNS: контейнеры, страницы, база, сравнение со старым сайтом; --public: HTTPS и сертификат)
+  secrets <имя> [env|dburl|build] ввести секреты проекта заранее (для migrate)
+  migrate <имя>                  перенос проекта из манифеста по шагам: подключение, секреты, запуск, данные, проверка, DNS, HTTPS
+  migrate-all [--yes]            перенести все проекты из манифеста по очереди (останавливается при проблеме)
+  migrate-status                 на каком шаге каждый проект
+  watch                          наблюдатель (cron, каждые 5 минут): перезапуск упавшего сайта и уведомление
   ssl <имя>                      выпустить HTTPS-сертификат (после смены DNS)
   vhost <имя>                    пересоздать nginx-сайт
   status                         сводка по всем проектам и памяти
@@ -362,6 +689,6 @@ cmd=${1:-help}; shift || true
 case $cmd in
   add) cmd_add "$@";; env) cmd_env "$@";; up) cmd_up "$@";; down) cmd_down "$@";; logs) cmd_logs "$@";;
   status) cmd_status;; ssl) cmd_ssl "$@";; db-import) cmd_db_import "$@";; backup) cmd_backup;;
-  autodeploy) cmd_autodeploy;; vhost) cmd_vhost "$@";; update) cmd_update;; help|-h|--help) cmd_help;;
+  autodeploy) cmd_autodeploy;; verify) cmd_verify "$@";; secrets) cmd_secrets "$@";; migrate) cmd_migrate "$@";; migrate-all) cmd_migrate_all "$@";; migrate-status) cmd_migrate_status;; watch) cmd_watch;; vhost) cmd_vhost "$@";; update) cmd_update;; help|-h|--help) cmd_help;;
   *) cmd_help; exit 1;;
 esac
