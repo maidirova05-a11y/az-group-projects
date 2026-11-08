@@ -141,7 +141,8 @@ function createServer(root = ROOT) {
   }
 
   function loadFn(name) {
-    if (!/^[A-Za-z0-9-]+$/.test(name)) return null;
+    // api/<имя>.js и вложенные api/<папка>/<имя>.js; сегменты, начинающиеся с «_», — служебные (не маршруты)
+    if (!/^[A-Za-z0-9-]+(\/[A-Za-z0-9-]+)*$/.test(name)) return null;
     const f = path.join(root, 'api', name + '.js');
     if (!fs.existsSync(f)) return null;
     if (!fnCache.has(f)) { const m = require(f); fnCache.set(f, m.default || m); }
@@ -162,9 +163,9 @@ function createServer(root = ROOT) {
       applyHeaders(res, pathname);
 
       // функции: /api/<имя>
-      const fm = /^\/api\/([^/]+)\/?$/.exec(pathname);
+      const fm = /^\/api\/(.+?)\/?$/.exec(pathname);
       if (fm) {
-        const fn = fm[1].startsWith('_') ? null : loadFn(fm[1]);
+        const fn = fm[1].split('/').some((seg) => seg.startsWith('_')) ? null : loadFn(fm[1]);
         if (!fn) return res.status(404).json({ ok: false, error: 'not_found' });
         req.query = Object.fromEntries(url.searchParams);
         if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {

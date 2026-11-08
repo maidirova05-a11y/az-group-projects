@@ -9,7 +9,7 @@
 | Тип проекта | Как определяется | Как запускается |
 |---|---|---|
 | `compose` | в репозитории есть `compose.yaml` (приложение + база) | `docker compose` из репозитория; порт берётся из `APP_PORT:-NNNN` |
-| `static-fn` | `index.html` + каталог `api/` (статика и функции Vercel) | мини-сервер `static-fn/server.cjs` (без зависимостей): раздаёт файлы и выполняет `api/<имя>.js` как функцию Vercel, повторяет `cleanUrls`, `headers`, `redirects` из `vercel.json` |
+| `static-fn` | `index.html` + каталог `api/`, но без `compose.yaml` (статика и функции Vercel, без базы) | мини-сервер `static-fn/server.cjs` (без зависимостей): раздаёт файлы и выполняет `api/<имя>.js` и вложенные `api/<папка>/<имя>.js` как функции Vercel, повторяет `cleanUrls`, `headers`, `redirects` из `vercel.json`. Запасной вариант для проектов без Docker; Atlantia и Fibonacci теперь имеют свой `compose.yaml` и подключаются как `compose` |
 
 ## 1. Установка (один раз)
 
@@ -54,8 +54,12 @@ azhost ssl <имя>                        # HTTPS
 | `itecx-landing` | compose | 3103 | `itecx.kz` | `ADMIN_PASSWORD_HASH`, `TOKEN_SECRET`, `BITRIX_WEBHOOK_URL` |
 | `Ascora-Education` | compose | 3104 | `www.ascora.education` (+ `ascora.education`), **Cloudflare** | `JWT_SECRET`, Bitrix24 (`BITRIX_WEBHOOK`, `BITRIX_CATEGORY_ID`, `BITRIX_STAGE_ID`), Google Sheets (`GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY_B64`) |
 | `smarthub-kz` | compose | 3105 | `smarthub-kz.com` (+ `www`) | `ADMIN_PASSWORD`, `ADMIN_SECRET`, `BITRIX_WEBHOOK_URL`, `BITRIX_CATEGORY_ID`, `BITRIX_STAGE_ID`, `BITRIX_ASSIGNED_BY_ID` |
-| `atlantia-olympiads-kz` | static-fn | 3106 | `atlantia-olympiads.kz` (+ `www`, редирект на без-`www` делает сайт) | `BITRIX_WEBHOOK_URL` (и необязательные `BITRIX_*`) |
-| `fibonacci-olympiads-kz` | static-fn | 3107 | `fibonacci-olympiads.kz` (+ `www`) | `BITRIX_WEBHOOK_URL` |
+| `atlantia-olympiads-kz` | compose (сайт + функция заявок + Postgres) | 3106 | `atlantia-olympiads.kz` (+ `www`, редирект на без-`www` делает сайт) | `BITRIX_WEBHOOK_URL` (и необязательные `BITRIX_*`) |
+| `fibonacci-olympiads-kz` | compose (сайт + функции + кабинет результатов + Postgres) | 3107 | `fibonacci-olympiads.kz` (+ `www`) | `BITRIX_WEBHOOK_URL`, `RESULTS_SESSION_SECRET`, `RESEND_API_KEY`, `MAIL_FROM` |
+
+**Atlantia и Fibonacci:** заявки с форм сохраняются в таблицу `leads` до отправки в Bitrix24 (при сбое CRM заявка остаётся со статусом `failed`). Старой базы у них нет, поэтому `db-import` не нужен. Недоставленные заявки:
+`cd /opt/apps/<имя> && docker compose -p <имя> exec db psql -U app -d app -c "select id, created_at, name, phone, crm_error from leads where crm_status <> 'ok' order by id"`.
+**Fibonacci:** кабинет результатов (`/results`) раньше хранил данные в облачном Redis (Upstash), теперь — в Postgres на сервере (таблица `kv`). Результаты загружают заново из таблицы: `docker compose -p fibonacci cp "Результаты.xlsx" app:/tmp/r.xlsx`, затем `docker compose -p fibonacci exec app node scripts/import-results.mjs /tmp/r.xlsx` (сначала с `--dry`). Подробности — `docs/BACKEND.md` в репозитории проекта.
 
 Значения секретов — те же, что в Vercel → Settings → Environment Variables (у проектов на Forge/Render — из их `.env`). Адрес базы указывать не нужно: он прописан в `compose.yaml` проекта.
 
